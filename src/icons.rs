@@ -12,7 +12,6 @@ use egui::{pos2, vec2, Color32, Painter, Pos2, Rect, Shape, Stroke};
 pub enum Icon {
     Play,
     Pause,
-    Stop,
     Prev,
     Next,
     Step,
@@ -26,7 +25,6 @@ pub enum Icon {
     Camera,
     Sun,
     Moon,
-    Plus,
     Close,
     Screen,
     Convert,
@@ -35,7 +33,6 @@ pub enum Icon {
     Upload,
     Music,
     Image,
-    Trash,
 }
 
 fn arc(c: Pos2, r: f32, a0: f32, a1: f32, n: usize) -> Vec<Pos2> {
@@ -67,9 +64,6 @@ pub fn paint(p: &Painter, rect: Rect, icon: Icon, color: Color32) {
         Icon::Pause => {
             p.rect_filled(Rect::from_min_max(at(0.18, 0.1), at(0.4, 0.9)), s * 0.06, color);
             p.rect_filled(Rect::from_min_max(at(0.6, 0.1), at(0.82, 0.9)), s * 0.06, color);
-        }
-        Icon::Stop => {
-            p.rect_filled(Rect::from_min_max(at(0.15, 0.15), at(0.85, 0.85)), s * 0.1, color);
         }
         Icon::Prev => {
             p.rect_filled(Rect::from_min_max(at(0.12, 0.15), at(0.25, 0.85)), s * 0.04, color);
@@ -167,10 +161,6 @@ pub fn paint(p: &Painter, rect: Rect, icon: Icon, color: Color32) {
             }
             line(p, outline, st);
         }
-        Icon::Plus => {
-            p.line_segment([at(0.5, 0.12), at(0.5, 0.88)], st);
-            p.line_segment([at(0.12, 0.5), at(0.88, 0.5)], st);
-        }
         Icon::Close => {
             p.line_segment([at(0.2, 0.2), at(0.8, 0.8)], st);
             p.line_segment([at(0.8, 0.2), at(0.2, 0.8)], st);
@@ -220,11 +210,6 @@ pub fn paint(p: &Painter, rect: Rect, icon: Icon, color: Color32) {
             p.circle_filled(at(0.32, 0.38), s * 0.08, color);
             line(p, vec![at(0.1, 0.8), at(0.4, 0.52), at(0.58, 0.68), at(0.72, 0.56), at(0.92, 0.76)], st);
         }
-        Icon::Trash => {
-            p.line_segment([at(0.1, 0.22), at(0.9, 0.22)], st);
-            line(p, vec![at(0.36, 0.22), at(0.4, 0.08), at(0.6, 0.08), at(0.64, 0.22)], st);
-            line(p, vec![at(0.2, 0.22), at(0.26, 0.92), at(0.74, 0.92), at(0.8, 0.22)], st);
-        }
     }
 }
 
@@ -232,8 +217,9 @@ pub fn paint(p: &Painter, rect: Rect, icon: Icon, color: Color32) {
 // Logo
 // ---------------------------------------------------------------------------
 
-const LOGO_A: [f32; 3] = [124.0, 92.0, 255.0];
-const LOGO_B: [f32; 3] = [46.0, 200.0, 255.0];
+// VLC orange (top-left) into warm amber (bottom-right).
+const LOGO_A: [f32; 3] = [255.0, 110.0, 0.0];
+const LOGO_B: [f32; 3] = [255.0, 184.0, 48.0];
 const SQUIRCLE_N: f32 = 5.0;
 const TILE: f32 = 0.92; // half-size of the tile in normalised (-1..1) logo space
 const RING_R: f32 = 0.52;
@@ -308,8 +294,9 @@ pub fn logo_rgba(size: u32) -> Vec<u8> {
     out
 }
 
-/// Paints the logo as vectors into `rect`.
-pub fn paint_logo(p: &Painter, rect: Rect) {
+
+/// Paints the logo with its convert ring (and arrow head) rotated by `ring_deg`.
+pub fn paint_logo_ex(p: &Painter, rect: Rect, ring_deg: f32) {
     let s = rect.width().min(rect.height()) / 2.0;
     let c = rect.center();
     let to_screen = |u: f32, v: f32| c + vec2(u, v) * s;
@@ -339,14 +326,16 @@ pub fn paint_logo(p: &Painter, rect: Rect) {
     p.add(Shape::Path(PathShape::line(closed, Stroke::new(0.8_f32, Color32::from_rgba_unmultiplied(255, 255, 255, 60)))));
 
     // Circular convert arrow + play triangle.
+    let rot = ring_deg.to_radians();
     let ring: Vec<Pos2> = (0..=48)
         .map(|i| {
-            let a = (GAP_DEG + (360.0 - 2.0 * GAP_DEG) * i as f32 / 48.0).to_radians();
+            let a = (GAP_DEG + (360.0 - 2.0 * GAP_DEG) * i as f32 / 48.0).to_radians() + rot;
             to_screen(a.cos() * RING_R, a.sin() * RING_R)
         })
         .collect();
     p.add(Shape::Path(PathShape::line(ring, Stroke::new(RING_W * 2.0 * s, Color32::WHITE))));
-    let head = arrow_head().map(|(u, v)| to_screen(u, v));
+    let (sr, cr) = rot.sin_cos();
+    let head = arrow_head().map(|(u, v)| to_screen(u * cr - v * sr, u * sr + v * cr));
     p.add(Shape::convex_polygon(head.to_vec(), Color32::WHITE, Stroke::NONE));
     let play = PLAY.map(|(u, v)| to_screen(u + 0.02, v));
     p.add(Shape::convex_polygon(play.to_vec(), Color32::WHITE, Stroke::NONE));

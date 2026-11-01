@@ -16,12 +16,13 @@ pub struct Settings {
     pub hwaccel: bool,
     /// 0 = off, 1 = playlist, 2 = current item.
     pub loop_mode: u8,
-    pub show_playlist: bool,
+    /// Whether the tools inspector next to the preview is open.
+    pub tools_open: bool,
 }
 
 impl Default for Settings {
     fn default() -> Self {
-        Self { dark: false, volume: 0.8, muted: false, max_height: 1080, hwaccel: true, loop_mode: 0, show_playlist: false }
+        Self { dark: false, volume: 0.8, muted: false, max_height: 1080, hwaccel: true, loop_mode: 0, tools_open: true }
     }
 }
 
@@ -39,7 +40,8 @@ fn path() -> Option<PathBuf> {
 pub fn load() -> Settings {
     path()
         .and_then(|p| std::fs::read(p).ok())
-        .and_then(|bytes| serde_json::from_slice(&bytes).ok())
+        // Tolerate a UTF-8 byte-order mark (added by Notepad or PowerShell when hand-edited).
+        .and_then(|bytes| serde_json::from_slice(bytes.strip_prefix(b"\xEF\xBB\xBF").unwrap_or(&bytes)).ok())
         .unwrap_or_default()
 }
 
@@ -64,5 +66,14 @@ mod tests {
         assert_eq!(s.volume, 0.5);
         assert_eq!(s.max_height, 1080);
         assert!(s.hwaccel);
+    }
+
+    #[test]
+    fn old_files_and_bom_still_load() {
+        // v1.0 files had "show_playlist", which is simply ignored now.
+        let bytes = b"\xEF\xBB\xBF{\"dark\": true, \"show_playlist\": true}";
+        let s: Settings = serde_json::from_slice(bytes.strip_prefix(b"\xEF\xBB\xBF").unwrap()).unwrap();
+        assert!(s.dark);
+        assert!(s.tools_open);
     }
 }

@@ -1,14 +1,13 @@
-//! "Frames" tab: video → image sequence (like `ffmpeg -vf fps=N out_%06d.png`) and
-//! the way back, image sequence → video, with optional reversed order.
+//! Image-sequence tools in the inspector: video → images (like
+//! `ffmpeg -vf fps=N out_%06d.png`) and images → video, both optionally backwards.
 
 use std::ffi::OsString;
 use std::io::Write;
 use std::path::{Path, PathBuf};
-use std::sync::mpsc::{self, Receiver};
 
 use egui::{vec2, RichText, Ui};
 
-use crate::converter::{jobs_card, pill};
+use crate::converter::{field, pill};
 use crate::ffmpeg::{self, MediaInfo};
 use crate::formats::{self, Res, VCodec, IMAGE_SEQ_FORMATS, SEQ_VIDEO_FORMATS};
 use crate::icons::Icon;
@@ -17,13 +16,8 @@ use crate::theme::{self, pal};
 use crate::util;
 
 pub struct Frames {
-    mode: usize,
     // Video → images
     video: Option<String>,
-    video_info: Option<Result<MediaInfo, String>>,
-    probe_rx: Option<Receiver<Result<MediaInfo, String>>>,
-    thumb: Option<egui::TextureHandle>,
-    thumb_rx: Option<Receiver<Option<egui::ColorImage>>>,
     original_fps: bool,
     fps: f64,
     img_format: usize,
@@ -48,12 +42,7 @@ pub struct Frames {
 impl Default for Frames {
     fn default() -> Self {
         Self {
-            mode: 0,
             video: None,
-            video_info: None,
-            probe_rx: None,
-            thumb: None,
-            thumb_rx: None,
             original_fps: false,
             fps: 10.0,
             img_format: 0,
@@ -76,185 +65,196 @@ impl Default for Frames {
     }
 }
 
-const MODES: [(Icon, &str); 2] = [(Icon::Frames, "Video → Images"), (Icon::Screen, "Images → Video")];
-
 impl Frames {
-    /// Routes dropped/opened paths to the right mode.
-    pub fn add_paths(&mut self, paths: Vec<PathBuf>, ctx: &egui::Context) {
-        let mut imgs: Vec<PathBuf> = Vec::new();
-        for p in &paths {
-            if p.is_dir() {
-                imgs.extend(list_images(p));
-            } else if util::is_image_path(p) {
-                imgs.push(p.clone());
-            }
-        }
-        if !imgs.is_empty() && (paths.len() > 1 || paths[0].is_dir()) {
-            self.mode = 1;
-            self.set_images(imgs);
-        } else if let Some(first) = paths.first() {
-            self.mode = 0;
-            self.set_video(first.to_string_lossy().into_owned(), ctx);
+    fn status(&self, ui: &mut Ui) {
+        if let Some((m, ok)) = &self.message {
+            let p = pal();
+            ui.label(RichText::new(m).size(12.5).color(if *ok { p.ok } else { p.danger }));
         }
     }
 
-    fn set_images(&mut self, mut imgs: Vec<PathBuf>) {
-        imgs.sort_by(|a, b| util::natural_cmp(&a.to_string_lossy(), &b.to_string_lossy()));
-        imgs.dedup();
-        self.images = imgs;
-        self.seq_output = None;
-    }
-
-    pub fn set_video(&mut self, source: String, ctx: &egui::Context) {
-        self.video = Some(source.clone());
-        self.video_info = None;
-        self.thumb = None;
-        self.out_dir = None;
-        let (tx, rx) = mpsc::channel();
-        let (ttx, trx) = mpsc::channel();
-        let ctx = ctx.clone();
-        std::thread::spawn(move || {
-            let info = ffmpeg::probe(&source);
-            let thumb = info.as_ref().ok().and_then(|i| i.video.as_ref()).and_then(|v| {
-                let (w, h) = ffmpeg::fit_size(v.width, v.height, 480, 270);
-                let at = i_duration(&info).map(|d| (d * 0.1).min(5.0)).unwrap_or(0.0);
-                ffmpeg::grab_frame(&source, at, false, w, h)
-            });
-            let _ = tx.send(info);
-            let _ = ttx.send(thumb);
-            ctx.request_repaint();
-        });
-        self.probe_rx = Some(rx);
-        self.thumb_rx = Some(trx);
-    }
-
-    pub fn ui(&mut self, ui: &mut Ui, queue: &mut Queue) {
-        if let Some(rx) = &self.probe_rx {
-            if let Ok(info) = rx.try_recv() {
-                if let Ok(i) = &info {
-                    if let Some(v) = &i.video {
-                        if self.original_fps {
-                            self.fps = v.fps;
-                        }
-                    }
-                }
-                self.video_info = Some(info);
-                self.probe_rx = None;
-            }
-        }
-        if let Some(rx) = &self.thumb_rx {
-            if let Ok(img) = rx.try_recv() {
-                self.thumb = img.map(|i| ui.ctx().load_texture("frames-thumb", i, egui::TextureOptions::LINEAR));
-                self.thumb_rx = None;
-            }
-        }
-        let wide = ui.available_width() > 900.0;
-        let col_w = if wide { (ui.available_width() - 30.0) / 2.0 } else { ui.available_width() - 8.0 };
-        egui::ScrollArea::vertical().auto_shrink([false, false]).show(ui, |ui| {
-            ui.add_space(6.0);
-            ui.horizontal(|ui| {
-                ui.add_space(4.0);
-                if theme::segmented(ui, &mut self.mode, &MODES) {
-                    self.message = None;
-                }
-            });
-            ui.add_space(12.0);
-            let left = |s: &mut Self, ui: &mut Ui| {
-                if s.mode == 0 {
-                    s.video_source_card(ui, col_w);
-                } else {
-                    s.images_source_card(ui, col_w);
-                }
-            };
-            if wide {
-                ui.horizontal_top(|ui| {
-                    ui.add_space(4.0);
-                    ui.vertical(|ui| {
-                        ui.set_width(col_w);
-                        left(self, ui);
-                        ui.add_space(14.0);
-                        jobs_card(ui, queue, col_w);
-                    });
-                    ui.add_space(14.0);
-                    ui.vertical(|ui| {
-                        ui.set_width(col_w);
-                        if self.mode == 0 {
-                            self.extract_settings(ui, queue, col_w);
-                        } else {
-                            self.assemble_settings(ui, queue, col_w);
-                        }
-                    });
-                });
-            } else {
-                left(self, ui);
-                ui.add_space(14.0);
-                if self.mode == 0 {
-                    self.extract_settings(ui, queue, col_w);
-                } else {
-                    self.assemble_settings(ui, queue, col_w);
-                }
-                ui.add_space(14.0);
-                jobs_card(ui, queue, col_w);
-            }
-            ui.add_space(20.0);
-        });
-    }
-
-    // ----- Video → images -------------------------------------------------
-
-    fn video_source_card(&mut self, ui: &mut Ui, w: f32) {
+    /// Video → image sequence for the video in the preview.
+    pub fn extract_panel(&mut self, ui: &mut Ui, queue: &mut Queue, source: &str, info: &MediaInfo) {
         let p = pal();
-        theme::card(ui, |ui| {
-            ui.set_width(w - 32.0);
-            ui.horizontal(|ui| {
-                theme::section_title(ui, "Source video");
-                ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                    if self.video.is_some() && theme::button_icon(ui, Icon::Folder, "Change", false).clicked() {
-                        if let Some(f) = rfd::FileDialog::new().pick_file() {
-                            self.set_video(f.to_string_lossy().into_owned(), ui.ctx());
+        if self.video.as_deref() != Some(source) {
+            self.video = Some(source.to_string());
+            self.message = None;
+        }
+        let src_fps = info.video.as_ref().map(|v| v.fps);
+        field(ui, "Frames per second", |ui| {
+            theme::toggle(ui, &mut self.original_fps, "Every frame (original rate)");
+            if !self.original_fps {
+                ui.horizontal_wrapped(|ui| {
+                    ui.spacing_mut().item_spacing = vec2(8.0, 8.0);
+                    ui.add(egui::DragValue::new(&mut self.fps).range(0.01..=240.0).speed(0.1).suffix(" fps").max_decimals(3));
+                    for v in [1.0, 5.0, 10.0, 24.0, 30.0, 60.0] {
+                        if pill(ui, &format!("{v}"), (self.fps - v).abs() < 1e-6).clicked() {
+                            self.fps = v;
                         }
                     }
                 });
-            });
-            match &self.video {
-                None => {
-                    let hovering = ui.ctx().input(|i| !i.raw.hovered_files.is_empty());
-                    if theme::drop_zone(
-                        ui,
-                        vec2(ui.available_width(), 240.0),
-                        "Drop a video here",
-                        "any format · click to browse",
-                        hovering,
-                    )
-                    .clicked()
-                    {
-                        if let Some(f) = rfd::FileDialog::new().pick_file() {
-                            self.set_video(f.to_string_lossy().into_owned(), ui.ctx());
-                        }
-                    }
-                }
-                Some(src) => {
-                    ui.label(RichText::new(util::display_name(src)).color(p.strong));
-                    match &self.video_info {
-                        None => theme::hint(ui, "Analysing…"),
-                        Some(Err(e)) => {
-                            ui.label(RichText::new(e).color(p.danger));
-                        }
-                        Some(Ok(info)) => {
-                            theme::hint(ui, &format!("{}  ·  {}", util::fmt_time(info.duration.unwrap_or(0.0)), info.summary()));
-                        }
-                    }
-                    if let Some(t) = &self.thumb {
-                        ui.add_space(6.0);
-                        let size = t.size_vec2();
-                        let scale = ((ui.available_width()) / size.x).min(1.0);
-                        let (rect, _) = ui.allocate_exact_size(size * scale, egui::Sense::hover());
-                        theme::paint_raised(ui.painter(), rect, 12.0, 5.0);
-                        theme::rounded_image(ui.painter(), rect.shrink(4.0), 9.0, t.id());
-                    }
-                }
             }
         });
+        field(ui, "Image format", |ui| {
+            ui.horizontal_wrapped(|ui| {
+                ui.spacing_mut().item_spacing = vec2(8.0, 8.0);
+                for (i, (name, _, _)) in IMAGE_SEQ_FORMATS.iter().enumerate() {
+                    if pill(ui, name, self.img_format == i).clicked() {
+                        self.img_format = i;
+                    }
+                }
+            });
+        });
+        let codec = IMAGE_SEQ_FORMATS[self.img_format].2;
+        if matches!(codec, VCodec::Jpeg | VCodec::Webp) {
+            field(ui, "Quality", |ui| {
+                ui.horizontal(|ui| {
+                    let mut v = self.quality / 100.0;
+                    if theme::slider(ui, &mut v, (ui.available_width() - 110.0).max(120.0), 8.0, None).changed() {
+                        self.quality = (v * 100.0).round().max(1.0);
+                    }
+                    let hint = formats::quality_hint(Some(codec), self.quality);
+                    ui.label(RichText::new(format!("{:.0}%  {hint}", self.quality)).size(12.5).color(p.muted));
+                });
+            });
+        }
+        field(ui, "Resolution", |ui| {
+            egui::ComboBox::from_id_salt("frames-res").selected_text(self.res.label()).show_ui(ui, |ui| {
+                for r in Res::ALL {
+                    ui.selectable_value(&mut self.res, r, r.label());
+                }
+            });
+        });
+        field(ui, "Range", |ui| {
+            ui.horizontal(|ui| {
+                ui.add(egui::TextEdit::singleline(&mut self.start).hint_text("start 0:00").desired_width(90.0));
+                ui.label("→");
+                ui.add(egui::TextEdit::singleline(&mut self.end).hint_text("end").desired_width(90.0));
+            });
+        });
+        field(ui, "File names", |ui| {
+            ui.horizontal(|ui| {
+                ui.add(egui::TextEdit::singleline(&mut self.prefix).desired_width(100.0));
+                let ext = IMAGE_SEQ_FORMATS[self.img_format].1;
+                ui.label(RichText::new(format!("000001.{ext}")).size(12.5).color(p.muted));
+            });
+        });
+        theme::toggle(ui, &mut self.reverse_out, "Backwards (last frame becomes 000001)");
+        field(ui, "Save to", |ui| {
+            ui.horizontal(|ui| {
+                if theme::icon_button(ui, Icon::Folder, 30.0, false, "Choose folder").clicked() {
+                    if let Some(d) = rfd::FileDialog::new().pick_folder() {
+                        self.out_dir = Some(d);
+                    }
+                }
+                let label = self
+                    .out_dir
+                    .as_ref()
+                    .map(|d| theme::truncate(&d.to_string_lossy(), 34))
+                    .unwrap_or_else(|| "New folder next to the video".into());
+                ui.label(RichText::new(label).size(12.5).color(p.muted));
+            });
+        });
+        let (start, end) = self.range();
+        let dur = end.unwrap_or(info.duration.unwrap_or(0.0)).min(info.duration.unwrap_or(f64::MAX)) - start;
+        let fps = if self.original_fps { src_fps.unwrap_or(self.fps) } else { self.fps };
+        let count = (dur.max(0.0) * fps).ceil() as u64;
+        theme::chip(ui, &format!("≈ {count} images from {}", util::fmt_time(dur.max(0.0))), p.accent);
+        if count > 20_000 {
+            theme::hint(ui, "That is a lot of files; consider a lower fps or a shorter range.");
+        }
+        ui.add_space(6.0);
+        if theme::button_ex(ui, Some(Icon::Frames), "Extract frames", true, info.duration.is_some()).clicked() {
+            match self.extract_job(info) {
+                Ok(job) => {
+                    self.message = Some((format!("Extracting to {}", job.output.display()), true));
+                    queue.push(job);
+                }
+                Err(e) => self.message = Some((e, false)),
+            }
+        }
+        self.status(ui);
+    }
+
+    /// Image sequence → video, from the loaded images (or a picked folder).
+    pub fn assemble_panel(&mut self, ui: &mut Ui, queue: &mut Queue, images: &[PathBuf]) {
+        let p = pal();
+        let mut sorted = images.to_vec();
+        sorted.sort_by(|a, b| util::natural_cmp(&a.to_string_lossy(), &b.to_string_lossy()));
+        if sorted != self.images {
+            self.images = sorted;
+            self.seq_output = None;
+        }
+        ui.horizontal(|ui| {
+            theme::chip(ui, &format!("{} images", self.images.len()), p.accent);
+            theme::hint(ui, "sorted naturally (img2 before img10)");
+        });
+        field(ui, "Frames per second", |ui| {
+            ui.horizontal_wrapped(|ui| {
+                ui.spacing_mut().item_spacing = vec2(8.0, 8.0);
+                ui.add(egui::DragValue::new(&mut self.seq_fps).range(0.1..=240.0).speed(0.1).suffix(" fps").max_decimals(3));
+                for v in [1.0, 12.0, 24.0, 30.0, 60.0] {
+                    if pill(ui, &format!("{v}"), (self.seq_fps - v).abs() < 1e-6).clicked() {
+                        self.seq_fps = v;
+                    }
+                }
+            });
+        });
+        field(ui, "Format", |ui| {
+            ui.horizontal_wrapped(|ui| {
+                ui.spacing_mut().item_spacing = vec2(8.0, 10.0);
+                for (i, (name, _, _)) in SEQ_VIDEO_FORMATS.iter().enumerate() {
+                    if pill(ui, name, self.seq_format == i).clicked() {
+                        self.seq_format = i;
+                        self.seq_output = None;
+                    }
+                }
+            });
+        });
+        let codec = SEQ_VIDEO_FORMATS[self.seq_format].2;
+        let hint = formats::quality_hint(Some(codec), self.seq_quality);
+        if hint != "lossless" {
+            field(ui, "Quality", |ui| {
+                ui.horizontal(|ui| {
+                    let mut v = self.seq_quality / 100.0;
+                    if theme::slider(ui, &mut v, (ui.available_width() - 110.0).max(120.0), 8.0, None).changed() {
+                        self.seq_quality = (v * 100.0).round();
+                    }
+                    ui.label(RichText::new(format!("{:.0}%  {hint}", self.seq_quality)).size(12.5).color(p.muted));
+                });
+            });
+        }
+        theme::toggle(ui, &mut self.seq_reverse, "Backwards (reverse order)");
+        theme::toggle(ui, &mut self.seq_boomerang, "Boomerang (forward, then backward)");
+        field(ui, "Save as", |ui| {
+            ui.horizontal(|ui| {
+                if theme::icon_button(ui, Icon::Folder, 30.0, false, "Choose file").clicked() {
+                    let ext = SEQ_VIDEO_FORMATS[self.seq_format].1;
+                    if let Some(f) = rfd::FileDialog::new().add_filter(ext, &[ext]).set_file_name(format!("sequence.{ext}")).save_file() {
+                        self.seq_output = Some(f);
+                    }
+                }
+                let label = self
+                    .seq_output
+                    .as_ref()
+                    .map(|d| theme::truncate(&d.to_string_lossy(), 34))
+                    .unwrap_or_else(|| "Next to the images".into());
+                ui.label(RichText::new(label).size(12.5).color(p.muted));
+            });
+        });
+        let frames = self.images.len() * if self.seq_boomerang { 2 } else { 1 };
+        theme::chip(ui, &format!("{frames} frames → {} of video", util::fmt_time(frames as f64 / self.seq_fps)), p.accent);
+        ui.add_space(6.0);
+        if theme::button_ex(ui, Some(Icon::Screen), "Create video", true, self.images.len() > 1).clicked() {
+            match self.assemble_job() {
+                Ok(job) => {
+                    self.message = Some((format!("Creating {}", job.output.display()), true));
+                    queue.push(job);
+                }
+                Err(e) => self.message = Some((e, false)),
+            }
+        }
+        self.status(ui);
     }
 
     fn range(&self) -> (f64, Option<f64>) {
@@ -262,140 +262,6 @@ impl Frames {
         (start, util::parse_time(&self.end).filter(|e| *e > start))
     }
 
-    fn extract_settings(&mut self, ui: &mut Ui, queue: &mut Queue, w: f32) {
-        let p = pal();
-        let info = match &self.video_info {
-            Some(Ok(i)) if i.video.is_some() => Some(i.clone()),
-            _ => None,
-        };
-        let src_fps = info.as_ref().and_then(|i| i.video.as_ref()).map(|v| v.fps);
-        theme::card(ui, |ui| {
-            ui.set_width(w - 32.0);
-            theme::section_title(ui, "Image sequence settings");
-            ui.add_space(4.0);
-            egui::Grid::new("extract-grid").num_columns(2).spacing(vec2(16.0, 12.0)).show(ui, |ui| {
-                ui.label("Frames / second");
-                ui.vertical(|ui| {
-                    ui.horizontal(|ui| {
-                        let r = theme::toggle(ui, &mut self.original_fps, "Every frame (original)");
-                        if r.changed() && self.original_fps {
-                            if let Some(f) = src_fps {
-                                self.fps = f;
-                            }
-                        }
-                    });
-                    ui.horizontal_wrapped(|ui| {
-                        ui.add_enabled(
-                            !self.original_fps,
-                            egui::DragValue::new(&mut self.fps).range(0.01..=240.0).speed(0.1).suffix(" fps").max_decimals(3),
-                        );
-                        if !self.original_fps {
-                            for v in [1.0, 5.0, 10.0, 24.0, 30.0, 60.0] {
-                                if pill(ui, &format!("{v}"), (self.fps - v).abs() < 1e-6).clicked() {
-                                    self.fps = v;
-                                }
-                            }
-                        }
-                    });
-                });
-                ui.end_row();
-
-                ui.label("Image format");
-                ui.horizontal_wrapped(|ui| {
-                    for (i, (name, _, _)) in IMAGE_SEQ_FORMATS.iter().enumerate() {
-                        if pill(ui, name, self.img_format == i).clicked() {
-                            self.img_format = i;
-                        }
-                    }
-                });
-                ui.end_row();
-
-                let codec = IMAGE_SEQ_FORMATS[self.img_format].2;
-                ui.label("Quality");
-                if matches!(codec, VCodec::Jpeg | VCodec::Webp) {
-                    ui.horizontal(|ui| {
-                        let mut v = self.quality / 100.0;
-                        if theme::slider(ui, &mut v, 200.0, 8.0, None).changed() {
-                            self.quality = (v * 100.0).round().max(1.0);
-                        }
-                        ui.label(RichText::new(format!("{:.0}%  {}", self.quality, formats::quality_hint(Some(codec), self.quality))).color(p.muted));
-                    });
-                } else {
-                    ui.label(RichText::new("Lossless").color(p.muted));
-                }
-                ui.end_row();
-
-                ui.label("Resolution");
-                egui::ComboBox::from_id_salt("frames-res").selected_text(self.res.label()).show_ui(ui, |ui| {
-                    for r in Res::ALL {
-                        ui.selectable_value(&mut self.res, r, r.label());
-                    }
-                });
-                ui.end_row();
-
-                ui.label("Range");
-                ui.horizontal(|ui| {
-                    ui.add(egui::TextEdit::singleline(&mut self.start).hint_text("start 0:00").desired_width(90.0));
-                    ui.label("→");
-                    ui.add(egui::TextEdit::singleline(&mut self.end).hint_text("end").desired_width(90.0));
-                });
-                ui.end_row();
-
-                ui.label("File names");
-                ui.horizontal(|ui| {
-                    ui.add(egui::TextEdit::singleline(&mut self.prefix).desired_width(110.0));
-                    let ext = IMAGE_SEQ_FORMATS[self.img_format].1;
-                    ui.label(RichText::new(format!("000001.{ext}")).color(p.muted));
-                });
-                ui.end_row();
-
-                ui.label("Save to");
-                ui.horizontal(|ui| {
-                    let label = self
-                        .out_dir
-                        .as_ref()
-                        .map(|d| d.to_string_lossy().into_owned())
-                        .unwrap_or_else(|| "New folder next to the video".into());
-                    ui.label(RichText::new(label).color(p.muted));
-                    if theme::icon_button(ui, Icon::Folder, 30.0, false, "Choose folder").clicked() {
-                        if let Some(d) = rfd::FileDialog::new().pick_folder() {
-                            self.out_dir = Some(d);
-                        }
-                    }
-                });
-                ui.end_row();
-            });
-            ui.add_space(4.0);
-            theme::toggle(ui, &mut self.reverse_out, "Backwards — number frames in reverse (last frame = 000001)");
-            ui.add_space(8.0);
-
-            if let Some(info) = &info {
-                let (start, end) = self.range();
-                let dur = end.unwrap_or(info.duration.unwrap_or(0.0)).min(info.duration.unwrap_or(f64::MAX)) - start;
-                let fps = if self.original_fps { src_fps.unwrap_or(self.fps) } else { self.fps };
-                let count = (dur.max(0.0) * fps).ceil() as u64;
-                theme::chip(ui, &format!("≈ {count} images  ·  {} of video", util::fmt_time(dur.max(0.0))), p.accent);
-                if count > 20_000 {
-                    theme::hint(ui, "That is a lot of files — consider a lower fps or a shorter range.");
-                }
-            }
-            ui.add_space(8.0);
-            ui.horizontal(|ui| {
-                if theme::button_ex(ui, Some(Icon::Frames), "Extract frames", true, info.is_some()).clicked() {
-                    match self.extract_job(info.as_ref().unwrap()) {
-                        Ok(job) => {
-                            self.message = Some((format!("Extracting to {}", job.output.display()), true));
-                            queue.push(job);
-                        }
-                        Err(e) => self.message = Some((e, false)),
-                    }
-                }
-                if let Some((m, ok)) = &self.message {
-                    ui.label(RichText::new(m).color(if *ok { p.ok } else { p.danger }));
-                }
-            });
-        });
-    }
 
     fn extract_job(&self, info: &MediaInfo) -> Result<Job, String> {
         let source = self.video.clone().ok_or("No video selected")?;
@@ -452,154 +318,6 @@ impl Frames {
         Ok(job)
     }
 
-    // ----- Images → video -------------------------------------------------
-
-    fn images_source_card(&mut self, ui: &mut Ui, w: f32) {
-        let p = pal();
-        theme::card(ui, |ui| {
-            ui.set_width(w - 32.0);
-            ui.horizontal(|ui| {
-                theme::section_title(ui, "Image sequence");
-                ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                    if theme::button_icon(ui, Icon::Image, "Pick images", false).clicked() {
-                        if let Some(files) = rfd::FileDialog::new()
-                            .add_filter("Images", util::IMAGE_EXTS)
-                            .pick_files()
-                        {
-                            self.set_images(files);
-                        }
-                    }
-                    if theme::button_icon(ui, Icon::Folder, "Pick folder", false).clicked() {
-                        if let Some(d) = rfd::FileDialog::new().pick_folder() {
-                            self.set_images(list_images(&d));
-                        }
-                    }
-                });
-            });
-            if self.images.is_empty() {
-                let hovering = ui.ctx().input(|i| !i.raw.hovered_files.is_empty());
-                if theme::drop_zone(
-                    ui,
-                    vec2(ui.available_width(), 240.0),
-                    "Drop a folder or many images",
-                    "PNG · JPG · WebP · TIFF · BMP · EXR … sorted naturally",
-                    hovering,
-                )
-                .clicked()
-                {
-                    if let Some(d) = rfd::FileDialog::new().pick_folder() {
-                        self.set_images(list_images(&d));
-                    }
-                }
-            } else {
-                theme::chip(ui, &format!("{} images", self.images.len()), p.accent);
-                theme::well(ui, |ui| {
-                    ui.set_width(ui.available_width());
-                    egui::ScrollArea::vertical().id_salt("seq-list").max_height(220.0).show(ui, |ui| {
-                        let n = self.images.len();
-                        for (i, img) in self.images.iter().enumerate() {
-                            if n > 14 && i == 6 {
-                                theme::hint(ui, &format!("… {} more …", n - 12));
-                            }
-                            if n > 14 && (6..n - 6).contains(&i) {
-                                continue;
-                            }
-                            ui.label(
-                                RichText::new(format!("{:>5}  {}", i + 1, img.file_name().unwrap_or_default().to_string_lossy()))
-                                    .monospace()
-                                    .color(p.text),
-                            );
-                        }
-                    });
-                });
-            }
-        });
-    }
-
-    fn assemble_settings(&mut self, ui: &mut Ui, queue: &mut Queue, w: f32) {
-        let p = pal();
-        theme::card(ui, |ui| {
-            ui.set_width(w - 32.0);
-            theme::section_title(ui, "Video settings");
-            ui.add_space(4.0);
-            egui::Grid::new("assemble-grid").num_columns(2).spacing(vec2(16.0, 12.0)).show(ui, |ui| {
-                ui.label("Frames / second");
-                ui.horizontal_wrapped(|ui| {
-                    ui.add(egui::DragValue::new(&mut self.seq_fps).range(0.1..=240.0).speed(0.1).suffix(" fps").max_decimals(3));
-                    for v in [1.0, 12.0, 24.0, 25.0, 30.0, 60.0] {
-                        if pill(ui, &format!("{v}"), (self.seq_fps - v).abs() < 1e-6).clicked() {
-                            self.seq_fps = v;
-                        }
-                    }
-                });
-                ui.end_row();
-                ui.label("Format");
-                ui.horizontal_wrapped(|ui| {
-                    for (i, (name, _, _)) in SEQ_VIDEO_FORMATS.iter().enumerate() {
-                        if pill(ui, name, self.seq_format == i).clicked() {
-                            self.seq_format = i;
-                            self.seq_output = None;
-                        }
-                    }
-                });
-                ui.end_row();
-                let codec = SEQ_VIDEO_FORMATS[self.seq_format].2;
-                ui.label("Quality");
-                let hint = formats::quality_hint(Some(codec), self.seq_quality);
-                if hint == "lossless" {
-                    ui.label(RichText::new("Lossless").color(p.muted));
-                } else {
-                    ui.horizontal(|ui| {
-                        let mut v = self.seq_quality / 100.0;
-                        if theme::slider(ui, &mut v, 200.0, 8.0, None).changed() {
-                            self.seq_quality = (v * 100.0).round();
-                        }
-                        ui.label(RichText::new(format!("{:.0}%  {hint}", self.seq_quality)).color(p.muted));
-                    });
-                }
-                ui.end_row();
-                ui.label("Save as");
-                ui.horizontal(|ui| {
-                    let label = self
-                        .seq_output
-                        .as_ref()
-                        .map(|d| d.to_string_lossy().into_owned())
-                        .unwrap_or_else(|| "Next to the images".into());
-                    ui.label(RichText::new(label).color(p.muted));
-                    if theme::icon_button(ui, Icon::Folder, 30.0, false, "Choose file").clicked() {
-                        let ext = SEQ_VIDEO_FORMATS[self.seq_format].1;
-                        if let Some(f) = rfd::FileDialog::new().add_filter(ext, &[ext]).set_file_name(format!("sequence.{ext}")).save_file() {
-                            self.seq_output = Some(f);
-                        }
-                    }
-                });
-                ui.end_row();
-            });
-            ui.add_space(4.0);
-            theme::toggle(ui, &mut self.seq_reverse, "Backwards — play the sequence in reverse");
-            theme::toggle(ui, &mut self.seq_boomerang, "Boomerang — forward then backward");
-            ui.add_space(8.0);
-            if !self.images.is_empty() {
-                let frames = self.images.len() * if self.seq_boomerang { 2 } else { 1 };
-                theme::chip(ui, &format!("{frames} frames  ·  {} of video", util::fmt_time(frames as f64 / self.seq_fps)), p.accent);
-                ui.add_space(8.0);
-            }
-            ui.horizontal(|ui| {
-                if theme::button_ex(ui, Some(Icon::Screen), "Create video", true, !self.images.is_empty()).clicked() {
-                    match self.assemble_job() {
-                        Ok(job) => {
-                            self.message = Some((format!("Creating {}", job.output.display()), true));
-                            queue.push(job);
-                        }
-                        Err(e) => self.message = Some((e, false)),
-                    }
-                }
-                if let Some((m, ok)) = &self.message {
-                    ui.label(RichText::new(m).color(if *ok { p.ok } else { p.danger }));
-                }
-            });
-        });
-    }
 
     fn assemble_job(&self) -> Result<Job, String> {
         let (name, ext, codec) = SEQ_VIDEO_FORMATS[self.seq_format];
@@ -670,10 +388,7 @@ fn rand_suffix() -> u128 {
     std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_nanos()).unwrap_or(0)
 }
 
-fn i_duration(info: &Result<MediaInfo, String>) -> Option<f64> {
-    info.as_ref().ok().and_then(|i| i.duration)
-}
-
+#[cfg(test)]
 fn list_images(dir: &Path) -> Vec<PathBuf> {
     let mut v: Vec<PathBuf> = std::fs::read_dir(dir)
         .map(|rd| rd.flatten().map(|e| e.path()).filter(|p| p.is_file() && util::is_image_path(p)).collect())

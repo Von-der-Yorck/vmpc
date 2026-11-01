@@ -19,15 +19,23 @@ pub fn is_dark() -> bool {
     DARK.load(Ordering::Relaxed)
 }
 
+/// Design tokens. Both themes share every layout and component; only these differ.
 #[derive(Clone, Copy)]
 pub struct Pal {
     pub bg: Color32,
     pub well: Color32,
+    /// Light-side shadow of extruded surfaces.
     pub hi: Color32,
+    /// Dark-side shadow of extruded surfaces.
     pub lo: Color32,
+    /// Hairline that crisps the edge of raised surfaces (mostly visible in dark mode).
+    pub edge: Color32,
+    /// Backdrop behind playing media (a dark "cinema" stage in both themes).
+    pub stage: Color32,
     pub text: Color32,
     pub strong: Color32,
     pub muted: Color32,
+    /// VLC orange and its lighter amber partner for gradients.
     pub accent: Color32,
     pub accent2: Color32,
     pub danger: Color32,
@@ -37,33 +45,42 @@ pub struct Pal {
 pub fn pal() -> Pal {
     if is_dark() {
         Pal {
-            bg: Color32::from_rgb(43, 46, 53),
-            well: Color32::from_rgb(38, 41, 47),
-            hi: Color32::from_rgba_unmultiplied(255, 255, 255, 16),
-            lo: Color32::from_rgba_unmultiplied(10, 11, 14, 190),
-            text: Color32::from_rgb(200, 206, 217),
-            strong: Color32::from_rgb(236, 239, 245),
-            muted: Color32::from_rgb(128, 136, 150),
-            accent: Color32::from_rgb(124, 108, 255),
-            accent2: Color32::from_rgb(64, 196, 255),
-            danger: Color32::from_rgb(255, 107, 129),
-            ok: Color32::from_rgb(80, 210, 150),
+            bg: Color32::from_rgb(37, 38, 42),
+            well: Color32::from_rgb(29, 30, 33),
+            hi: Color32::from_rgba_unmultiplied(255, 255, 255, 13),
+            lo: Color32::from_rgba_unmultiplied(0, 0, 0, 170),
+            edge: Color32::from_rgba_unmultiplied(255, 255, 255, 14),
+            stage: Color32::from_rgb(17, 17, 19),
+            text: Color32::from_rgb(190, 193, 200),
+            strong: Color32::from_rgb(242, 243, 245),
+            muted: Color32::from_rgb(124, 128, 137),
+            accent: Color32::from_rgb(255, 140, 10),
+            accent2: Color32::from_rgb(255, 186, 66),
+            danger: Color32::from_rgb(255, 99, 90),
+            ok: Color32::from_rgb(70, 205, 110),
         }
     } else {
         Pal {
-            bg: Color32::from_rgb(228, 233, 241),
-            well: Color32::from_rgb(220, 226, 235),
-            hi: Color32::from_rgba_unmultiplied(255, 255, 255, 235),
-            lo: Color32::from_rgba_unmultiplied(155, 168, 191, 150),
-            text: Color32::from_rgb(84, 96, 117),
-            strong: Color32::from_rgb(45, 55, 72),
-            muted: Color32::from_rgb(138, 149, 168),
-            accent: Color32::from_rgb(112, 94, 255),
-            accent2: Color32::from_rgb(52, 182, 255),
-            danger: Color32::from_rgb(234, 84, 110),
-            ok: Color32::from_rgb(38, 178, 120),
+            bg: Color32::from_rgb(234, 236, 240),
+            well: Color32::from_rgb(226, 229, 234),
+            hi: Color32::from_rgba_unmultiplied(255, 255, 255, 240),
+            lo: Color32::from_rgba_unmultiplied(160, 167, 180, 140),
+            edge: Color32::from_rgba_unmultiplied(255, 255, 255, 90),
+            stage: Color32::from_rgb(22, 23, 26),
+            text: Color32::from_rgb(88, 94, 106),
+            strong: Color32::from_rgb(30, 33, 40),
+            muted: Color32::from_rgb(140, 146, 158),
+            accent: Color32::from_rgb(255, 128, 0),
+            accent2: Color32::from_rgb(255, 172, 40),
+            danger: Color32::from_rgb(226, 62, 52),
+            ok: Color32::from_rgb(36, 168, 90),
         }
     }
+}
+
+/// Eased 0→1 animation for a boolean state (cubic ease-out feels "premium" and snappy).
+pub fn ease(ctx: &egui::Context, id: egui::Id, on: bool, seconds: f32) -> f32 {
+    ctx.animate_bool_with_time_and_easing(id, on, seconds, egui::emath::easing::cubic_out)
 }
 
 /// Installs the palette into egui's own widgets (text fields, combo boxes, scroll bars...).
@@ -93,8 +110,8 @@ pub fn apply(ctx: &egui::Context, dark: bool) {
         fg_stroke: Stroke::new(1.5_f32, text),
         expansion: 0.0,
     };
-    let raised = if dark { Color32::from_rgb(50, 54, 62) } else { Color32::from_rgb(236, 240, 246) };
-    let hover = if dark { Color32::from_rgb(56, 60, 70) } else { Color32::from_rgb(242, 245, 250) };
+    let raised = if dark { Color32::from_rgb(46, 47, 52) } else { Color32::from_rgb(242, 244, 247) };
+    let hover = if dark { Color32::from_rgb(54, 55, 61) } else { Color32::from_rgb(248, 249, 251) };
     v.widgets.noninteractive = widget(p.bg, p.text);
     v.widgets.noninteractive.bg_stroke = Stroke::new(1.0_f32, p.lo.gamma_multiply(0.35));
     v.widgets.inactive = widget(raised, p.text);
@@ -177,8 +194,18 @@ pub fn raised_shapes(rect: Rect, r: f32, depth: f32, fill: Color32) -> Vec<Shape
     vec![
         Shape::Rect(light.as_shape(rect, r)),
         Shape::Rect(dark.as_shape(rect, r)),
-        Shape::Rect(RectShape::filled(rect, r, fill)),
+        Shape::Rect(RectShape::new(rect, r, fill, Stroke::new(1.0_f32, p.edge))),
     ]
+}
+
+/// Soft coloured glow under accent elements (orange halo).
+pub fn glow(painter: &egui::Painter, rect: Rect, r: f32, strength: f32) {
+    if strength <= 0.01 {
+        return;
+    }
+    let p = pal();
+    let shadow = Shadow { offset: vec2(0.0, 4.0), blur: 22.0, spread: 0.0, color: p.accent.gamma_multiply(0.45 * strength) };
+    painter.add(shadow.as_shape(rect, r));
 }
 
 /// Pressed-in surface with directional inner shadow.
@@ -210,9 +237,6 @@ pub fn inset_shapes(rect: Rect, r: f32, depth: f32) -> Vec<Shape> {
     shapes
 }
 
-pub fn paint_raised(painter: &egui::Painter, rect: Rect, r: f32, depth: f32) {
-    painter.extend(raised_shapes(rect, r, depth, pal().bg));
-}
 
 pub fn paint_inset(painter: &egui::Painter, rect: Rect, r: f32, depth: f32) {
     painter.extend(inset_shapes(rect, r, depth));
@@ -241,9 +265,6 @@ fn surface<R>(ui: &mut Ui, inset: bool, radius: f32, margin: f32, add: impl FnOn
     inner.inner
 }
 
-pub fn section_title(ui: &mut Ui, text: &str) {
-    ui.label(egui::RichText::new(text).size(16.0).strong().color(pal().strong));
-}
 
 pub fn hint(ui: &mut Ui, text: &str) {
     ui.label(egui::RichText::new(text).size(12.5).color(pal().muted));
@@ -271,8 +292,7 @@ pub fn button_icon(ui: &mut Ui, icon: Icon, text: &str, primary: bool) -> Respon
 pub fn button_ex(ui: &mut Ui, icon: Option<Icon>, text: &str, primary: bool, enabled: bool) -> Response {
     let p = pal();
     let font = FontId::proportional(14.5);
-    let text_color = if primary { Color32::WHITE } else { p.strong };
-    let galley = ui.painter().layout_no_wrap(text.to_string(), font, text_color);
+    let galley = ui.painter().layout_no_wrap(text.to_string(), font, Color32::PLACEHOLDER);
     let icon_w = if icon.is_some() { 22.0 } else { 0.0 };
     let size = vec2(galley.size().x + icon_w + 32.0, 38.0);
     let sense = if enabled { Sense::click() } else { Sense::hover() };
@@ -285,6 +305,7 @@ pub fn button_ex(ui: &mut Ui, icon: Option<Icon>, text: &str, primary: bool, ena
     let r = 12.0;
     if primary && enabled {
         painter.extend(raised_shapes(rect, r, 5.0 * (1.0 - press), p.bg));
+        glow(painter, rect, r, 0.35 + 0.65 * hover);
         let (a, b) = (p.accent, p.accent2);
         let k = 1.0 + 0.08 * hover;
         gradient_rrect(painter, rect.shrink(press), r, a.gamma_multiply(k), b.gamma_multiply(k));
@@ -339,6 +360,7 @@ pub fn hero_button(ui: &mut Ui, icon: Icon, diameter: f32, tip: &str) -> Respons
         let painter = ui.painter();
         let r = diameter / 2.0;
         painter.extend(raised_shapes(rect, r, 7.0 * (1.0 - 0.6 * press), p.bg));
+        glow(painter, rect.shrink(6.0), r, 0.5 + 0.5 * hover);
         let inner = rect.shrink(5.0 + press);
         let k = 1.0 + 0.1 * hover;
         gradient_rrect(painter, inner, inner.width() / 2.0, p.accent.gamma_multiply(k), p.accent2.gamma_multiply(k));
@@ -349,6 +371,71 @@ pub fn hero_button(ui: &mut Ui, icon: Icon, diameter: f32, tip: &str) -> Respons
         icons::paint(painter, ir, icon, Color32::WHITE);
     }
     resp.on_hover_cursor(CursorIcon::PointingHand).on_hover_text(tip)
+}
+
+/// The app logo as the main-menu button: lifts and glows on hover, and its convert
+/// ring spins once whenever the pointer arrives or the menu opens/closes.
+pub fn logo_button(ui: &mut Ui, size: f32, open: bool) -> Response {
+    let (rect, resp) = ui.allocate_exact_size(Vec2::splat(size), Sense::click());
+    if ui.is_rect_visible(rect) {
+        let ctx = ui.ctx();
+        let hover = ease(ctx, resp.id.with("h"), resp.hovered() || open, 0.25);
+        let press = ease(ctx, resp.id.with("p"), resp.is_pointer_button_down_on(), 0.08);
+        // One full ring turn per state change, eased.
+        let spin = ease(ctx, resp.id.with("spin"), resp.hovered() ^ open, 0.7);
+        let lift = 1.0 + 0.06 * hover - 0.05 * press;
+        let tile = Rect::from_center_size(rect.center(), rect.size() * 0.86 * lift);
+        let painter = ui.painter();
+        glow(painter, tile, size * 0.24, 0.25 + 0.75 * hover);
+        painter.extend(raised_shapes(tile, size * 0.24, 4.0, pal().bg));
+        icons::paint_logo_ex(painter, tile.expand(size * 0.04), spin * 360.0);
+    }
+    resp.on_hover_cursor(CursorIcon::PointingHand)
+}
+
+/// Full-width row in the main menu drawer.
+pub fn menu_item(ui: &mut Ui, icon: Icon, label: &str, detail: Option<&str>, active: bool) -> Response {
+    let p = pal();
+    let h = if detail.is_some() { 50.0 } else { 42.0 };
+    let (rect, resp) = ui.allocate_exact_size(vec2(ui.available_width(), h), Sense::click());
+    if ui.is_rect_visible(rect) {
+        let hover = ease(ui.ctx(), resp.id.with("h"), resp.hovered(), 0.15);
+        let painter = ui.painter();
+        if active {
+            paint_inset(painter, rect, 12.0, 3.0);
+            let bar = Rect::from_min_size(pos2(rect.left() + 4.0, rect.top() + 10.0), vec2(3.0, h - 20.0));
+            painter.rect_filled(bar, 1.5, p.accent);
+        } else if hover > 0.01 {
+            painter.extend(raised_shapes(rect, 12.0, 3.0 * hover, p.bg));
+        }
+        let color = if active { p.accent } else { lerp_color(p.text, p.strong, hover) };
+        let slide = 3.0 * hover;
+        let icon_rect = Rect::from_center_size(pos2(rect.left() + 26.0 + slide, rect.center().y), Vec2::splat(17.0));
+        icons::paint(painter, icon_rect, icon, if active { p.accent } else { lerp_color(p.text, p.accent, hover) });
+        let x = rect.left() + 48.0 + slide;
+        match detail {
+            Some(d) => {
+                painter.text(pos2(x, rect.center().y - 9.0), Align2::LEFT_CENTER, label, FontId::proportional(14.5), color);
+                let d = truncate(d, ((rect.right() - x - 10.0) / 6.6) as usize);
+                painter.text(pos2(x, rect.center().y + 10.0), Align2::LEFT_CENTER, d, FontId::proportional(11.5), p.muted);
+            }
+            None => {
+                painter.text(pos2(x, rect.center().y), Align2::LEFT_CENTER, label, FontId::proportional(14.5), color);
+            }
+        }
+    }
+    resp.on_hover_cursor(CursorIcon::PointingHand)
+}
+
+/// Shortens text to `max` characters with an ellipsis.
+pub fn truncate(text: &str, max: usize) -> String {
+    if text.chars().count() <= max.max(4) {
+        text.to_string()
+    } else {
+        let mut s: String = text.chars().take(max.max(4) - 1).collect();
+        s.push('…');
+        s
+    }
 }
 
 /// Horizontal soft slider for values in 0..=1. Returns the response; `value` is
@@ -390,36 +477,57 @@ pub fn slider(ui: &mut Ui, value: &mut f32, width: f32, height: f32, buffered: O
 /// Segmented control. Returns true if the selection changed.
 pub fn segmented(ui: &mut Ui, selected: &mut usize, items: &[(Icon, &str)]) -> bool {
     let p = pal();
-    let font = FontId::proportional(14.5);
-    let galleys: Vec<_> = items
-        .iter()
-        .map(|(_, t)| ui.painter().layout_no_wrap(t.to_string(), font.clone(), p.text))
-        .collect();
-    let seg_w: Vec<f32> = galleys.iter().map(|g| g.size().x + 54.0).collect();
+    let avail = ui.available_width();
+    let galleys = |size: f32| -> Vec<_> {
+        items.iter().map(|(_, t)| ui.painter().layout_no_wrap(t.to_string(), FontId::proportional(size), Color32::PLACEHOLDER)).collect()
+    };
+    // Natural size first; tighten (smaller text, then equal widths) when space is short.
+    let (mut texts, mut pad, mut icons_on) = (galleys(14.5), 54.0, true);
+    let natural = |g: &Vec<std::sync::Arc<egui::Galley>>, pad: f32| g.iter().map(|g| g.size().x + pad).sum::<f32>() + 12.0;
+    if natural(&texts, pad) > avail {
+        texts = galleys(13.0);
+        pad = 42.0;
+    }
+    let mut seg_w: Vec<f32> = texts.iter().map(|g| g.size().x + pad).collect();
+    if natural(&texts, pad) > avail {
+        let each = (avail - 12.0) / items.len() as f32;
+        icons_on = texts.iter().all(|g| g.size().x + 30.0 <= each);
+        seg_w = vec![each; items.len()];
+    }
     let total = vec2(seg_w.iter().sum::<f32>() + 12.0, 46.0);
     let (rect, _) = ui.allocate_exact_size(total, Sense::hover());
     paint_inset(ui.painter(), rect, 23.0, 4.0);
+
+    // One raised indicator glides to the selected segment.
+    let lefts: Vec<f32> = seg_w.iter().scan(rect.left() + 6.0, |x, w| {
+        let l = *x;
+        *x += w;
+        Some(l)
+    }).collect();
+    let sel = (*selected).min(items.len().saturating_sub(1));
+    let id = ui.id().with(("seg-ind", items.len()));
+    let x = ui.ctx().animate_value_with_time(id.with("x"), lefts[sel], 0.22);
+    let w = ui.ctx().animate_value_with_time(id.with("w"), seg_w[sel], 0.22);
+    let ind = Rect::from_min_size(pos2(x, rect.top() + 6.0), vec2(w, rect.height() - 12.0));
+    ui.painter().extend(raised_shapes(ind, ind.height() / 2.0, 4.0, p.bg));
+
     let mut changed = false;
-    let mut x = rect.left() + 6.0;
-    for (i, ((icon, _), galley)) in items.iter().zip(galleys).enumerate() {
-        let seg = Rect::from_min_size(pos2(x, rect.top() + 6.0), vec2(seg_w[i], rect.height() - 12.0));
-        x += seg_w[i];
+    for (i, ((icon, _), galley)) in items.iter().zip(texts).enumerate() {
+        let seg = Rect::from_min_size(pos2(lefts[i], rect.top() + 6.0), vec2(seg_w[i], rect.height() - 12.0));
         let resp = ui.interact(seg, ui.id().with(("seg", i)), Sense::click()).on_hover_cursor(CursorIcon::PointingHand);
         if resp.clicked() && *selected != i {
             *selected = i;
             changed = true;
         }
-        let on = *selected == i;
-        let t = ui.ctx().animate_bool_with_time(resp.id.with("on"), on, 0.15);
-        if t > 0.01 {
-            let shapes = raised_shapes(seg, seg.height() / 2.0, 4.0 * t, p.bg);
-            ui.painter().extend(shapes);
+        let on = ease(ui.ctx(), resp.id.with("on"), sel == i, 0.2);
+        let hover = ease(ui.ctx(), resp.id.with("h"), resp.hovered(), 0.15);
+        let color = lerp_color(lerp_color(p.text, p.strong, hover), p.accent, on);
+        let icon_w = if icons_on { 22.0 } else { 0.0 };
+        let cx = seg.center().x - (icon_w + galley.size().x) / 2.0;
+        if icons_on {
+            icons::paint(ui.painter(), Rect::from_center_size(pos2(cx + 8.0, seg.center().y), Vec2::splat(16.0)), *icon, color);
         }
-        let color = if on { p.accent } else if resp.hovered() { p.strong } else { p.text };
-        let content = 22.0 + galley.size().x;
-        let cx = seg.center().x - content / 2.0;
-        icons::paint(ui.painter(), Rect::from_center_size(pos2(cx + 8.0, seg.center().y), Vec2::splat(16.0)), *icon, color);
-        ui.painter().galley(pos2(cx + 22.0, seg.center().y - galley.size().y / 2.0), galley, color);
+        ui.painter().galley(pos2(cx + icon_w, seg.center().y - galley.size().y / 2.0), galley, color);
     }
     changed
 }
@@ -505,11 +613,11 @@ pub fn chip(ui: &mut Ui, text: &str, color: Color32) {
 }
 
 /// Draws a texture clipped to a rounded rectangle.
-pub fn rounded_image(painter: &egui::Painter, rect: Rect, r: f32, texture: egui::TextureId) {
+pub fn rounded_image(painter: &egui::Painter, rect: Rect, r: f32, texture: egui::TextureId, alpha: f32) {
     painter.add(RectShape {
         rect,
         rounding: Rounding::same(r),
-        fill: Color32::WHITE,
+        fill: Color32::WHITE.gamma_multiply(alpha.clamp(0.0, 1.0)),
         stroke: Stroke::NONE,
         blur_width: 0.0,
         fill_texture_id: texture,

@@ -259,7 +259,37 @@ pub struct AudioInfo {
     pub channels: u32,
 }
 
+/// What a file is, as far as the UI is concerned.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum MediaKind {
+    Video,
+    Audio,
+    Image,
+}
+
+impl MediaKind {
+    pub fn label(self) -> &'static str {
+        match self {
+            MediaKind::Video => "VIDEO",
+            MediaKind::Audio => "AUDIO",
+            MediaKind::Image => "IMAGE",
+        }
+    }
+}
+
 impl MediaInfo {
+    /// Detects the media type: still pictures are images (animated GIF/WebP count as
+    /// video), anything with moving pictures is video, the rest is audio.
+    pub fn kind(&self) -> MediaKind {
+        if self.is_still() {
+            MediaKind::Image
+        } else if self.video.is_some() {
+            MediaKind::Video
+        } else {
+            MediaKind::Audio
+        }
+    }
+
     /// A still image (a single picture, no timeline).
     pub fn is_still(&self) -> bool {
         self.audio.is_none()

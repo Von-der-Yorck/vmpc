@@ -5,48 +5,69 @@ A lightweight VLC-style media player and universal media converter with a soft
 
 <img src="assets/vmpc-256.png" width="96" alt="VMPC logo">
 
+## How it works
+
+One workspace instead of tabs:
+
+1. **Drop or open anything**: a video, a song, a picture, a whole folder or a stream URL.
+2. It appears in the **preview stage**: the video plays, images are shown, audio gets a
+   level-reactive visual (or its cover art).
+3. VMPC **detects what the file is** and the **tools panel** on the right only offers what fits:
+
+   | Detected | Tools offered |
+   | --- | --- |
+   | Video | Convert to video / audio (extract soundtrack) / image (grab a frame) · **Frames** (video → image sequence) |
+   | Audio | Convert to audio formats |
+   | Image | Convert to image formats · **To video** when several images are loaded (image sequence → video) |
+
+4. **Click the logo** (top-left) for everything else: open files, folders and streams, your
+   library of loaded files, all tools, the conversion queue, settings (incl. light/dark mode).
+
 ## Features
 
 ### ▶ Player
 - Opens practically every audio, video and image format: MP4, MKV, AVI, MOV, WebM, FLV, TS, WMV, MPEG,
   MP3, FLAC, WAV, OGG, Opus, AAC, M4A, PNG, JPG, GIF, WebP, TIFF and hundreds more.
-- **Network streams**: http(s), HLS (`.m3u8`), RTSP, RTMP… Paste the URL and press *Stream*.
+- **Network streams**: http(s), HLS (`.m3u8`), RTSP, RTMP (logo menu → *Open network stream*).
 - Drag & drop files or whole folders anywhere on the window, or pass files on the command line
   (`vmpc movie.mkv song.flac`).
-- Playlist with next/previous, loop off / all / one, auto-advance.
+- Library with next/previous, loop off / all / one, auto-advance.
 - Seek bar, frame stepping, speed 0.25×–4× (pitch-corrected), volume / mute, fullscreen with
   auto-hiding controls, snapshot (full-resolution PNG to your *Pictures* folder).
-- Audio files show their cover art, or a level-reactive visual.
 - Audio-clock A/V sync; if a slow PC can't keep up, the video re-syncs automatically
   instead of drifting.
 - Hardware-accelerated decoding (on by default), adjustable render size (720p … 4K) in Settings.
 
 ### ⇄ Convert
-- Batch-convert any number of files (or URLs) at once.
+- Converts the file in the preview, or every loaded file of the same type at once.
 - **Video:** MP4 (H.264 / H.265), MKV (H.264 / AV1 / FFV1 lossless), WebM (VP9), MOV (ProRes),
   AVI, MPEG-2, WMV, MPEG-TS, animated GIF (palette-optimised), animated WebP.
 - **Audio:** MP3, M4A (AAC / ALAC), Opus, OGG Vorbis, FLAC, WAV, AIFF, WMA.
-- **Image:** PNG, JPEG, WebP, BMP, TIFF (also extracts a frame, or a song's cover art).
-- **Custom:** type any extension FFmpeg can write (`3gp`, `ogv`, `ac3`, `apng`, …).
+- **Image:** PNG, JPEG, WebP, BMP, TIFF (also grabs a frame from a video, or a song's cover art).
+- **Other:** type any extension FFmpeg can write (`3gp`, `ogv`, `ac3`, `apng`, …).
 - Quality slider (mapped to CRF / q-scale / bitrate per codec), resolution (never upscales),
   audio bitrate, trim start/end, **reverse** (play backwards), remove audio, output folder.
 - Jobs run one after another in the background with progress, ETA, speed and cancel.
 
-### ▦ Frames — video ⇄ image sequence (like `ffmpeg -vf fps=N`)
-- **Video → Images:** choose frames per second (0.01–240, or *every original frame*), format
+### ▦ Frames: video ⇄ image sequence (like `ffmpeg -vf fps=N`)
+- **Video → images:** choose frames per second (0.01–240, or *every original frame*), format
   (PNG, JPEG, WebP, BMP, TIFF), quality, resolution, time range and file-name prefix.
   **Backwards** option numbers the frames in reverse (last frame = `000001`).
-- **Images → Video:** pick a folder or many images (sorted naturally: `img2` before `img10`),
+- **Images → video:** open a folder or several images (sorted naturally: `img2` before `img10`),
   set fps, output MP4 / WebM / MOV ProRes 4444 (keeps alpha) / FFV1 / GIF / animated WebP / H.265,
   quality, **Backwards** (reverse order) and **Boomerang** (forward then backward).
   Mixed image sizes are letterboxed automatically.
 
 ### Design
-- Neumorphic ("soft UI") look, light and dark theme (moon/sun button in the header).
+- Neumorphic ("soft UI") look in **VLC orange**, with matching light and dark themes
+  (logo menu → Settings → Appearance).
+- Animated throughout: the logo's convert ring spins on hover, the menu drawer and tools panel
+  slide in, tabs glide, media fades in on a darkening "cinema" stage, buttons glow.
+  Animations only run while something moves, so an idle VMPC uses no CPU.
 - All shadows, inner shadows, gradients and icons are drawn by VMPC itself — no image assets needed.
-- Logo: a macOS Big Sur–style "squircle" app icon in the app's violet→cyan accent gradient, with a
-  play symbol inside a circular *convert* arrow. (Apple's own logo is a trademark, so VMPC uses its
-  own mark in the macOS icon style.) `vmpc --export-icon <dir>` writes it as PNG/ICO.
+- Logo: a macOS Big Sur–style "squircle" app icon in VLC orange, with a play symbol inside a
+  circular *convert* arrow. (Apple's and VLC's own logos are trademarks, so VMPC uses its own
+  mark in that style.) `vmpc --export-icon <dir>` writes it as PNG/ICO.
 
 ## Keyboard shortcuts
 
@@ -57,13 +78,14 @@ A lightweight VLC-style media player and universal media converter with a soft
 | ↑ / ↓ | Volume |
 | M | Mute |
 | F / F11, Esc | Fullscreen, leave fullscreen (double-click the video also toggles) |
-| N / P | Next / previous |
+| N / P | Next / previous file |
 | E | Next frame |
 | S | Snapshot |
 | L | Loop off / all / one |
 | + / − | Speed |
+| T | Show / hide the tools panel |
 | Ctrl+O | Open files |
-| Ctrl+L | Show / hide playlist |
+| Ctrl+L | Open / close the menu |
 
 ## Install
 
@@ -184,11 +206,12 @@ The repository must be **public** so the web installers can download the release
 ```
 src/
   main.rs        window setup, app icon, --export-icon
-  app.rs         header, tabs, player view, playlist, shortcuts, drag & drop
+  app.rs         workspace: logo menu drawer, preview stage, controls, tools inspector,
+                 library, media-type detection, shortcuts, drag & drop
   player.rs      playback engine: ffmpeg → raw RGBA pipe (zero-copy into the texture),
                  ffmpeg → f32 PCM → cpal audio output, audio-master clock, seeking, resync
-  converter.rs   Convert tab + shared job list UI
-  frames.rs      Frames tab: video ⇄ image sequence
+  converter.rs   context-aware conversion panel + queue list
+  frames.rs      video ⇄ image sequence panels
   formats.rs     format catalogue, quality → encoder argument mapping
   jobs.rs        background job queue (one ffmpeg at a time, -progress parsing, cancel)
   ffmpeg.rs      locating/downloading ffmpeg + ffprobe, probing, single-frame grabs
