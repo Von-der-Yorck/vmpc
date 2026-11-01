@@ -1,0 +1,179 @@
+# Builds VMPC for Windows and Linux and publishes a GitHub Release when a version tag is pushed:
+#
+#   git tag v1.0.0 && git push origin v1.0.0
+#
+# The tag must match `version` in Cargo.toml. Release assets:
+#   VMPC-Setup-<v>-x64.exe           full Windows installer (includes FFmpeg, works offline)
+#   VMPC-WebSetup-<v>-x64.exe        small Windows web installer (downloads the 3 files below)
+#   vmpc.exe, ffmpeg.exe, ffprobe.exe payload for the web installer (SHA-256 checked)
+#   VMPC-<v>-windows-x64-portable.zip  no-install version
+#   vmpc_<v>-1_amd64.deb             Debian/Ubuntu package (uses the system FFmpeg)
+#   vmpc-linux-x86_64.tar.gz         Linux build with FFmpeg included
+#   install-linux.sh                 Linux web installer (curl ... | sh)
+#   SHA256SUMS.txt
+
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  FFMPEG_WIN_URL: https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip
+  FFMPEG_LINUX_URL: https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: v
+        run: |
+          v=$(grep -m1 '^version' Cargo.toml | cut -d'"' -f2)
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+          if [ "$GITHUB_REF_TYPE" = "tag" ] && [ "$GITHUB_REF_NAME" != "v$v" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match Cargo.toml version $v (expected v$v)"
+            exit 1
+          fi
+
+  windows:
+    needs: version
+    runs-on: windows-latest
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Download FFmpeg
+        shell: pwsh
+        run: |
+          curl.exe -L --fail -o ffmpeg.zip $env:FFMPEG_WIN_URL
+          tar -xf ffmpeg.zip
+          New-Item -ItemType Directory -Force dist\ffmpeg | Out-Null
+          Get-ChildItem -Recurse -Path ffmpeg-master-* -Include ffmpeg.exe, ffprobe.exe | Copy-Item -Destination dist\ffmpeg
+          Add-Content $env:GITHUB_PATH "$PWD\dist\ffmpeg"
+
+      - name: Test
+        run: cargo test --release
+
+      - name: Build
+        run: cargo build --release
+
+      - name: Install Inno Setup
+        run: choco install innosetup -y --no-progress
+
+      - name: Build installers and portable zip
+        shell: pwsh
+        run: |
+          Copy-Item target\release\vmpc.exe dist\vmpc.exe
+          Copy-Item README.md, THIRD_PARTY_NOTICES.md dist\
+          New-Item -ItemType Directory -Force out | Out-Null
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          $hash = { param($f) (Get-FileHash $f -Algorithm SHA256).Hash.ToLower() }
+          & $iscc /Q "/DMyAppVersion=$env:VERSION" "/DRepo=${{ github.repository }}" "/DSourceDir=$PWD\dist" "/DOutputDir=$PWD\out" installer\vmpc.iss
+          if ($LASTEXITCODE) { throw "full installer failed" }
+          & $iscc /Q /DWebInstaller "/DMyAppVersion=$env:VERSION" "/DRepo=${{ github.repository }}" `
+            "/DVmpcSha=$(& $hash dist\vmpc.exe)" "/DFfmpegSha=$(& $hash dist\ffmpeg\ffmpeg.exe)" `
+            "/DFfprobeSha=$(& $hash dist\ffmpeg\ffprobe.exe)" "/DOutputDir=$PWD\out" installer\vmpc.iss
+          if ($LASTEXITCODE) { throw "web installer failed" }
+          Compress-Archive -Path dist\* -DestinationPath "out\VMPC-$env:VERSION-windows-x64-portable.zip"
+          # Payload the web installer downloads (same files it was hashed against).
+          Copy-Item dist\vmpc.exe, dist\ffmpeg\ffmpeg.exe, dist\ffmpeg\ffprobe.exe out\
+          Get-ChildItem out
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: out/*
+
+  linux:
+    needs: version
+    runs-on: ubuntu-22.04 # older glibc = runs on more distributions
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pkg-config libasound2-dev libxkbcommon-dev \
+            libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev
+
+      - name: Download FFmpeg
+        run: |
+          curl -L --fail -o ffmpeg.tar.xz "$FFMPEG_LINUX_URL"
+          mkdir ffmpeg-src && tar -xJf ffmpeg.tar.xz -C ffmpeg-src --strip-components=1
+          echo "$PWD/ffmpeg-src/bin" >> "$GITHUB_PATH"
+
+      - name: Test
+        run: cargo test --release
+
+      - name: Build
+        run: cargo build --release
+
+      - name: Debian package
+        run: |
+          cargo install cargo-deb --locked
+          cargo deb --no-build
+          mkdir -p out && cp target/debian/*.deb out/
+
+      - name: Tarball and web installer
+        run: |
+          d=pkg/vmpc
+          mkdir -p "$d/ffmpeg" "$d/assets"
+          cp target/release/vmpc "$d/"
+          cp ffmpeg-src/bin/ffmpeg ffmpeg-src/bin/ffprobe "$d/ffmpeg/"
+          cp assets/vmpc-256.png assets/vmpc-512.png assets/vmpc.desktop "$d/assets/"
+          cp README.md THIRD_PARTY_NOTICES.md "$d/"
+          sed "s|__REPO__|${{ github.repository }}|g" scripts/install-linux.sh > "$d/install-linux.sh"
+          chmod +x "$d/install-linux.sh" "$d/vmpc"
+          tar -C pkg -czf out/vmpc-linux-x86_64.tar.gz vmpc
+          cp "$d/install-linux.sh" out/install-linux.sh
+          ls -la out
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux
+          path: out/*
+
+  release:
+    needs: [version, windows, linux]
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: out
+          merge-multiple: true
+      - name: Checksums
+        run: cd out && sha256sum * > SHA256SUMS.txt && cat SHA256SUMS.txt
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: VMPC ${{ needs.version.outputs.version }}
+          generate_release_notes: true
+          files: out/*
+          body: |
+            ## Download
+
+            **Windows 10/11**
+            - **VMPC-Setup-${{ needs.version.outputs.version }}-x64.exe**: full installer, works offline (recommended)
+            - **VMPC-WebSetup-${{ needs.version.outputs.version }}-x64.exe**: small installer that downloads the app during setup
+            - **VMPC-${{ needs.version.outputs.version }}-windows-x64-portable.zip**: no installation, just unzip and run `vmpc.exe`
+
+            **Linux (x86_64)**
+            - One-line install: `curl -fsSL https://github.com/${{ github.repository }}/releases/latest/download/install-linux.sh | sh`
+            - Debian/Ubuntu: `sudo apt install ./vmpc_${{ needs.version.outputs.version }}-1_amd64.deb`
+            - Any distro: unpack `vmpc-linux-x86_64.tar.gz` and run `./vmpc/install-linux.sh`
+
+            VMPC bundles FFmpeg (GPL), see THIRD_PARTY_NOTICES.md.

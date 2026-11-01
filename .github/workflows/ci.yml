@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-22.04]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+
+      # The integration tests use the same static FFmpeg builds the releases ship
+      # (distro packages may lack encoders such as SVT-AV1).
+      - name: Linux build dependencies and FFmpeg
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pkg-config libasound2-dev libxkbcommon-dev \
+            libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev
+          curl -L --fail -o ffmpeg.tar.xz https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz
+          mkdir ffmpeg-src && tar -xJf ffmpeg.tar.xz -C ffmpeg-src --strip-components=1
+          echo "$PWD/ffmpeg-src/bin" >> "$GITHUB_PATH"
+
+      - name: FFmpeg for the integration tests
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          curl.exe -L --fail -o ffmpeg.zip https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip
+          tar -xf ffmpeg.zip
+          $bin = (Get-ChildItem -Recurse -Filter ffmpeg.exe -Path ffmpeg-master-* | Select-Object -First 1).DirectoryName
+          Add-Content $env:GITHUB_PATH $bin
+
+      - run: cargo test --release

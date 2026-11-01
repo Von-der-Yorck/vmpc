@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=VMPC
+GenericName=Media Player & Converter
+Comment=Play and convert any video, audio or image file
+Exec=vmpc %F
+Icon=vmpc
+Terminal=false
+Categories=AudioVideo;Player;Video;Audio;
+MimeType=video/mp4;video/x-matroska;video/webm;video/quicktime;video/x-msvideo;video/mpeg;video/x-flv;video/ogg;audio/mpeg;audio/flac;audio/ogg;audio/wav;audio/x-wav;audio/mp4;audio/aac;audio/opus;image/gif;

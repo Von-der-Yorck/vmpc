@@ -1,0 +1,48 @@
+[package]
+name = "vmpc"
+version = "1.0.0"
+edition = "2021"
+description = "VMPC - Video Media Player Converter: a lightweight neumorphic media player & converter"
+build = "build.rs"
+
+[dependencies]
+eframe = { version = "=0.29.1", default-features = false, features = ["default_fonts", "glow", "wayland", "x11"] }
+egui = "=0.29.1"
+rfd = "0.15"
+cpal = "0.15"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 4
+strip = true
+panic = "abort"
+
+[profile.dev.package."*"]
+opt-level = 2
+
+[target."cfg(windows)".build-dependencies]
+embed-resource = "3"
+
+# `cargo deb` (https://github.com/kornelski/cargo-deb) builds the Debian/Ubuntu package.
+[package.metadata.deb]
+maintainer = "VMPC contributors"
+copyright = "VMPC contributors"
+section = "video"
+priority = "optional"
+revision = "1"
+depends = "$auto, ffmpeg"
+extended-description = """\
+A lightweight neumorphic media player and converter. Plays practically every \
+audio, video and image format and network streams, converts between formats and \
+turns videos into image sequences and back. Uses FFmpeg as its codec engine."""
+assets = [
+    ["target/release/vmpc", "usr/bin/", "755"],
+    ["assets/vmpc.desktop", "usr/share/applications/", "644"],
+    ["assets/vmpc-256.png", "usr/share/icons/hicolor/256x256/apps/vmpc.png", "644"],
+    ["assets/vmpc-512.png", "usr/share/icons/hicolor/512x512/apps/vmpc.png", "644"],
+    ["README.md", "usr/share/doc/vmpc/README.md", "644"],
+    ["THIRD_PARTY_NOTICES.md", "usr/share/doc/vmpc/THIRD_PARTY_NOTICES.md", "644"],
+]
