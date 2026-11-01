@@ -15,6 +15,7 @@ mod icons;
 mod jobs;
 mod player;
 mod settings;
+mod updater;
 mod theme;
 mod util;
 

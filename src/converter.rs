@@ -1,5 +1,6 @@
-//! Conversion panel in the inspector. It only offers targets that make sense for the
-//! detected media type and converts the current file (or every file of that type).
+//! Everything you can turn the loaded media into, as one list of targets grouped by
+//! what makes sense for the detected media type, plus the options for the selected
+//! target. Video → image sequence and images → video live in the same list.
 
 use std::ffi::OsString;
 use std::path::{Path, PathBuf};
@@ -7,14 +8,86 @@ use std::path::{Path, PathBuf};
 use egui::{vec2, RichText, Ui};
 
 use crate::ffmpeg::{MediaInfo, MediaKind};
-use crate::formats::{self, Format, Kind, Res, FORMATS};
+use crate::formats::{self, Format, Kind, Res, FORMATS, IMAGE_SEQ_FORMATS, SEQ_VIDEO_FORMATS};
 use crate::icons::Icon;
 use crate::jobs::{Job, Queue};
 use crate::theme::{self, pal};
 use crate::util;
 
+/// One thing the media can be converted into.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum Target {
+    /// A file format of kind `kind` (index into the Video/Audio/Image/Other kinds).
+    Format { kind: usize, format: usize },
+    /// Any extension FFmpeg can write.
+    Custom,
+    /// Video → image sequence ([`IMAGE_SEQ_FORMATS`] index).
+    Sequence(usize),
+    /// Image(s) → video ([`SEQ_VIDEO_FORMATS`] index).
+    ToVideo(usize),
+}
+
+pub struct Group {
+    pub title: String,
+    pub icon: Icon,
+    pub targets: Vec<(Target, String)>,
+}
+
+fn formats_of(kind: usize) -> Vec<(Target, String)> {
+    let k = kind_of(kind);
+    FORMATS
+        .iter()
+        .filter(|f| f.kind == k)
+        .enumerate()
+        .map(|(i, f)| (Target::Format { kind, format: i }, f.name.to_string()))
+        .collect()
+}
+
+/// The conversion targets that fit the detected media, grouped for display.
+pub fn groups_for(media: MediaKind, images: usize) -> Vec<Group> {
+    let g = |title: &str, icon, targets| Group { title: title.to_string(), icon, targets };
+    let other = g("Other format", Icon::Gear, vec![(Target::Custom, "Any extension…".into())]);
+    match media {
+        MediaKind::Video => vec![
+            g("Video", Icon::Screen, formats_of(0)),
+            g("Audio only", Icon::Music, formats_of(1)),
+            g("Still image", Icon::Image, formats_of(2)),
+            g(
+                "Image sequence",
+                Icon::Frames,
+                IMAGE_SEQ_FORMATS.iter().enumerate().map(|(i, (name, _, _))| (Target::Sequence(i), format!("{name} frames"))).collect(),
+            ),
+            other,
+        ],
+        MediaKind::Audio => vec![g("Audio", Icon::Music, formats_of(1)), other],
+        MediaKind::Image => {
+            let video_title = if images > 1 { format!("Video from {images} images") } else { "Video from this image".into() };
+            let image_title = if images > 1 { format!("Image format (all {images})") } else { "Image format".into() };
+            vec![
+                g(&image_title, Icon::Image, formats_of(2)),
+                g(
+                    &video_title,
+                    Icon::Screen,
+                    SEQ_VIDEO_FORMATS.iter().enumerate().map(|(i, (name, _, _))| (Target::ToVideo(i), name.to_string())).collect(),
+                ),
+                other,
+            ]
+        }
+    }
+}
+
+/// Sensible first choice: MP4 for video, MP3 for audio, a video for an image sequence.
+pub fn default_target(media: MediaKind, images: usize) -> Target {
+    match media {
+        MediaKind::Video => Target::Format { kind: 0, format: 0 },
+        MediaKind::Audio => Target::Format { kind: 1, format: 0 },
+        MediaKind::Image if images > 1 => Target::ToVideo(0),
+        MediaKind::Image => Target::Format { kind: 2, format: 1 },
+    }
+}
+
 pub struct Converter {
-    /// Index into [`ALL_KINDS`].
+    /// Index into the Video/Audio/Image/Other kinds.
     kind: usize,
     format: usize,
     custom_ext: String,
@@ -27,7 +100,6 @@ pub struct Converter {
     no_audio: bool,
     out_dir: Option<PathBuf>,
     batch: bool,
-    message: Option<String>,
 }
 
 impl Default for Converter {
@@ -44,34 +116,40 @@ impl Default for Converter {
             reverse: false,
             no_audio: false,
             out_dir: None,
-            batch: false,
-            message: None,
+            batch: true,
         }
     }
 }
-
-const ALL_KINDS: [(Icon, &str); 4] = [(Icon::Screen, "Video"), (Icon::Music, "Audio"), (Icon::Image, "Image"), (Icon::Gear, "Other")];
 
 fn kind_of(i: usize) -> Kind {
     [Kind::Video, Kind::Audio, Kind::Image, Kind::Custom][i]
 }
 
-/// Output kinds that make sense for a source of the given type (indices into [`ALL_KINDS`]).
-pub fn allowed_kinds(media: MediaKind) -> &'static [usize] {
-    match media {
-        // Video → video, extract the soundtrack, grab a frame, or anything else.
-        MediaKind::Video => &[0, 1, 2, 3],
-        MediaKind::Audio => &[1, 3],
-        MediaKind::Image => &[2, 3],
-    }
+/// A label above its control.
+pub fn field(ui: &mut Ui, label: &str, add: impl FnOnce(&mut Ui)) {
+    ui.label(RichText::new(label).size(12.5).color(pal().muted));
+    ui.add_space(-2.0);
+    add(ui);
+    ui.add_space(6.0);
 }
 
-/// A label above its control: reads well in the narrow inspector.
-pub fn field(ui: &mut Ui, label: &str, add: impl FnOnce(&mut Ui)) {
-    ui.label(RichText::new(label).size(12.0).color(pal().muted));
-    ui.add_space(-4.0);
-    add(ui);
-    ui.add_space(4.0);
+/// Output folder picker row.
+pub fn save_to(ui: &mut Ui, dir: &mut Option<PathBuf>, default_label: &str) {
+    let p = pal();
+    field(ui, "Save to", |ui| {
+        ui.horizontal(|ui| {
+            if theme::icon_button(ui, Icon::Folder, 30.0, false, "Choose a folder").clicked() {
+                if let Some(d) = rfd::FileDialog::new().pick_folder() {
+                    *dir = Some(d);
+                }
+            }
+            let label = dir.as_ref().map(|d| theme::truncate(&d.to_string_lossy(), 34)).unwrap_or_else(|| default_label.into());
+            ui.label(RichText::new(label).size(12.5).color(p.muted));
+            if dir.is_some() && theme::icon_button(ui, Icon::Close, 26.0, false, "Reset").clicked() {
+                *dir = None;
+            }
+        });
+    });
 }
 
 impl Converter {
@@ -80,40 +158,27 @@ impl Converter {
         FORMATS.iter().filter(|f| f.kind == kind).nth(self.format).copied()
     }
 
-    /// `current` is the file in the preview; `same_kind` are all loaded files of its type.
-    pub fn panel(&mut self, ui: &mut Ui, queue: &mut Queue, current: (&str, &MediaInfo), same_kind: &[(String, MediaInfo)]) {
-        let p = pal();
-        let media = current.1.kind();
-        let allowed = allowed_kinds(media);
-        if !allowed.contains(&self.kind) {
-            self.kind = allowed[0];
-            self.format = 0;
-        }
-
-        field(ui, "Convert to", |ui| {
-            let items: Vec<(Icon, &str)> = allowed.iter().map(|&k| ALL_KINDS[k]).collect();
-            let mut sel = allowed.iter().position(|&k| k == self.kind).unwrap_or(0);
-            if theme::segmented(ui, &mut sel, &items) {
-                self.kind = allowed[sel];
-                self.format = 0;
+    /// Selects a `Target::Format` / `Target::Custom` target.
+    pub fn set_target(&mut self, target: Target) {
+        match target {
+            Target::Format { kind, format } => {
+                self.kind = kind;
+                self.format = format;
             }
-        });
+            Target::Custom => self.kind = 3,
+            _ => {}
+        }
+    }
+
+    /// Options for the selected format; `batch_count` = loaded files of the same type.
+    pub fn options_ui(&mut self, ui: &mut Ui, info: &MediaInfo, batch_count: usize) {
+        let p = pal();
+        let media = info.kind();
         let kind = kind_of(self.kind);
         if kind == Kind::Custom {
             field(ui, "File extension", |ui| {
                 ui.add(egui::TextEdit::singleline(&mut self.custom_ext).desired_width(120.0));
                 theme::hint(ui, "Any format FFmpeg can write: mkv, m4v, 3gp, ogv, ac3, amr, apng…");
-            });
-        } else {
-            field(ui, "Format", |ui| {
-                ui.horizontal_wrapped(|ui| {
-                    ui.spacing_mut().item_spacing = vec2(8.0, 10.0);
-                    for (i, fmt) in FORMATS.iter().filter(|f| f.kind == kind).enumerate() {
-                        if pill(ui, fmt.name, self.format == i).clicked() {
-                            self.format = i;
-                        }
-                    }
-                });
             });
         }
         let fmt = self.selected_format();
@@ -144,7 +209,7 @@ impl Converter {
             use formats::ACodec::*;
             matches!(a, Mp3 | Aac | Opus | Wma | Mp2)
         });
-        if bitrate && !(kind == Kind::Video && self.no_audio) && current.1.audio.is_some() {
+        if bitrate && !(kind == Kind::Video && self.no_audio) && info.audio.is_some() {
             field(ui, "Audio bitrate", |ui| {
                 egui::ComboBox::from_id_salt("conv-kbps").selected_text(format!("{} kb/s", self.kbps)).show_ui(ui, |ui| {
                     for k in [64, 96, 128, 160, 192, 256, 320] {
@@ -169,55 +234,47 @@ impl Converter {
                     theme::hint(ui, "Buffers the whole clip in memory; trim long videos first.");
                 }
             }
-            if kind == Kind::Video && current.1.audio.is_some() {
+            if kind == Kind::Video && info.audio.is_some() {
                 theme::toggle(ui, &mut self.no_audio, "Remove audio");
             }
         }
-        field(ui, "Save to", |ui| {
-            ui.horizontal(|ui| {
-                if theme::icon_button(ui, Icon::Folder, 30.0, false, "Choose output folder").clicked() {
-                    if let Some(d) = rfd::FileDialog::new().pick_folder() {
-                        self.out_dir = Some(d);
-                    }
-                }
-                let label = self
-                    .out_dir
-                    .as_ref()
-                    .map(|d| theme::truncate(&d.to_string_lossy(), 34))
-                    .unwrap_or_else(|| "Same folder as the source".into());
-                ui.label(RichText::new(label).size(12.5).color(p.muted));
-                if self.out_dir.is_some() && theme::icon_button(ui, Icon::Close, 26.0, false, "Reset").clicked() {
-                    self.out_dir = None;
-                }
-            });
-        });
-        if same_kind.len() > 1 {
+        save_to(ui, &mut self.out_dir, "Same folder as the source");
+        if batch_count > 1 {
             let noun = match media {
                 MediaKind::Video => "videos",
                 MediaKind::Audio => "audio files",
                 MediaKind::Image => "images",
             };
-            theme::toggle(ui, &mut self.batch, &format!("Convert all {} loaded {noun}", same_kind.len()));
+            theme::toggle(ui, &mut self.batch, &format!("All {batch_count} loaded {noun}"));
         }
-        ui.add_space(8.0);
-        let enabled = kind != Kind::Custom || !self.custom_ext.trim().is_empty();
-        let count = if self.batch && same_kind.len() > 1 { same_kind.len() } else { 1 };
-        let label = if count > 1 { format!("Convert {count} files") } else { "Convert".to_string() };
-        if theme::button_ex(ui, Some(Icon::Convert), &label, true, enabled).clicked() {
-            let jobs: Vec<Job> = if count > 1 {
-                same_kind.iter().map(|(s, i)| self.build_job(s, i, fmt)).collect()
-            } else {
-                vec![self.build_job(current.0, current.1, fmt)]
-            };
-            let n = jobs.len();
-            for job in jobs {
-                queue.push(job);
-            }
-            self.message = Some(format!("Added {n} job{} to the queue", if n == 1 { "" } else { "s" }));
+    }
+
+    /// Whether the start button can be used.
+    pub fn ready(&self) -> bool {
+        kind_of(self.kind) != Kind::Custom || !self.custom_ext.trim().is_empty()
+    }
+
+    pub fn action_label(&self, batch_count: usize) -> String {
+        if self.batch && batch_count > 1 {
+            format!("Convert {batch_count} files")
+        } else {
+            "Convert".into()
         }
-        if let Some(m) = &self.message {
-            ui.label(RichText::new(m).size(12.5).color(p.ok));
+    }
+
+    /// Queues the conversion; returns a status line.
+    pub fn start(&mut self, queue: &mut Queue, current: (&str, &MediaInfo), same_kind: &[(String, MediaInfo)]) -> String {
+        let fmt = self.selected_format();
+        let jobs: Vec<Job> = if self.batch && same_kind.len() > 1 {
+            same_kind.iter().map(|(s, i)| self.build_job(s, i, fmt)).collect()
+        } else {
+            vec![self.build_job(current.0, current.1, fmt)]
+        };
+        let n = jobs.len();
+        for job in jobs {
+            queue.push(job);
         }
+        format!("Added {n} conversion{} to the queue", if n == 1 { "" } else { "s" })
     }
 
     pub fn build_job(&self, source: &str, info: &MediaInfo, fmt: Option<Format>) -> Job {
@@ -333,21 +390,19 @@ impl Converter {
     }
 }
 
-/// Selectable pill (raised when off, pressed-in and accented when on).
+/// Selectable format pill: outlined; selected = orange outline, wash and text.
 pub fn pill(ui: &mut Ui, text: &str, selected: bool) -> egui::Response {
     let p = pal();
     let galley = ui.painter().layout_no_wrap(text.to_string(), egui::FontId::proportional(13.0), egui::Color32::PLACEHOLDER);
-    let (rect, resp) = ui.allocate_exact_size(galley.size() + vec2(22.0, 14.0), egui::Sense::click());
-    let hover = theme::ease(ui.ctx(), resp.id.with("h"), resp.hovered(), 0.15);
-    let on = theme::ease(ui.ctx(), resp.id.with("on"), selected, 0.2);
+    let (rect, resp) = ui.allocate_exact_size(galley.size() + vec2(20.0, 12.0), egui::Sense::click());
+    let hover = theme::ease(ui.ctx(), resp.id.with("h"), resp.hovered(), 0.12);
+    let on = theme::ease(ui.ctx(), resp.id.with("on"), selected, 0.18);
     let r = rect.height() / 2.0;
-    if on > 0.5 {
-        theme::paint_inset(ui.painter(), rect, r, 3.0);
-    } else {
-        ui.painter().extend(theme::raised_shapes(rect, r, 3.5 - 1.5 * hover, p.bg));
-    }
+    let fill = theme::lerp_color(theme::lerp_color(p.surface, p.tint, hover), p.accent_soft, on);
+    let border = theme::lerp_color(p.border, p.accent, on);
+    ui.painter().add(theme::surface_shape(rect, r, fill, border));
     let color = theme::lerp_color(theme::lerp_color(p.text, p.strong, hover), p.accent, on);
-    ui.painter().galley(rect.min + vec2(11.0, 7.0), galley, color);
+    ui.painter().galley(rect.min + vec2(10.0, 6.0), galley, color);
     resp.on_hover_cursor(egui::CursorIcon::PointingHand)
 }
 
@@ -410,6 +465,7 @@ pub fn jobs_list(ui: &mut Ui, queue: &mut Queue) {
         queue.clear_finished();
     }
 }
+
 
 #[cfg(test)]
 mod tests {
@@ -486,10 +542,19 @@ mod tests {
         assert_eq!(kind(&sample), MediaKind::Video);
         assert_eq!(kind(&png), MediaKind::Image);
         assert_eq!(kind(&mp3), MediaKind::Audio);
-        // Audio never offers video or image targets; images never offer video or audio.
-        assert_eq!(allowed_kinds(MediaKind::Audio), &[1, 3]);
-        assert_eq!(allowed_kinds(MediaKind::Image), &[2, 3]);
-        assert_eq!(allowed_kinds(MediaKind::Video), &[0, 1, 2, 3]);
+        // Only fitting targets: audio never gets video/image/sequence targets; images get
+        // image formats and "images → video" (even a single image); video gets sequences.
+        let targets = |m, n| groups_for(m, n).into_iter().flat_map(|g| g.targets).map(|(t, _)| t).collect::<Vec<_>>();
+        let audio = targets(MediaKind::Audio, 0);
+        assert!(audio.iter().all(|t| matches!(t, Target::Format { kind: 1, .. } | Target::Custom)));
+        let one_image = targets(MediaKind::Image, 1);
+        assert!(one_image.iter().any(|t| matches!(t, Target::ToVideo(_))));
+        assert!(one_image.iter().all(|t| matches!(t, Target::Format { kind: 2, .. } | Target::ToVideo(_) | Target::Custom)));
+        let video = targets(MediaKind::Video, 0);
+        assert!(video.iter().any(|t| matches!(t, Target::Sequence(_))));
+        assert!(!video.iter().any(|t| matches!(t, Target::ToVideo(_))));
+        assert_eq!(default_target(MediaKind::Image, 5), Target::ToVideo(0));
+        assert_eq!(default_target(MediaKind::Audio, 0), Target::Format { kind: 1, format: 0 });
         let _ = std::fs::remove_dir_all(&out);
     }
 }

@@ -1,27 +1,42 @@
 # VMPC — Video · Media · Player · Converter
 
-A lightweight VLC-style media player and universal media converter with a soft
-**neumorphic** UI, written entirely in **Rust**. Runs on **Windows** and **Linux**.
+A lightweight VLC-style media player and universal media converter with a
+clean, Claude-style UI in VLC orange, written entirely in **Rust**. Runs on **Windows** and **Linux**.
 
 <img src="assets/vmpc-256.png" width="96" alt="VMPC logo">
 
 ## How it works
 
-One workspace instead of tabs:
+The layout follows the Claude app:
 
-1. **Drop or open anything**: a video, a song, a picture, a whole folder or a stream URL.
-2. It appears in the **preview stage**: the video plays, images are shown, audio gets a
-   level-reactive visual (or its cover art).
-3. VMPC **detects what the file is** and the **tools panel** on the right only offers what fits:
+1. **Home page:** drop files or a folder anywhere, use *Open files* / *Open folder*, or paste a
+   stream link into the box. Suggestions (*Convert to MP3*, *Make a GIF*, *Video → image sequence*,
+   *Images → video*) open a file and preselect that conversion.
+2. The file opens in the **preview**: videos play, images are shown, audio gets a level-reactive
+   visual (or its cover art).
+3. VMPC **detects what you opened**, and the slide-out **Convert** bar lists *everything* that fits,
+   in one place, with the options for the selected target right below it:
 
-   | Detected | Tools offered |
+   | Detected | Conversions offered |
    | --- | --- |
-   | Video | Convert to video / audio (extract soundtrack) / image (grab a frame) · **Frames** (video → image sequence) |
-   | Audio | Convert to audio formats |
-   | Image | Convert to image formats · **To video** when several images are loaded (image sequence → video) |
+   | Video | Video formats · audio only (extract the soundtrack) · still image · **image sequence** (PNG/JPEG/WebP/BMP/TIFF frames) · any other extension |
+   | Audio | Audio formats · any other extension |
+   | Image(s) | Image formats · **video from these images** (also from a single image) · any other extension |
 
-4. **Click the logo** (top-left) for everything else: open files, folders and streams, your
-   library of loaded files, all tools, the conversion queue, settings (incl. light/dark mode).
+   Opening a folder of images preselects *video from N images* automatically.
+4. The **sidebar** (click the logo or press Ctrl+B to collapse it) has the open actions, your
+   library of loaded files, the conversion progress and Settings.
+
+## Automatic updates
+
+At every start VMPC asks GitHub whether a newer release exists. If so, it offers to update: it
+downloads the installer for your system, verifies it against the release's `SHA256SUMS.txt`,
+installs it silently and restarts. Without an internet connection the check is skipped silently,
+with no "please connect" messages. Turn it off or check manually in **Settings → Updates**.
+
+- Installed with the Windows setup (per user or for all users) or with `install-linux.sh`:
+  updates install themselves.
+- Portable zip / `.deb`: VMPC opens the release page instead.
 
 ## Features
 
@@ -59,12 +74,13 @@ One workspace instead of tabs:
   Mixed image sizes are letterboxed automatically.
 
 ### Design
-- Neumorphic ("soft UI") look in **VLC orange**, with matching light and dark themes
-  (logo menu → Settings → Appearance).
-- Animated throughout: the logo's convert ring spins on hover, the menu drawer and tools panel
-  slide in, tabs glide, media fades in on a darkening "cinema" stage, buttons glow.
+- Calm, flat design inspired by the Claude app (warm neutral surfaces, hairline borders, serif
+  headlines in Source Serif 4, UI text in Inter) with **VLC orange** accents; matching light and dark themes
+  (Settings → Appearance).
+- Subtle animation: the logo's convert ring spins on hover, the sidebar and Convert bar
+  slide, selections glide and media fades in.
   Animations only run while something moves, so an idle VMPC uses no CPU.
-- All shadows, inner shadows, gradients and icons are drawn by VMPC itself — no image assets needed.
+- All icons and the logo are drawn by VMPC itself.
 - Logo: a macOS Big Sur–style "squircle" app icon in VLC orange, with a play symbol inside a
   circular *convert* arrow. (Apple's and VLC's own logos are trademarks, so VMPC uses its own
   mark in that style.) `vmpc --export-icon <dir>` writes it as PNG/ICO.
@@ -83,9 +99,9 @@ One workspace instead of tabs:
 | S | Snapshot |
 | L | Loop off / all / one |
 | + / − | Speed |
-| T | Show / hide the tools panel |
+| T | Show / hide the Convert bar |
 | Ctrl+O | Open files |
-| Ctrl+L | Open / close the menu |
+| Ctrl+B | Collapse / expand the sidebar |
 
 ## Install
 
@@ -206,17 +222,18 @@ The repository must be **public** so the web installers can download the release
 ```
 src/
   main.rs        window setup, app icon, --export-icon
-  app.rs         workspace: logo menu drawer, preview stage, controls, tools inspector,
-                 library, media-type detection, shortcuts, drag & drop
+  app.rs         shell: sidebar, home composer, preview stage, controls, Convert bar,
+                 dialogs (settings, update), library, shortcuts, drag & drop
   player.rs      playback engine: ffmpeg → raw RGBA pipe (zero-copy into the texture),
                  ffmpeg → f32 PCM → cpal audio output, audio-master clock, seeking, resync
-  converter.rs   context-aware conversion panel + queue list
-  frames.rs      video ⇄ image sequence panels
+  converter.rs   conversion targets per media type, format options, queue list
+  frames.rs      video → image sequence, image(s) → video (fps or seconds per image)
   formats.rs     format catalogue, quality → encoder argument mapping
   jobs.rs        background job queue (one ffmpeg at a time, -progress parsing, cancel)
   ffmpeg.rs      locating/downloading ffmpeg + ffprobe, probing, single-frame grabs
   settings.rs    saved preferences (JSON in the user config folder)
-  theme.rs       neumorphic design system (raised/inset surfaces, buttons, sliders, toggles…)
+  updater.rs     GitHub release check, verified download, silent install + restart
+  theme.rs       design system (tokens, fonts, buttons, sliders, toggles, segmented…)
   icons.rs       vector icons, logo (vector + software rasteriser), PNG/ICO writer
   util.rs        time parsing, natural sort, output paths
 installer/vmpc.iss   Windows installer (full + web) for Inno Setup

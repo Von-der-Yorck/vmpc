@@ -18,11 +18,13 @@ pub struct Settings {
     pub loop_mode: u8,
     /// Whether the tools inspector next to the preview is open.
     pub tools_open: bool,
+    /// Check GitHub for a newer release at every start.
+    pub auto_update: bool,
 }
 
 impl Default for Settings {
     fn default() -> Self {
-        Self { dark: false, volume: 0.8, muted: false, max_height: 1080, hwaccel: true, loop_mode: 0, tools_open: true }
+        Self { dark: false, volume: 0.8, muted: false, max_height: 1080, hwaccel: true, loop_mode: 0, tools_open: true, auto_update: true }
     }
 }
 

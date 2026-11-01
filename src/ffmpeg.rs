@@ -104,14 +104,7 @@ fn download_engine() -> Result<(), String> {
             Err(format!("{what} failed: {}", err.lines().last().unwrap_or("").trim()))
         }
     };
-    // On Windows use the built-in tools explicitly (bsdtar unpacks .zip; a GNU tar on PATH would not).
-    #[cfg(windows)]
-    let (curl, tar) = {
-        let sys = PathBuf::from(std::env::var_os("SystemRoot").unwrap_or_else(|| "C:\\Windows".into())).join("System32");
-        (sys.join("curl.exe"), sys.join("tar.exe"))
-    };
-    #[cfg(not(windows))]
-    let (curl, tar) = (PathBuf::from("curl"), PathBuf::from("tar"));
+    let (curl, tar) = (system_tool("curl"), system_tool("tar"));
     run(command(&curl).args(["-L", "--fail", "--silent", "--show-error", "-o"]).arg(&archive).arg(ENGINE_URL), "Download")?;
     run(command(&tar).arg("-xf").arg(&archive).arg("-C").arg(&work), "Unpacking")?;
     let found = find_file(&work, &exe("ffmpeg")).ok_or("ffmpeg not found in the download")?;
@@ -126,6 +119,21 @@ fn download_engine() -> Result<(), String> {
     }
     let _ = std::fs::remove_dir_all(&work);
     Ok(())
+}
+
+/// `curl` / `tar` from the OS. On Windows the built-in copies in System32 are used
+/// explicitly (bsdtar unpacks .zip; a GNU tar earlier on PATH would not).
+pub fn system_tool(name: &str) -> PathBuf {
+    #[cfg(windows)]
+    {
+        PathBuf::from(std::env::var_os("SystemRoot").unwrap_or_else(|| "C:\\Windows".into()))
+            .join("System32")
+            .join(format!("{name}.exe"))
+    }
+    #[cfg(not(windows))]
+    {
+        PathBuf::from(name)
+    }
 }
 
 fn find_file(dir: &Path, name: &str) -> Option<PathBuf> {

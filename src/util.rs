@@ -140,11 +140,13 @@ pub fn is_url(source: &str) -> bool {
     source.contains("://")
 }
 
+#[cfg(test)]
 pub const IMAGE_EXTS: &[&str] = &[
     "png", "jpg", "jpeg", "bmp", "tif", "tiff", "webp", "gif", "tga", "exr", "dpx", "ppm", "pgm",
     "jxl", "avif", "heic", "qoi",
 ];
 
+#[cfg(test)]
 pub fn is_image_path(p: &Path) -> bool {
     p.extension()
         .map(|e| IMAGE_EXTS.contains(&e.to_string_lossy().to_ascii_lowercase().as_str()))

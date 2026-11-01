@@ -134,6 +134,14 @@ Root: HKA; Subkey: "Software\Classes\Applications\{#MyAppExe}\shell\open\command
 Filename: "{app}\ffmpeg\ffprobe.exe"; Parameters: "-v quiet -version"; StatusMsg: "{cm:Preparing}"; Flags: runhidden waituntilterminated
 Filename: "{app}\ffmpeg\ffmpeg.exe"; Parameters: "-v quiet -version"; StatusMsg: "{cm:Preparing}"; Flags: runhidden waituntilterminated
 Filename: "{app}\{#MyAppExe}"; Description: "{cm:LaunchProgram,{#MyAppName}}"; Flags: nowait postinstall skipifsilent
+; In-app auto update: the app runs this setup with /SILENT /RELAUNCH=1, so start it again.
+Filename: "{app}\{#MyAppExe}"; Flags: nowait runasoriginaluser; Check: ShouldRelaunch
+
+[Code]
+function ShouldRelaunch: Boolean;
+begin
+  Result := ExpandConstant('{param:relaunch|0}') = '1';
+end;
 
 #ifdef WebInstaller
 [Code]

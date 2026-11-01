@@ -1,6 +1,6 @@
 [package]
 name = "vmpc"
-version = "1.1.1"
+version = "1.2.0"
 edition = "2021"
 description = "VMPC - Video Media Player Converter: a lightweight neumorphic media player & converter"
 build = "build.rs"
@@ -12,6 +12,7 @@ rfd = "0.15"
 cpal = "0.15"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+sha2 = "0.10"
 
 [profile.release]
 opt-level = 3

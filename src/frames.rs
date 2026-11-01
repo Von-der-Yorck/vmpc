@@ -1,5 +1,7 @@
-//! Image-sequence tools in the inspector: video → images (like
-//! `ffmpeg -vf fps=N out_%06d.png`) and images → video, both optionally backwards.
+//! Image-sequence conversions: video → images (like `ffmpeg -vf fps=N out_%06d.png`)
+//! and images → video (a sequence at N fps, or a still/slideshow at N seconds per
+//! image), both optionally backwards. The UI shows these as targets in the same list
+//! as every other format; this module provides their options and jobs.
 
 use std::ffi::OsString;
 use std::io::Write;
@@ -7,10 +9,9 @@ use std::path::{Path, PathBuf};
 
 use egui::{vec2, RichText, Ui};
 
-use crate::converter::{field, pill};
+use crate::converter::{field, pill, save_to};
 use crate::ffmpeg::{self, MediaInfo};
 use crate::formats::{self, Res, VCodec, IMAGE_SEQ_FORMATS, SEQ_VIDEO_FORMATS};
-use crate::icons::Icon;
 use crate::jobs::{Job, Post, Queue};
 use crate::theme::{self, pal};
 use crate::util;
@@ -35,8 +36,10 @@ pub struct Frames {
     seq_quality: f32,
     seq_reverse: bool,
     seq_boomerang: bool,
+    /// "Seconds per image" (slideshow) instead of frames per second.
+    seq_still: bool,
+    seq_seconds: f64,
     seq_output: Option<PathBuf>,
-    message: Option<(String, bool)>,
 }
 
 impl Default for Frames {
@@ -59,33 +62,40 @@ impl Default for Frames {
             seq_quality: 75.0,
             seq_reverse: false,
             seq_boomerang: false,
+            seq_still: false,
+            seq_seconds: 3.0,
             seq_output: None,
-            message: None,
         }
     }
 }
 
 impl Frames {
-    fn status(&self, ui: &mut Ui) {
-        if let Some((m, ok)) = &self.message {
-            let p = pal();
-            ui.label(RichText::new(m).size(12.5).color(if *ok { p.ok } else { p.danger }));
-        }
+    pub fn set_sequence_format(&mut self, i: usize) {
+        self.img_format = i.min(IMAGE_SEQ_FORMATS.len() - 1);
     }
 
-    /// Video → image sequence for the video in the preview.
-    pub fn extract_panel(&mut self, ui: &mut Ui, queue: &mut Queue, source: &str, info: &MediaInfo) {
-        let p = pal();
-        if self.video.as_deref() != Some(source) {
-            self.video = Some(source.to_string());
-            self.message = None;
+    pub fn set_video_format(&mut self, i: usize) {
+        if self.seq_format != i {
+            self.seq_output = None;
         }
+        self.seq_format = i.min(SEQ_VIDEO_FORMATS.len() - 1);
+    }
+
+    /// Stills: one picture always, or many in "seconds per image" mode.
+    fn still_mode(&self) -> bool {
+        self.images.len() == 1 || self.seq_still
+    }
+
+    // ----- Video → images -------------------------------------------------
+
+    pub fn extract_options_ui(&mut self, ui: &mut Ui, info: &MediaInfo) {
+        let p = pal();
         let src_fps = info.video.as_ref().map(|v| v.fps);
         field(ui, "Frames per second", |ui| {
             theme::toggle(ui, &mut self.original_fps, "Every frame (original rate)");
             if !self.original_fps {
                 ui.horizontal_wrapped(|ui| {
-                    ui.spacing_mut().item_spacing = vec2(8.0, 8.0);
+                    ui.spacing_mut().item_spacing = vec2(6.0, 6.0);
                     ui.add(egui::DragValue::new(&mut self.fps).range(0.01..=240.0).speed(0.1).suffix(" fps").max_decimals(3));
                     for v in [1.0, 5.0, 10.0, 24.0, 30.0, 60.0] {
                         if pill(ui, &format!("{v}"), (self.fps - v).abs() < 1e-6).clicked() {
@@ -94,16 +104,6 @@ impl Frames {
                     }
                 });
             }
-        });
-        field(ui, "Image format", |ui| {
-            ui.horizontal_wrapped(|ui| {
-                ui.spacing_mut().item_spacing = vec2(8.0, 8.0);
-                for (i, (name, _, _)) in IMAGE_SEQ_FORMATS.iter().enumerate() {
-                    if pill(ui, name, self.img_format == i).clicked() {
-                        self.img_format = i;
-                    }
-                }
-            });
         });
         let codec = IMAGE_SEQ_FORMATS[self.img_format].2;
         if matches!(codec, VCodec::Jpeg | VCodec::Webp) {
@@ -140,21 +140,8 @@ impl Frames {
             });
         });
         theme::toggle(ui, &mut self.reverse_out, "Backwards (last frame becomes 000001)");
-        field(ui, "Save to", |ui| {
-            ui.horizontal(|ui| {
-                if theme::icon_button(ui, Icon::Folder, 30.0, false, "Choose folder").clicked() {
-                    if let Some(d) = rfd::FileDialog::new().pick_folder() {
-                        self.out_dir = Some(d);
-                    }
-                }
-                let label = self
-                    .out_dir
-                    .as_ref()
-                    .map(|d| theme::truncate(&d.to_string_lossy(), 34))
-                    .unwrap_or_else(|| "New folder next to the video".into());
-                ui.label(RichText::new(label).size(12.5).color(p.muted));
-            });
-        });
+        ui.add_space(4.0);
+        save_to(ui, &mut self.out_dir, "New folder next to the video");
         let (start, end) = self.range();
         let dur = end.unwrap_or(info.duration.unwrap_or(0.0)).min(info.duration.unwrap_or(f64::MAX)) - start;
         let fps = if self.original_fps { src_fps.unwrap_or(self.fps) } else { self.fps };
@@ -163,54 +150,64 @@ impl Frames {
         if count > 20_000 {
             theme::hint(ui, "That is a lot of files; consider a lower fps or a shorter range.");
         }
-        ui.add_space(6.0);
-        if theme::button_ex(ui, Some(Icon::Frames), "Extract frames", true, info.duration.is_some()).clicked() {
-            match self.extract_job(info) {
-                Ok(job) => {
-                    self.message = Some((format!("Extracting to {}", job.output.display()), true));
-                    queue.push(job);
-                }
-                Err(e) => self.message = Some((e, false)),
-            }
-        }
-        self.status(ui);
     }
 
-    /// Image sequence → video, from the loaded images (or a picked folder).
-    pub fn assemble_panel(&mut self, ui: &mut Ui, queue: &mut Queue, images: &[PathBuf]) {
-        let p = pal();
+    pub fn start_extract(&mut self, queue: &mut Queue, source: &str, info: &MediaInfo) -> Result<String, String> {
+        self.video = Some(source.to_string());
+        let job = self.extract_job(info)?;
+        let msg = format!("Extracting frames to {}", job.output.display());
+        queue.push(job);
+        Ok(msg)
+    }
+
+    // ----- Images → video -------------------------------------------------
+
+    fn sync_images(&mut self, images: &[PathBuf]) {
         let mut sorted = images.to_vec();
         sorted.sort_by(|a, b| util::natural_cmp(&a.to_string_lossy(), &b.to_string_lossy()));
         if sorted != self.images {
             self.images = sorted;
             self.seq_output = None;
         }
-        ui.horizontal(|ui| {
-            theme::chip(ui, &format!("{} images", self.images.len()), p.accent);
-            theme::hint(ui, "sorted naturally (img2 before img10)");
-        });
-        field(ui, "Frames per second", |ui| {
-            ui.horizontal_wrapped(|ui| {
-                ui.spacing_mut().item_spacing = vec2(8.0, 8.0);
-                ui.add(egui::DragValue::new(&mut self.seq_fps).range(0.1..=240.0).speed(0.1).suffix(" fps").max_decimals(3));
-                for v in [1.0, 12.0, 24.0, 30.0, 60.0] {
-                    if pill(ui, &format!("{v}"), (self.seq_fps - v).abs() < 1e-6).clicked() {
-                        self.seq_fps = v;
-                    }
+    }
+
+    pub fn assemble_options_ui(&mut self, ui: &mut Ui, images: &[PathBuf]) {
+        let p = pal();
+        self.sync_images(images);
+        let many = self.images.len() > 1;
+        if many {
+            field(ui, "Timing", |ui| {
+                let mut mode = usize::from(self.seq_still);
+                if theme::segmented(ui, &mut mode, &[(crate::icons::Icon::Frames, "Frames per second"), (crate::icons::Icon::Image, "Seconds per image")]) {
+                    self.seq_still = mode == 1;
                 }
             });
-        });
-        field(ui, "Format", |ui| {
-            ui.horizontal_wrapped(|ui| {
-                ui.spacing_mut().item_spacing = vec2(8.0, 10.0);
-                for (i, (name, _, _)) in SEQ_VIDEO_FORMATS.iter().enumerate() {
-                    if pill(ui, name, self.seq_format == i).clicked() {
-                        self.seq_format = i;
-                        self.seq_output = None;
+        }
+        if self.still_mode() {
+            field(ui, if many { "Seconds per image" } else { "Video length (seconds)" }, |ui| {
+                ui.horizontal_wrapped(|ui| {
+                    ui.spacing_mut().item_spacing = vec2(6.0, 6.0);
+                    ui.add(egui::DragValue::new(&mut self.seq_seconds).range(0.1..=3600.0).speed(0.1).suffix(" s").max_decimals(2));
+                    for v in [1.0, 3.0, 5.0, 10.0, 30.0] {
+                        if pill(ui, &format!("{v} s"), (self.seq_seconds - v).abs() < 1e-6).clicked() {
+                            self.seq_seconds = v;
+                        }
                     }
-                }
+                });
             });
-        });
+        } else {
+            field(ui, "Frames per second", |ui| {
+                ui.horizontal_wrapped(|ui| {
+                    ui.spacing_mut().item_spacing = vec2(6.0, 6.0);
+                    ui.add(egui::DragValue::new(&mut self.seq_fps).range(0.1..=240.0).speed(0.1).suffix(" fps").max_decimals(3));
+                    for v in [1.0, 12.0, 24.0, 30.0, 60.0] {
+                        if pill(ui, &format!("{v}"), (self.seq_fps - v).abs() < 1e-6).clicked() {
+                            self.seq_fps = v;
+                        }
+                    }
+                });
+            });
+        }
         let codec = SEQ_VIDEO_FORMATS[self.seq_format].2;
         let hint = formats::quality_hint(Some(codec), self.seq_quality);
         if hint != "lossless" {
@@ -224,13 +221,16 @@ impl Frames {
                 });
             });
         }
-        theme::toggle(ui, &mut self.seq_reverse, "Backwards (reverse order)");
-        theme::toggle(ui, &mut self.seq_boomerang, "Boomerang (forward, then backward)");
+        if many {
+            theme::toggle(ui, &mut self.seq_reverse, "Backwards (reverse order)");
+            theme::toggle(ui, &mut self.seq_boomerang, "Boomerang (forward, then backward)");
+            ui.add_space(4.0);
+        }
         field(ui, "Save as", |ui| {
             ui.horizontal(|ui| {
-                if theme::icon_button(ui, Icon::Folder, 30.0, false, "Choose file").clicked() {
+                if theme::icon_button(ui, crate::icons::Icon::Folder, 30.0, false, "Choose file").clicked() {
                     let ext = SEQ_VIDEO_FORMATS[self.seq_format].1;
-                    if let Some(f) = rfd::FileDialog::new().add_filter(ext, &[ext]).set_file_name(format!("sequence.{ext}")).save_file() {
+                    if let Some(f) = rfd::FileDialog::new().add_filter(ext, &[ext]).set_file_name(format!("video.{ext}")).save_file() {
                         self.seq_output = Some(f);
                     }
                 }
@@ -242,19 +242,17 @@ impl Frames {
                 ui.label(RichText::new(label).size(12.5).color(p.muted));
             });
         });
-        let frames = self.images.len() * if self.seq_boomerang { 2 } else { 1 };
-        theme::chip(ui, &format!("{frames} frames → {} of video", util::fmt_time(frames as f64 / self.seq_fps)), p.accent);
-        ui.add_space(6.0);
-        if theme::button_ex(ui, Some(Icon::Screen), "Create video", true, self.images.len() > 1).clicked() {
-            match self.assemble_job() {
-                Ok(job) => {
-                    self.message = Some((format!("Creating {}", job.output.display()), true));
-                    queue.push(job);
-                }
-                Err(e) => self.message = Some((e, false)),
-            }
-        }
-        self.status(ui);
+        let frames = self.images.len() * if self.seq_boomerang && many { 2 } else { 1 };
+        let seconds = if self.still_mode() { frames as f64 * self.seq_seconds } else { frames as f64 / self.seq_fps };
+        theme::chip(ui, &format!("{frames} image{} → {} of video", if frames == 1 { "" } else { "s" }, util::fmt_time(seconds)), p.accent);
+    }
+
+    pub fn start_assemble(&mut self, queue: &mut Queue, images: &[PathBuf]) -> Result<String, String> {
+        self.sync_images(images);
+        let job = self.assemble_job()?;
+        let msg = format!("Creating {}", job.output.display());
+        queue.push(job);
+        Ok(msg)
     }
 
     fn range(&self) -> (f64, Option<f64>) {
@@ -333,19 +331,19 @@ impl Frames {
         let info = ffmpeg::probe(&first.to_string_lossy())?;
         let v = info.video.ok_or("The first file is not an image")?;
         let (w, h) = (v.width / 2 * 2, v.height / 2 * 2);
+        // A single picture (or "seconds per image" mode) becomes a still/slideshow video.
+        let still = self.still_mode();
+        let animated = matches!(codec, VCodec::Gif | VCodec::WebpAnim);
+        let out_fps = if !still { self.seq_fps } else if animated { 10.0 } else { 30.0 };
 
         // ffconcat list: works with any file names, orders and mixed formats.
         let list = std::env::temp_dir().join(format!("vmpc_seq_{}_{}.ffconcat", std::process::id(), rand_suffix()));
         let mut file = std::fs::File::create(&list).map_err(|e| e.to_string())?;
-        let dur = 1.0 / self.seq_fps;
+        let dur = if still { self.seq_seconds.max(0.1) } else { 1.0 / self.seq_fps };
         let mut text = String::from("ffconcat version 1.0\n");
         for f in &frames {
             let path = f.to_string_lossy().replace('\\', "/").replace('\'', "'\\''");
             text.push_str(&format!("file '{path}'\nduration {dur:.6}\n"));
-        }
-        if let Some(last) = frames.last() {
-            let path = last.to_string_lossy().replace('\\', "/").replace('\'', "'\\''");
-            text.push_str(&format!("file '{path}'\n"));
         }
         file.write_all(text.as_bytes()).map_err(|e| e.to_string())?;
 
@@ -353,32 +351,49 @@ impl Frames {
             Some(o) => o.with_extension(ext),
             None => {
                 let dir = first.parent().map(PathBuf::from).unwrap_or_else(|| util::default_output_dir("Videos"));
-                let stem = dir.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_else(|| "sequence".into());
-                let stem = if self.seq_reverse { format!("{stem}_reversed") } else { stem };
-                let parent = dir.parent().map(PathBuf::from).unwrap_or(dir.clone());
-                util::unique_path(&parent, &stem, ext)
+                if self.images.len() == 1 {
+                    // One picture: save next to it, named after it.
+                    let stem = first.file_stem().map(|n| n.to_string_lossy().into_owned()).unwrap_or_else(|| "image".into());
+                    util::unique_path(&dir, &stem, ext)
+                } else {
+                    let stem = dir.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_else(|| "sequence".into());
+                    let stem = if self.seq_reverse { format!("{stem}_reversed") } else { stem };
+                    let parent = dir.parent().map(PathBuf::from).unwrap_or(dir.clone());
+                    util::unique_path(&parent, &stem, ext)
+                }
             }
         };
-        let mut vf = vec![format!(
-            "scale={w}:{h}:force_original_aspect_ratio=decrease,pad={w}:{h}:(ow-iw)/2:(oh-ih)/2"
-        )];
+        // Timing: the list gives each image its duration; tpad holds the last image for
+        // its full time, fps turns it into a constant frame rate and -t (below) trims to
+        // exactly images × duration.
+        let mut vf = vec![
+            format!("scale={w}:{h}:force_original_aspect_ratio=decrease,pad={w}:{h}:(ow-iw)/2:(oh-ih)/2"),
+            format!("tpad=stop_mode=clone:stop_duration={dur:.6}"),
+            format!("fps={out_fps:.6}"),
+        ];
         if codec == VCodec::Gif {
             vf.push(formats::GIF_PALETTE.to_string());
         }
         let mut args: Vec<OsString> = ["-f", "concat", "-safe", "0", "-i"].iter().map(OsString::from).collect();
         args.push(list.clone().into_os_string());
-        for a in ["-vf".to_string(), vf.join(","), "-fps_mode".into(), "cfr".into(), "-r".into(), format!("{:.6}", self.seq_fps)] {
-            args.push(a.into());
-        }
+        args.push("-vf".into());
+        args.push(vf.join(",").into());
         for a in formats::video_args(codec, self.seq_quality) {
             args.push(a.into());
         }
         if ext == "mp4" {
             args.extend(["-movflags", "+faststart"].map(OsString::from));
         }
+        let total_secs = frames.len() as f64 * dur;
+        args.extend(["-t".into(), format!("{total_secs:.3}").into()]);
         args.push(output.clone().into_os_string());
-        let total = Some(frames.len() as f64 / self.seq_fps);
-        let mut job = Job::new(format!("{} images  →  {name} @ {} fps", frames.len(), self.seq_fps), output, args, total);
+        let total = Some(total_secs);
+        let title = if still {
+            format!("{} image{} → {name}, {}s each", frames.len(), if frames.len() == 1 { "" } else { "s" }, self.seq_seconds)
+        } else {
+            format!("{} images → {name} @ {} fps", frames.len(), self.seq_fps)
+        };
+        let mut job = Job::new(title, output, args, total);
         job.temp.push(list);
         Ok(job)
     }
@@ -453,6 +468,37 @@ mod tests {
             let d = probed.duration.unwrap_or(0.0);
             assert!((d - expect).abs() < 0.2, "format {format}: duration {d}, expected {expect}");
         }
+        let _ = std::fs::remove_dir_all(&out);
+    }
+
+    #[test]
+    fn single_image_and_slideshow_become_videos() {
+        let Some(sample) = testing::sample_video() else { return };
+        let out = testing::scratch_dir("stills");
+        let png = out.join("cover.png");
+        let ok = ffmpeg::ffmpeg_cmd().unwrap().args(["-y", "-v", "error", "-i"]).arg(&sample).args(["-frames:v", "1"]).arg(&png).status().unwrap();
+        assert!(ok.success());
+        let png2 = out.join("cover2.png");
+        std::fs::copy(&png, &png2).unwrap();
+        let duration = |job: Job| {
+            let job = testing::run(job);
+            assert_eq!(job.status, Status::Done, "{:?}", job.status);
+            ffmpeg::probe(&job.output.to_string_lossy()).unwrap().duration.unwrap_or(0.0)
+        };
+        // One picture → a 2 s video (no fps needed).
+        let single = Frames { images: vec![png.clone()], seq_seconds: 2.0, seq_output: Some(out.join("single")), ..Default::default() };
+        let d = duration(single.assemble_job().unwrap());
+        assert!((d - 2.0).abs() < 0.15, "single image video lasted {d}");
+        // Two pictures in "seconds per image" mode → 2 × 1.5 s slideshow.
+        let show = Frames {
+            images: vec![png, png2],
+            seq_still: true,
+            seq_seconds: 1.5,
+            seq_output: Some(out.join("show")),
+            ..Default::default()
+        };
+        let d = duration(show.assemble_job().unwrap());
+        assert!((d - 3.0).abs() < 0.15, "slideshow lasted {d}");
         let _ = std::fs::remove_dir_all(&out);
     }
 }
