@@ -1,6 +1,6 @@
 [package]
 name = "vmpc"
-version = "1.1.0"
+version = "1.1.1"
 edition = "2021"
 description = "VMPC - Video Media Player Converter: a lightweight neumorphic media player & converter"
 build = "build.rs"

@@ -89,6 +89,8 @@ english.Downloading=Downloading VMPC and the FFmpeg engine...
 german.Downloading=VMPC und die FFmpeg-Engine werden heruntergeladen...
 english.MediaFile=Media file (VMPC)
 german.MediaFile=Mediendatei (VMPC)
+english.Preparing=Preparing the media engine...
+german.Preparing=Die Medien-Engine wird vorbereitet...
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
@@ -127,6 +129,10 @@ Root: HKA; Subkey: "Software\Classes\Applications\{#MyAppExe}\shell\open\command
 {#Assoc("opus")}{#Assoc("m4a")}{#Assoc("aac")}{#Assoc("wma")}{#Assoc("aiff")}{#Assoc("gif")}
 
 [Run]
+; Start the engine once, hidden: Windows scans a freshly installed executable on its first
+; run (~10 s for the 170 MB FFmpeg binaries). Doing it here keeps the first file open instant.
+Filename: "{app}\ffmpeg\ffprobe.exe"; Parameters: "-v quiet -version"; StatusMsg: "{cm:Preparing}"; Flags: runhidden waituntilterminated
+Filename: "{app}\ffmpeg\ffmpeg.exe"; Parameters: "-v quiet -version"; StatusMsg: "{cm:Preparing}"; Flags: runhidden waituntilterminated
 Filename: "{app}\{#MyAppExe}"; Description: "{cm:LaunchProgram,{#MyAppName}}"; Flags: nowait postinstall skipifsilent
 
 #ifdef WebInstaller
