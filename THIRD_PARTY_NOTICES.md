@@ -30,3 +30,17 @@ Run `cargo tree` in the source tree for the complete list.
 
 Both are licensed under the SIL Open Font License 1.1; the full texts are in
 `assets/fonts/Inter-OFL.txt` and `assets/fonts/SourceSerif4-OFL.txt`.
+
+## File-format catalogue
+
+`assets/formats.tsv` (the list of ~1,700 file formats VMPC recognises) is derived from the
+Wikipedia article "List of file formats" (https://en.wikipedia.org/wiki/List_of_file_formats)
+by its contributors, licensed under the Creative Commons Attribution-ShareAlike 4.0 License
+(https://creativecommons.org/licenses/by-sa/4.0/). The derived file is distributed under the
+same license; VMPC added entries for common media, subtitle, archive and data formats.
+
+## Data and archive libraries
+
+YAML, TOML and CSV support uses the serde_yaml (MIT/Apache-2.0), toml (MIT/Apache-2.0) and csv
+(MIT/Unlicense) crates. Archives are handled by libarchive's `bsdtar` (BSD license), which ships
+with Windows 10/11 and is available as `libarchive-tools` on Linux.

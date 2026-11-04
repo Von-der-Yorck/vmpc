@@ -7,13 +7,17 @@
 #![cfg_attr(all(windows, not(debug_assertions)), windows_subsystem = "windows")]
 
 mod app;
+mod archive;
+mod catalog;
 mod converter;
+mod data;
 mod ffmpeg;
 mod formats;
 mod frames;
 mod icons;
 mod jobs;
 mod player;
+mod playlist;
 mod settings;
 mod updater;
 mod theme;

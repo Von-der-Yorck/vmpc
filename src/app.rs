@@ -9,9 +9,10 @@ use std::time::{Duration, Instant};
 
 use egui::{pos2, vec2, Align, Align2, Color32, FontId, Id, Key, Layout, Margin, Rect, RichText, Sense, Stroke, Ui, Vec2};
 
-use crate::converter::{self, Converter, Target};
+use crate::catalog::{self, Classified, DataFormat, Handler};
+use crate::converter::{self, Converter, Subject, Target};
 use crate::ffmpeg::{self, MediaInfo, MediaKind};
-use crate::formats::{Kind, FORMATS, SEQ_VIDEO_FORMATS};
+use crate::formats::{self, Kind, FORMATS, SEQ_VIDEO_FORMATS};
 use crate::frames::Frames;
 use crate::icons::{self, Icon};
 use crate::jobs::{Queue, Status};
@@ -28,16 +29,105 @@ enum LoopMode {
     One,
 }
 
-/// A loaded file or stream and its probe result.
+/// A loaded file or stream and what VMPC found inside it.
 struct Item {
     source: String,
-    info: Option<Result<MediaInfo, String>>,
+    class: Option<Classified>,
 }
 
 impl Item {
-    fn kind(&self) -> Option<MediaKind> {
-        self.info.as_ref().and_then(|i| i.as_ref().ok()).map(|i| i.kind())
+    fn info(&self) -> Option<&MediaInfo> {
+        match &self.class {
+            Some(Classified::Media(info)) => Some(info),
+            _ => None,
+        }
     }
+    fn kind(&self) -> Option<MediaKind> {
+        self.info().map(|i| i.kind())
+    }
+    fn icon(&self) -> Icon {
+        match &self.class {
+            _ if util::is_url(&self.source) => Icon::Globe,
+            Some(Classified::Media(i)) => kind_icon(i.kind()),
+            Some(Classified::Subtitle(_)) => Icon::Playlist,
+            Some(Classified::Archive(_)) => Icon::Archive,
+            Some(Classified::Data(..) | Classified::Text(_) | Classified::Recognized) => Icon::Doc,
+            _ => Icon::Folder,
+        }
+    }
+}
+
+fn kind_icon(kind: MediaKind) -> Icon {
+    match kind {
+        MediaKind::Video => Icon::Screen,
+        MediaKind::Audio => Icon::Music,
+        MediaKind::Image => Icon::Image,
+    }
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum TextKind {
+    Plain,
+    Subtitle,
+    Data(DataFormat),
+}
+
+/// A non-media file on the stage.
+enum Doc {
+    Text { source: String, text: String, lines: Vec<String>, kind: TextKind },
+    Archive { source: String, entries: Vec<String> },
+    Recognized { source: String },
+    Unreadable { source: String, error: String },
+}
+
+impl Doc {
+    fn new(source: String, class: Classified) -> Self {
+        let text_doc = |source, text: String, kind| {
+            let lines = text.lines().take(200_000).map(str::to_string).collect();
+            Doc::Text { source, text, lines, kind }
+        };
+        match class {
+            Classified::Subtitle(t) => text_doc(source, t, TextKind::Subtitle),
+            Classified::Data(f, t) => text_doc(source, t, TextKind::Data(f)),
+            Classified::Text(t) => text_doc(source, t, TextKind::Plain),
+            Classified::Archive(entries) => Doc::Archive { source, entries },
+            Classified::Unreadable(error) => Doc::Unreadable { source, error },
+            Classified::Recognized | Classified::Media(_) | Classified::Playlist(_) => Doc::Recognized { source },
+        }
+    }
+    fn source(&self) -> &str {
+        match self {
+            Doc::Text { source, .. } | Doc::Archive { source, .. } | Doc::Recognized { source } | Doc::Unreadable { source, .. } => source,
+        }
+    }
+    fn subject(&self) -> Option<Subject> {
+        match self {
+            Doc::Text { kind: TextKind::Subtitle, .. } => Some(Subject::Subtitle),
+            Doc::Text { kind: TextKind::Data(f), .. } => Some(Subject::Data(*f)),
+            Doc::Archive { .. } => Some(Subject::Archive),
+            _ => None,
+        }
+    }
+    /// Short label for the header chip.
+    fn label(&self) -> String {
+        match self {
+            Doc::Text { kind: TextKind::Subtitle, .. } => "SUBTITLES".into(),
+            Doc::Text { kind: TextKind::Data(f), .. } => f.label().into(),
+            Doc::Text { .. } => "TEXT".into(),
+            Doc::Archive { entries, .. } => format!("ARCHIVE · {} files", entries.len()),
+            Doc::Recognized { source } | Doc::Unreadable { source, .. } => {
+                catalog::lookup(&catalog::ext_of(source)).first().map(|e| e.category.to_uppercase()).unwrap_or_else(|| "FILE".into())
+            }
+        }
+    }
+}
+
+/// Options for subtitle / data / archive targets.
+#[derive(Default)]
+struct ExtraOpts {
+    shift: f64,
+    track: usize,
+    out_dir: Option<PathBuf>,
 }
 
 /// What a home-page suggestion asked for, applied once the media is analysed.
@@ -58,8 +148,17 @@ pub struct App {
     player: Player,
     library: Vec<Item>,
     current: Option<usize>,
-    probe_tx: Sender<(String, Result<MediaInfo, String>)>,
-    probe_rx: Receiver<(String, Result<MediaInfo, String>)>,
+    probe_tx: Sender<(String, Classified)>,
+    probe_rx: Receiver<(String, Classified)>,
+    /// The non-media file on the stage (text, archive, recognised file …).
+    doc: Option<Doc>,
+    /// The current item is still being analysed.
+    awaiting: Option<String>,
+    extra: ExtraOpts,
+    archive_tx: Sender<Result<Vec<PathBuf>, String>>,
+    archive_rx: Receiver<Result<Vec<PathBuf>, String>>,
+    show_formats: bool,
+    format_search: String,
     loop_mode: LoopMode,
     seek_drag: Option<f32>,
     url_input: String,
@@ -101,6 +200,7 @@ impl App {
         player.max_res = MaxRes::from_height(saved.max_height);
         player.hwaccel = saved.hwaccel;
         let (probe_tx, probe_rx) = mpsc::channel();
+        let (archive_tx, archive_rx) = mpsc::channel();
         let updater = Updater::default();
         if saved.auto_update {
             // Silent: if there is no connection nothing is shown.
@@ -113,6 +213,14 @@ impl App {
             current: None,
             probe_tx,
             probe_rx,
+            doc: None,
+            awaiting: None,
+            extra: ExtraOpts::default(),
+            archive_tx,
+            archive_rx,
+            // VMPC_SHOW_FORMATS opens the format library at start-up (handy for screenshots).
+            show_formats: std::env::var_os("VMPC_SHOW_FORMATS").is_some(),
+            format_search: std::env::var("VMPC_SHOW_FORMATS").unwrap_or_default(),
             loop_mode: match saved.loop_mode {
                 1 => LoopMode::All,
                 2 => LoopMode::One,
@@ -161,10 +269,10 @@ impl App {
             }
             let (tx, src, ctx) = (self.probe_tx.clone(), source.clone(), ctx.clone());
             std::thread::spawn(move || {
-                let _ = tx.send((src.clone(), ffmpeg::probe(&src)));
+                let _ = tx.send((src.clone(), catalog::classify(&src)));
                 ctx.request_repaint();
             });
-            self.library.push(Item { source, info: None });
+            self.library.push(Item { source, class: None });
         }
         if play_first && self.library.len() > first_new {
             self.play_index(first_new);
@@ -172,12 +280,66 @@ impl App {
     }
 
     fn play_index(&mut self, i: usize) {
-        if let Some(item) = self.library.get(i) {
-            self.current = Some(i);
-            self.seek_drag = None;
-            self.convert_msg = None;
-            self.player.open(item.source.clone());
+        let Some(item) = self.library.get(i) else { return };
+        self.current = Some(i);
+        self.seek_drag = None;
+        self.convert_msg = None;
+        let (source, class) = (item.source.clone(), item.class.clone());
+        match class {
+            Some(class) => self.show_classified(source, class),
+            None => {
+                // Still analysing: shown as soon as the result arrives.
+                self.player.stop();
+                self.doc = None;
+                self.awaiting = Some(source);
+            }
         }
+    }
+
+    /// Puts an analysed item on the stage: media in the player, everything else as a document.
+    fn show_classified(&mut self, source: String, class: Classified) {
+        self.awaiting = None;
+        self.extra.track = 0;
+        match class {
+            Classified::Media(info) => {
+                self.doc = None;
+                self.player.open_known(source, info);
+            }
+            other => {
+                self.player.stop();
+                self.doc = Some(Doc::new(source, other));
+            }
+        }
+    }
+
+    /// Handles a finished analysis; playlists are replaced by their entries.
+    fn on_classified(&mut self, ctx: &egui::Context, source: String, class: Classified) {
+        let Some(idx) = self.library.iter().position(|i| i.source == source) else { return };
+        if let Classified::Playlist(entries) = class {
+            let was_current = self.current == Some(idx);
+            self.remove_item(idx);
+            if was_current {
+                self.awaiting = None;
+            }
+            let n = entries.len();
+            self.toast(if n == 0 { "This playlist is empty".to_string() } else { format!("Playlist opened: {n} entries") });
+            self.enqueue(ctx, entries, was_current || self.current.is_none());
+            return;
+        }
+        self.library[idx].class = Some(class.clone());
+        if self.awaiting.as_deref() == Some(source.as_str()) {
+            self.show_classified(source, class);
+        }
+    }
+
+    /// What the convert bar works on, and its source.
+    fn subject(&self) -> Option<(Subject, String)> {
+        if let Some((source, info)) = self.current_media() {
+            let text_subtitles = info.subtitles.iter().filter(|c| !formats::is_bitmap_subtitle(c)).count();
+            return Some((Subject::Media { kind: info.kind(), images: self.images().len(), text_subtitles }, source));
+        }
+        let doc = self.doc.as_ref()?;
+        Some((doc.subject()?, doc.source().to_string()))
     }
 
     fn remove_item(&mut self, i: usize) {
@@ -185,7 +347,7 @@ impl App {
         match self.current {
             Some(c) if c == i => {
                 self.current = None;
-                self.player.stop();
+                self.go_home();
             }
             Some(c) if c > i => self.current = Some(c - 1),
             _ => {}
@@ -196,7 +358,14 @@ impl App {
         self.library.clear();
         self.current = None;
         self.target = None;
+        self.go_home();
+    }
+
+    /// Back to the home page (nothing on stage).
+    fn go_home(&mut self) {
         self.player.stop();
+        self.doc = None;
+        self.awaiting = None;
     }
 
     fn next(&mut self) {
@@ -256,10 +425,7 @@ impl App {
     fn same_kind(&self, kind: MediaKind) -> Vec<(String, MediaInfo)> {
         self.library
             .iter()
-            .filter_map(|i| match &i.info {
-                Some(Ok(info)) if info.kind() == kind => Some((i.source.clone(), info.clone())),
-                _ => None,
-            })
+            .filter_map(|i| i.info().filter(|info| info.kind() == kind).map(|info| (i.source.clone(), info.clone())))
             .collect()
     }
 
@@ -296,11 +462,15 @@ impl App {
     /// Keeps the selected conversion valid for the media in the preview and applies
     /// a pending home-page suggestion.
     fn sync_target(&mut self) {
-        let Some((_, info)) = self.current_media() else { return };
-        let kind = info.kind();
-        let images = self.images().len();
-        let fits = |t: Target| converter::groups_for(kind, images).iter().any(|g| g.targets.iter().any(|(x, _)| *x == t));
-        if let Some(intent) = self.intent.take() {
+        let Some((subject, _)) = self.subject() else { return };
+        let kind = match subject {
+            Subject::Media { kind, .. } => Some(kind),
+            _ => None,
+        };
+        let groups = converter::groups_for_subject(subject);
+        let fits = |t: Target| groups.iter().any(|g| g.targets.iter().any(|(x, _)| *x == t));
+        if let Some(intent) = self.intent.take().filter(|_| kind.is_some()) {
+            let kind = kind.unwrap();
             let wanted = match intent {
                 Intent::ToMp3 => Target::Format { kind: 1, format: 0 },
                 Intent::Gif if kind == MediaKind::Image => {
@@ -319,7 +489,7 @@ impl App {
             }
         }
         if !self.target.is_some_and(fits) {
-            self.target = Some(converter::default_target(kind, images));
+            self.target = Some(converter::default_for_subject(subject));
         }
     }
 
@@ -356,6 +526,7 @@ impl App {
                 Key::O if mods.command => self.open_files(ctx),
                 Key::B if mods.command => self.sidebar_open = !self.sidebar_open,
                 Key::Escape if self.show_settings => self.show_settings = false,
+                Key::Escape if self.show_formats => self.show_formats = false,
                 Key::Escape => ctx.send_viewport_cmd(egui::ViewportCommand::Fullscreen(false)),
                 Key::T => self.bar_open = !self.bar_open,
                 Key::Space | Key::K => self.player.toggle_pause(),
@@ -467,13 +638,7 @@ impl App {
                 theme::hint(ui, "Files you open appear here.");
             }
             for (i, item) in self.library.iter().enumerate() {
-                let icon = match (util::is_url(&item.source), item.kind()) {
-                    (true, _) => Icon::Globe,
-                    (_, Some(MediaKind::Video)) => Icon::Screen,
-                    (_, Some(MediaKind::Audio)) => Icon::Music,
-                    (_, Some(MediaKind::Image)) => Icon::Image,
-                    _ => Icon::Folder,
-                };
+                let icon = item.icon();
                 let resp = theme::menu_item(ui, icon, &util::display_name(&item.source), None, self.current == Some(i));
                 let close = Rect::from_center_size(pos2(resp.rect.right() - 16.0, resp.rect.center().y), Vec2::splat(20.0));
                 let close_resp = ui.interact(close, ui.id().with(("lib-x", i)), Sense::click());
@@ -494,6 +659,10 @@ impl App {
         }
         ui.with_layout(Layout::bottom_up(Align::Min), |ui| {
             theme::hint(ui, &format!("VMPC {}", updater::current_version()));
+            let known = catalog::unique_extensions();
+            if theme::menu_item(ui, Icon::Doc, "Supported formats", Some(&format!("{known} known file types")), self.show_formats).clicked() {
+                self.show_formats = true;
+            }
             if theme::menu_item(ui, Icon::Gear, "Settings", None, self.show_settings).clicked() {
                 self.show_settings = true;
             }
@@ -532,11 +701,34 @@ impl App {
                         self.bar_open = !self.bar_open;
                     }
                     if theme::icon_button(ui, Icon::Close, 34.0, false, "Back to home").clicked() {
-                        self.player.stop();
+                        self.go_home();
                         self.current = None;
                     }
                 });
-            } else if let Some(source) = self.player.source.as_deref() {
+            } else if let Some(doc) = &self.doc {
+                let source = doc.source().to_string();
+                let (label, convertible) = (doc.label(), doc.subject().is_some());
+                ui.add(egui::Label::new(RichText::new(util::display_name(&source)).size(15.0).color(p.strong)).truncate());
+                theme::chip(ui, &label, p.accent);
+                if let Ok(meta) = std::fs::metadata(&source) {
+                    theme::chip(ui, &human_size(meta.len()), p.muted);
+                }
+                ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
+                    if convertible {
+                        let label = if self.bar_open { "Hide conversions" } else { "Convert" };
+                        if theme::button_ex(ui, Some(Icon::Convert), label, !self.bar_open, true).clicked() {
+                            self.bar_open = !self.bar_open;
+                        }
+                    }
+                    if theme::icon_button(ui, Icon::Upload, 34.0, false, "Open with the default app").clicked() {
+                        util::open_with_default(std::path::Path::new(&source));
+                    }
+                    if theme::icon_button(ui, Icon::Close, 34.0, false, "Back to home").clicked() {
+                        self.go_home();
+                        self.current = None;
+                    }
+                });
+            } else if let Some(source) = self.player.source.as_deref().or(self.awaiting.as_deref()) {
                 ui.label(RichText::new(util::display_name(source)).size(15.0).color(p.muted));
             }
         });
@@ -645,8 +837,8 @@ impl App {
 
     fn workspace(&mut self, ctx: &egui::Context, fullscreen: bool, boot: f32) {
         let p = pal();
-        let media = self.current_media();
-        let active = !matches!(self.player.state, LoadState::Idle);
+        let subject = self.subject();
+        let active = !matches!(self.player.state, LoadState::Idle) || self.doc.is_some() || self.awaiting.is_some();
         let playable = self.player.is_loaded() && !self.player.is_still();
         let show_controls =
             playable && (!fullscreen || self.player.paused || self.last_pointer_move.elapsed() < Duration::from_millis(2500));
@@ -657,11 +849,11 @@ impl App {
             .exact_width(BAR_W)
             .show_separator_line(false)
             .frame(egui::Frame::none().fill(p.surface).inner_margin(Margin::same(18.0)))
-            .show_animated(ctx, !fullscreen && self.bar_open && media.is_some(), |ui| {
+            .show_animated(ctx, !fullscreen && self.bar_open && subject.is_some(), |ui| {
                 let r = ui.max_rect();
                 ui.painter().vline(r.left() - 18.0, r.y_range().expand(18.0), Stroke::new(1.0_f32, p.border));
-                if let Some(media) = &media {
-                    self.convert_bar(ui, media);
+                if let Some((subject, source)) = &subject {
+                    self.convert_bar(ui, *subject, source);
                 }
             });
 
@@ -677,6 +869,10 @@ impl App {
                 if !fullscreen {
                     self.top_bar(ui);
                     ui.add_space(8.0);
+                }
+                if self.doc.is_some() {
+                    self.doc_view(ui);
+                    return;
                 }
                 let controls_h = theme::ease(ctx, Id::new("controls"), show_controls, 0.25) * 104.0;
                 let stage = Rect::from_min_max(ui.cursor().min, ui.max_rect().max - vec2(0.0, controls_h));
@@ -694,12 +890,12 @@ impl App {
         }
     }
 
-    fn convert_bar(&mut self, ui: &mut Ui, media: &(String, MediaInfo)) {
+    fn convert_bar(&mut self, ui: &mut Ui, subject: Subject, source: &str) {
         let p = pal();
-        let kind = media.1.kind();
+        let media = self.current_media();
         let images = self.images();
-        let groups = converter::groups_for(kind, images.len());
-        let target = self.target.unwrap_or(converter::default_target(kind, images.len()));
+        let groups = converter::groups_for_subject(subject);
+        let target = self.target.unwrap_or(converter::default_for_subject(subject));
         ui.horizontal(|ui| {
             theme::headline(ui, "Convert", 24.0);
             ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
@@ -708,7 +904,13 @@ impl App {
                 }
             });
         });
-        theme::hint(ui, &format!("Detected {} · showing everything that fits", kind.label().to_lowercase()));
+        let detected = match subject {
+            Subject::Media { kind, .. } => kind.label().to_lowercase(),
+            Subject::Subtitle => "subtitles".into(),
+            Subject::Data(f) => format!("{} data", f.label()),
+            Subject::Archive => "an archive".into(),
+        };
+        theme::hint(ui, &format!("Detected {detected} · showing everything that fits"));
         ui.add_space(6.0);
         let footer_h = 120.0;
         egui::ScrollArea::vertical().max_height(ui.available_height() - footer_h).auto_shrink([false, false]).show(ui, |ui| {
@@ -735,22 +937,7 @@ impl App {
                     egui::Frame::none().fill(p.tint).rounding(12.0).inner_margin(12.0).show(ui, |ui| {
                         ui.set_width(ui.available_width());
                         ui.set_opacity(t);
-                        match target {
-                            Target::Format { .. } | Target::Custom => {
-                                self.converter.set_target(target);
-                                let n = self.same_kind(kind).len();
-                                self.converter.options_ui(ui, &media.1, n);
-                            }
-                            Target::Sequence(i) => {
-                                self.frames.set_sequence_format(i);
-                                self.frames.extract_options_ui(ui, &media.1);
-                            }
-                            Target::ToVideo(i) => {
-                                self.frames.set_video_format(i);
-                                let imgs = if images.is_empty() { vec![PathBuf::from(&media.0)] } else { images.clone() };
-                                self.frames.assemble_options_ui(ui, &imgs);
-                            }
-                        }
+                        self.target_options(ui, target, media.as_ref(), &images);
                     });
                     ui.add_space(4.0);
                 }
@@ -766,21 +953,19 @@ impl App {
         });
         // Sticky footer with the action.
         ui.add_space(8.0);
-        let same = self.same_kind(kind);
+        let same = media.as_ref().map(|(_, i)| self.same_kind(i.kind())).unwrap_or_default();
         let (label, ready) = match target {
-            Target::Format { .. } | Target::Custom => (self.converter.action_label(same.len()), self.converter.ready()),
-            Target::Sequence(_) => ("Extract frames".to_string(), media.1.duration.is_some()),
+            Target::Format { .. } | Target::Custom => (self.converter.action_label(same.len()), self.converter.ready() && media.is_some()),
+            Target::Sequence(_) => ("Extract frames".to_string(), media.as_ref().is_some_and(|m| m.1.duration.is_some())),
             Target::ToVideo(_) => ("Create video".to_string(), true),
+            Target::Subtitle(_) if media.is_some() => ("Extract subtitles".to_string(), true),
+            Target::Subtitle(_) => ("Convert subtitles".to_string(), true),
+            Target::Data(f) => (format!("Convert to {}", f.label()), true),
+            Target::Extract => ("Extract".to_string(), true),
+            Target::Repack(_) => ("Repack".to_string(), true),
         };
         if theme::button_ex(ui, Some(Icon::Convert), &label, true, ready).clicked() {
-            let result = match target {
-                Target::Format { .. } | Target::Custom => Ok(self.converter.start(&mut self.queue, (&media.0, &media.1), &same)),
-                Target::Sequence(_) => self.frames.start_extract(&mut self.queue, &media.0, &media.1),
-                Target::ToVideo(_) => {
-                    let imgs = if images.is_empty() { vec![PathBuf::from(&media.0)] } else { images };
-                    self.frames.start_assemble(&mut self.queue, &imgs)
-                }
-            };
+            let result = self.start_target(target, source, media.as_ref(), &same, images);
             self.convert_msg = Some(match result {
                 Ok(m) => (m, true),
                 Err(e) => (e, false),
@@ -788,6 +973,199 @@ impl App {
         }
         if let Some((m, ok)) = &self.convert_msg {
             ui.add(egui::Label::new(RichText::new(m).size(12.5).color(if *ok { p.ok } else { p.danger })).truncate());
+        }
+    }
+
+    /// Options shown under the selected target.
+    fn target_options(&mut self, ui: &mut Ui, target: Target, media: Option<&(String, MediaInfo)>, images: &[PathBuf]) {
+        let p = pal();
+        match (target, media) {
+            (Target::Format { .. } | Target::Custom, Some(m)) => {
+                self.converter.set_target(target);
+                let n = self.same_kind(m.1.kind()).len();
+                self.converter.options_ui(ui, &m.1, n);
+            }
+            (Target::Sequence(i), Some(m)) => {
+                self.frames.set_sequence_format(i);
+                self.frames.extract_options_ui(ui, &m.1);
+            }
+            (Target::ToVideo(i), Some(m)) => {
+                self.frames.set_video_format(i);
+                let imgs = if images.is_empty() { vec![PathBuf::from(&m.0)] } else { images.to_vec() };
+                self.frames.assemble_options_ui(ui, &imgs);
+            }
+            (Target::Subtitle(_), _) => {
+                if let Some((_, info)) = media {
+                    let tracks: Vec<(usize, &String)> =
+                        info.subtitles.iter().enumerate().filter(|(_, c)| !formats::is_bitmap_subtitle(c)).collect();
+                    if !tracks.iter().any(|(i, _)| *i == self.extra.track) {
+                        self.extra.track = tracks.first().map(|t| t.0).unwrap_or(0);
+                    }
+                    if tracks.len() > 1 {
+                        converter::field(ui, "Track", |ui| {
+                            egui::ComboBox::from_id_salt("sub-track").selected_text(format!("Track {}", self.extra.track + 1)).show_ui(ui, |ui| {
+                                for (i, codec) in &tracks {
+                                    ui.selectable_value(&mut self.extra.track, *i, format!("Track {} · {codec}", i + 1));
+                                }
+                            });
+                        });
+                    }
+                    if info.subtitles.iter().any(|c| formats::is_bitmap_subtitle(c)) {
+                        theme::hint(ui, "Picture-based DVD/Blu-ray subtitle tracks can't be turned into text and are skipped.");
+                    }
+                }
+                converter::field(ui, "Shift timing", |ui| {
+                    ui.horizontal(|ui| {
+                        ui.add(egui::DragValue::new(&mut self.extra.shift).range(-3600.0..=3600.0).speed(0.05).suffix(" s").max_decimals(2));
+                        ui.label(RichText::new("positive = later").size(12.5).color(p.muted));
+                    });
+                });
+                converter::save_to(ui, &mut self.extra.out_dir, "Same folder as the source");
+            }
+            (Target::Data(to), _) => {
+                theme::hint(ui, &format!("Rewrites the data as {}. Tables become lists of records and back.", to.label()));
+                converter::save_to(ui, &mut self.extra.out_dir, "Same folder as the source");
+            }
+            (Target::Extract, _) => {
+                theme::hint(ui, "Unpacks every file into a new folder.");
+                converter::save_to(ui, &mut self.extra.out_dir, "Next to the archive");
+            }
+            (Target::Repack(i), _) => {
+                let (name, _) = crate::archive::REPACK_FORMATS[i];
+                theme::hint(ui, &format!("Copies every file into a new {name} archive."));
+                converter::save_to(ui, &mut self.extra.out_dir, "Next to the archive");
+            }
+            _ => {}
+        }
+    }
+
+    /// Starts the selected conversion; returns a status line.
+    fn start_target(
+        &mut self,
+        target: Target,
+        source: &str,
+        media: Option<&(String, MediaInfo)>,
+        same: &[(String, MediaInfo)],
+        images: Vec<PathBuf>,
+    ) -> Result<String, String> {
+        let dir = self.extra.out_dir.clone();
+        let path = std::path::Path::new(source);
+        match (target, media) {
+            (Target::Format { .. } | Target::Custom, Some(m)) => Ok(self.converter.start(&mut self.queue, (&m.0, &m.1), same)),
+            (Target::Sequence(_), Some(m)) => self.frames.start_extract(&mut self.queue, &m.0, &m.1),
+            (Target::ToVideo(_), Some(m)) => {
+                let imgs = if images.is_empty() { vec![PathBuf::from(&m.0)] } else { images };
+                self.frames.start_assemble(&mut self.queue, &imgs)
+            }
+            (Target::Subtitle(i), _) => {
+                let track = if media.is_some() { self.extra.track } else { 0 };
+                let job = converter::subtitle_job(source, i, track, self.extra.shift, dir.as_deref());
+                let msg = format!("Saving {}", job.output.display());
+                self.queue.push(job);
+                Ok(msg)
+            }
+            (Target::Data(to), _) => {
+                let Some(Doc::Text { text, kind: TextKind::Data(from), .. }) = &self.doc else { return Err("No data file open".into()) };
+                let out = crate::data::convert_file(path, text, *from, to, dir.as_deref())?;
+                Ok(format!("Saved {}", out.display()))
+            }
+            (Target::Extract, _) => {
+                let job = crate::archive::extract_job(path, dir.as_deref())?;
+                let msg = format!("Extracting to {}", job.output.display());
+                self.queue.push(job);
+                Ok(msg)
+            }
+            (Target::Repack(i), _) => {
+                let job = crate::archive::repack_job(path, crate::archive::REPACK_FORMATS[i].1, dir.as_deref())?;
+                let msg = format!("Creating {}", job.output.display());
+                self.queue.push(job);
+                Ok(msg)
+            }
+            _ => Err("Nothing to convert".into()),
+        }
+    }
+
+    // ----- documents (non-media files) ----------------------------------------------
+
+    fn doc_view(&mut self, ui: &mut Ui) {
+        let p = pal();
+        let ctx = ui.ctx().clone();
+        let rect = ui.available_rect_before_wrap();
+        ui.painter().add(theme::surface_shape(rect, 14.0, p.surface, p.border));
+        let inner = rect.shrink(18.0);
+        let mut play_inside = None;
+        ui.allocate_new_ui(egui::UiBuilder::new().max_rect(inner), |ui| match self.doc.as_ref() {
+            Some(Doc::Text { lines, text, kind, .. }) => {
+                let note = match kind {
+                    TextKind::Subtitle => "Subtitles · convert them with the Convert bar".to_string(),
+                    TextKind::Data(f) => format!("{} data · convert it to another format with the Convert bar", f.label()),
+                    TextKind::Plain => format!("{} lines", lines.len()),
+                };
+                theme::hint(ui, &note);
+                if text.len() >= 2 * 1024 * 1024 - 16 {
+                    theme::hint(ui, "Large file: showing the first 2 MB.");
+                }
+                ui.add_space(4.0);
+                let row_h = 19.0;
+                let digits = lines.len().max(1).to_string().len();
+                egui::ScrollArea::both().auto_shrink([false, false]).show_rows(ui, row_h, lines.len(), |ui, range| {
+                    ui.spacing_mut().item_spacing.y = 0.0;
+                    for i in range {
+                        ui.horizontal(|ui| {
+                            ui.set_height(row_h);
+                            ui.label(RichText::new(format!("{:>digits$}", i + 1)).monospace().size(12.0).color(p.muted));
+                            ui.add_space(6.0);
+                            ui.add(egui::Label::new(RichText::new(&lines[i]).monospace().size(12.5).color(p.text)).extend());
+                        });
+                    }
+                });
+            }
+            Some(Doc::Archive { source, entries }) => {
+                let playable = entries.iter().filter(|e| matches!(catalog::handler_for_ext(&catalog::ext_of(e)), Handler::Media)).count();
+                ui.horizontal(|ui| {
+                    theme::headline(ui, &format!("{} files", entries.len()), 22.0);
+                    ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
+                        if playable > 0 && theme::button_icon(ui, Icon::Play, &format!("Play {playable} media file{}", if playable == 1 { "" } else { "s" }), true).clicked() {
+                            play_inside = Some(PathBuf::from(source));
+                        }
+                    });
+                });
+                ui.add_space(6.0);
+                egui::ScrollArea::vertical().auto_shrink([false, false]).show_rows(ui, 26.0, entries.len(), |ui, range| {
+                    for e in &entries[range] {
+                        ui.horizontal(|ui| {
+                            let handler = catalog::handler_for_ext(&catalog::ext_of(e));
+                            let icon = match handler {
+                                Handler::Media => Icon::Screen,
+                                Handler::Archive => Icon::Archive,
+                                Handler::Subtitle | Handler::Playlist => Icon::Playlist,
+                                _ => Icon::Doc,
+                            };
+                            let (r, _) = ui.allocate_exact_size(Vec2::splat(15.0), Sense::hover());
+                            icons::paint(ui.painter(), r, icon, if handler == Handler::Media { p.accent } else { p.muted });
+                            ui.add(egui::Label::new(RichText::new(e).size(13.0).color(p.text)).truncate());
+                        });
+                    }
+                });
+            }
+            Some(Doc::Recognized { source }) | Some(Doc::Unreadable { source, .. }) => {
+                let error = match self.doc.as_ref() {
+                    Some(Doc::Unreadable { error, .. }) => Some(error.clone()),
+                    _ => None,
+                };
+                recognized_card(ui, source, error.as_deref());
+            }
+            None => {}
+        });
+        if let Some(path) = play_inside {
+            self.toast("Unpacking…");
+            let (tx, ctx) = (self.archive_tx.clone(), ctx.clone());
+            std::thread::spawn(move || {
+                let _ = tx.send(crate::archive::extract_to_temp(&path).map(|files| {
+                    files.into_iter().filter(|f| catalog::handler_for_ext(&catalog::ext_of(&f.to_string_lossy())) == Handler::Media).collect()
+                }));
+                ctx.request_repaint();
+            });
         }
     }
 
@@ -805,7 +1183,14 @@ impl App {
         }
         let dim_text = Color32::from_gray(170);
         match &self.player.state {
-            LoadState::Idle => {}
+            LoadState::Idle => {
+                if let Some(source) = &self.awaiting {
+                    let c = rect.center();
+                    ui.put(Rect::from_center_size(c, Vec2::splat(32.0)), egui::Spinner::new().size(32.0).color(p.accent));
+                    let name = util::display_name(source);
+                    ui.painter().text(c + vec2(0.0, 40.0), Align2::CENTER_CENTER, format!("Analysing {name}…"), FontId::proportional(14.0), dim_text);
+                }
+            }
             LoadState::Loading => {
                 let c = rect.center();
                 ui.put(Rect::from_center_size(c, Vec2::splat(32.0)), egui::Spinner::new().size(32.0).color(p.accent));
@@ -1089,6 +1474,84 @@ impl App {
         }
     }
 
+    /// Searchable library of every known format and what VMPC does with it.
+    fn formats_dialog(&mut self, ctx: &egui::Context) {
+        let p = pal();
+        let rows = catalog::with_handlers();
+        let mut close = false;
+        let query = self.format_search.trim().to_lowercase();
+        let filtered: Vec<&(catalog::Entry, Handler)> = rows
+            .iter()
+            .filter(|(e, h)| {
+                query.is_empty()
+                    || e.ext.contains(query.trim_start_matches('.'))
+                    || e.desc.to_lowercase().contains(&query)
+                    || e.category.to_lowercase().contains(&query)
+                    || h.label().to_lowercase().contains(&query)
+            })
+            .collect();
+        let count = |f: fn(&Handler) -> bool| {
+            let mut exts: Vec<&str> = rows.iter().filter(|(_, h)| f(h)).map(|(e, _)| e.ext).collect();
+            exts.sort_unstable();
+            exts.dedup();
+            exts.len()
+        };
+        let total = count(|_| true);
+        let opens = count(|h| !matches!(h, Handler::Recognized | Handler::Unknown));
+        let converts = count(|h| matches!(h, Handler::Media | Handler::Subtitle | Handler::Data(_) | Handler::Archive));
+        let outside = Self::modal(ctx, "formats-dialog", 760.0, |ui| {
+            ui.horizontal(|ui| {
+                theme::headline(ui, "Supported formats", 26.0);
+                ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
+                    if theme::icon_button(ui, Icon::Close, 32.0, false, "Close (Esc)").clicked() {
+                        close = true;
+                    }
+                });
+            });
+            theme::hint(
+                ui,
+                &format!(
+                    "{total} file types known · {opens} open in VMPC · {converts} can be converted · the rest are recognised by name. \
+                     Catalogue from Wikipedia's List of file formats (CC BY-SA 4.0)."
+                ),
+            );
+            ui.add_space(4.0);
+            ui.add(
+                egui::TextEdit::singleline(&mut self.format_search)
+                    .hint_text("Search: an extension (mkv), a name (photoshop) or a category (archive)…")
+                    .desired_width(ui.available_width())
+                    .margin(vec2(10.0, 7.0)),
+            );
+            ui.add_space(6.0);
+            theme::hint(ui, &format!("{} result{}", filtered.len(), if filtered.len() == 1 { "" } else { "s" }));
+            egui::ScrollArea::vertical().auto_shrink([false, false]).show_rows(ui, 40.0, filtered.len(), |ui, range| {
+                for (e, h) in &filtered[range] {
+                    ui.horizontal(|ui| {
+                        ui.set_height(36.0);
+                        ui.add_sized(vec2(70.0, 20.0), egui::Label::new(RichText::new(format!(".{}", e.ext)).monospace().strong().color(p.strong)));
+                        ui.vertical(|ui| {
+                            ui.set_width(ui.available_width() - 170.0);
+                            ui.add(egui::Label::new(RichText::new(e.desc).size(13.0).color(p.text)).truncate());
+                            let place = if e.section == e.category { e.category.to_string() } else { format!("{} · {}", e.category, e.section) };
+                            ui.add(egui::Label::new(RichText::new(place).size(11.5).color(p.muted)).truncate());
+                        });
+                        ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
+                            let color = match h {
+                                Handler::Media => p.accent,
+                                Handler::Recognized | Handler::Unknown => p.muted,
+                                _ => p.ok,
+                            };
+                            theme::chip(ui, h.label(), color);
+                        });
+                    });
+                }
+            });
+        });
+        if close || outside {
+            self.show_formats = false;
+        }
+    }
+
     fn settings_dialog(&mut self, ctx: &egui::Context) {
         let p = pal();
         let mut close = false;
@@ -1293,6 +1756,76 @@ fn local_hour(utc_secs: u64) -> u32 {
         .unwrap_or(((utc_secs / 3600) % 24) as u32)
 }
 
+fn human_size(bytes: u64) -> String {
+    let b = bytes as f64;
+    match bytes {
+        0..=1023 => format!("{bytes} B"),
+        1024..=1_048_575 => format!("{:.1} KB", b / 1024.0),
+        1_048_576..=1_073_741_823 => format!("{:.1} MB", b / 1_048_576.0),
+        _ => format!("{:.2} GB", b / 1_073_741_824.0),
+    }
+}
+
+/// Card for a file VMPC recognises but doesn't open itself (or couldn't read).
+fn recognized_card(ui: &mut Ui, source: &str, error: Option<&str>) {
+    let p = pal();
+    let ext = catalog::ext_of(source);
+    let entries = catalog::lookup(&ext);
+    ui.vertical_centered(|ui| {
+        ui.add_space((ui.available_height() * 0.16).max(10.0));
+        let (r, _) = ui.allocate_exact_size(Vec2::splat(56.0), Sense::hover());
+        icons::paint(ui.painter(), r, Icon::Doc, p.accent);
+        ui.add_space(8.0);
+        let title = if ext.is_empty() { "File".to_string() } else { format!(".{}", ext.to_uppercase()) };
+        theme::headline(ui, &title, 34.0);
+        match entries.first() {
+            Some(first) => {
+                ui.label(RichText::new(first.desc).size(15.0).color(p.text));
+                ui.add_space(4.0);
+                ui.horizontal_wrapped(|ui| {
+                    let mut seen = Vec::new();
+                    let width: f32 = entries.iter().map(|e| e.category.len() as f32 * 7.0 + 24.0).sum();
+                    ui.add_space(((ui.available_width() - width) / 2.0).max(0.0));
+                    for e in &entries {
+                        if !seen.contains(&e.category) {
+                            seen.push(e.category);
+                            theme::chip(ui, e.category, p.muted);
+                        }
+                    }
+                });
+                for e in entries.iter().skip(1).take(3) {
+                    theme::hint(ui, &format!("Also: {}", e.desc));
+                }
+            }
+            None => {
+                ui.label(RichText::new("VMPC doesn't know this file type.").size(15.0).color(p.text));
+            }
+        }
+        ui.add_space(10.0);
+        let note = match (error, entries.is_empty()) {
+            (Some(e), _) => format!("VMPC couldn't open it: {}", theme::truncate(e, 120)),
+            (None, true) => format!(
+                "It isn't among the {} formats VMPC knows, and it's neither media nor text.",
+                catalog::unique_extensions()
+            ),
+            (None, false) => "VMPC recognises this format. It plays and converts media, subtitles, playlists, archives and text; \
+                              for this one, use the app that made it."
+                .to_string(),
+        };
+        ui.label(RichText::new(note).size(13.0).color(if error.is_some() { p.danger } else { p.muted }));
+        ui.add_space(14.0);
+        ui.horizontal(|ui| {
+            ui.add_space((ui.available_width() - 330.0).max(0.0) / 2.0);
+            if theme::button_icon(ui, Icon::Upload, "Open with default app", true).clicked() {
+                util::open_with_default(std::path::Path::new(source));
+            }
+            if theme::button_icon(ui, Icon::Folder, "Show in folder", false).clicked() {
+                util::reveal(std::path::Path::new(source));
+            }
+        });
+    });
+}
+
 /// Home-page suggestion chip.
 fn suggestion(ui: &mut Ui, icon: Icon, label: &str) -> egui::Response {
     let p = pal();
@@ -1370,9 +1903,17 @@ impl eframe::App for App {
                 ctx.request_repaint_after(Duration::from_millis(600));
             }
         }
-        while let Ok((src, res)) = self.probe_rx.try_recv() {
-            if let Some(item) = self.library.iter_mut().find(|i| i.source == src) {
-                item.info = Some(res);
+        while let Ok((src, class)) = self.probe_rx.try_recv() {
+            self.on_classified(ctx, src, class);
+        }
+        while let Ok(result) = self.archive_rx.try_recv() {
+            match result {
+                Ok(files) if files.is_empty() => self.toast("No playable media inside"),
+                Ok(files) => {
+                    let files = files.into_iter().map(|f| f.to_string_lossy().into_owned()).collect();
+                    self.enqueue(ctx, files, true);
+                }
+                Err(e) => self.toast(e),
             }
         }
         self.handle_drops(ctx);
@@ -1406,6 +1947,9 @@ impl eframe::App for App {
         self.workspace(ctx, fullscreen, boot);
         if self.show_settings {
             self.settings_dialog(ctx);
+        }
+        if self.show_formats {
+            self.formats_dialog(ctx);
         }
         self.update_dialog(ctx);
         self.overlays(ctx);

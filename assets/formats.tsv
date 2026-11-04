@@ -1,0 +1,1949 @@
+# VMPC file-format catalog: extension<TAB>category<TAB>section<TAB>short description
+# Derived from Wikipedia, "List of file formats" (https://en.wikipedia.org/wiki/List_of_file_formats),
+# CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/); this file is distributed under the same
+# license. Lines after the Wikipedia data are VMPC additions.
+?q?	Archive and compressed	Archive and compressed	files that are compressed, often by the SQ program
+7z	Archive and compressed	Archive and compressed	7-zip compressed file
+ace	Archive and compressed	Archive and compressed	ace: ACE compressed file
+alz	Archive and compressed	Archive and compressed	ALZip compressed file
+arc	Archive and compressed	Archive and compressed	pre-Zip data compression
+arj	Archive and compressed	Archive and compressed	ARJ compressed file
+bz2	Archive and compressed	Archive and compressed	bzip2
+cab	Archive and compressed	Archive and compressed	A cabinet file is a library of compressed files stored as one file
+cpt	Archive and compressed	Archive and compressed	Compact Pro (Macintosh)
+sea	Archive and compressed	Archive and compressed	Compact Pro (Macintosh)
+egg	Archive and compressed	Archive and compressed	Alzip Egg Edition compressed file
+egt	Archive and compressed	Archive and compressed	EGT Universal Document also used to create compressed cabinet files, replaces .ecab
+ecab	Archive and compressed	Archive and compressed	EGT Compressed Folder used in advanced systems to compress entire system folders, replac…
+ezip	Archive and compressed	Archive and compressed	EGT Compressed Folder used in advanced systems to compress entire system folders, replac…
+ess	Archive and compressed	Archive and compressed	EGT SmartSense File, detects files compressed using the EGT compression system
+flipchart	Archive and compressed	Archive and compressed	Used in Promethean Flipchart Software
+fun	Archive and compressed	Archive and compressed	A FUN file often will be a file that has been encrypted by Jigsaw ransomware, which is m…
+gz	Archive and compressed	Archive and compressed	gzip Compressed file
+g3fc	Archive and compressed	Archive and compressed	Zstd based file container with support for encryption and FEC
+jar	Archive and compressed	Archive and compressed	A Java application in a ZIP file based format
+lawrence	Archive and compressed	Archive and compressed	LBR Lawrence Compiler Type file
+lbr	Archive and compressed	Archive and compressed	LBR Library file
+lzh	Archive and compressed	Archive and compressed	LHA Lempel, Ziv, Huffman
+lz	Archive and compressed	Archive and compressed	lzip Compressed file
+lzo	Archive and compressed	Archive and compressed	lzo
+lzma	Archive and compressed	Archive and compressed	lzma]] Lpel–Ziv–Markov chain algorithm compressed file
+lzx	Archive and compressed	Archive and compressed	LZX
+mbw	Archive and compressed	Archive and compressed	MBRWizard archive
+bin	Archive and compressed	Archive and compressed	BIN MacBinary
+oar	Archive and compressed	Archive and compressed	OAR: OAR archive
+pak	Archive and compressed	Archive and compressed	Enhanced type of .ARC archive
+par	Archive and compressed	Archive and compressed	PAR Parchive
+par2	Archive and compressed	Archive and compressed	PAR Parchive
+paf	Archive and compressed	Archive and compressed	PAF Portable Application File
+pea	Archive and compressed	Archive and compressed	PEA PeaZip archive file
+pkg	Archive and compressed	Archive and compressed	A package format that bundles installation files for software on macOS and PlayStation
+pyk	Archive and compressed	Archive and compressed	PYK compressed file
+rar	Archive and compressed	Archive and compressed	Rar Archive, for multiple file archive (rar to .r01–.r99 to .s01, and so on)
+rax	Archive and compressed	Archive and compressed	Archive file created by RaX
+sitx	Archive and compressed	Archive and compressed	SIT StuffIt (Macintosh)
+tar	Archive and compressed	Archive and compressed	A group of files packaged as one file
+wax	Archive and compressed	Archive and compressed	Wavexpress – A ZIP alternative optimized for packages containing video, allowing multipl…
+xz	Archive and compressed	Archive and compressed	xz compressed files, based on LZMA/LZMA2]] aorithm
+z	Archive and compressed	Archive and compressed	Unix compress file
+zoo	Archive and compressed	Archive and compressed	Archival format based on LZW
+zip	Archive and compressed	Archive and compressed	A popular compression format
+aab	Archive and compressed	Application packages	An Android App Bundle, which is the Android (and Android TV) application publishing form…
+apk	Archive and compressed	Application packages	An Android package, or a application installable on Android
+appx	Archive and compressed	Application packages	Microsoft Application Package
+app	Archive and compressed	Application packages	HarmonyOS APP Packs file format for HarmonyOS apps installable from AppGallery and third…
+dmg	Archive and compressed	Application packages	Application file on Macintosh devices; used by all third-party apps and some direct Appl…
+deb	Archive and compressed	Application packages	Debian install package
+hpkg	Archive and compressed	Application packages	Haiku application package format
+ipg	Archive and compressed	Application packages	Format in which Apple Inc
+msi	Archive and compressed	Application packages	Windows installation package
+rpm	Archive and compressed	Application packages	Red Hat package/installer for Fedora, RHEL, and similar systems
+sis	Archive and compressed	Application packages	Symbian Application Packages
+sisx	Archive and compressed	Application packages	Symbian Application Packages
+xap	Archive and compressed	Application packages	Windows Phone Application Package
+adf	Archive and compressed	Physical recordable media archiving	Amiga floppy disks archive
+adz	Archive and compressed	Physical recordable media archiving	GZip-compressed version of ADF
+b5t	Archive and compressed	Physical recordable media archiving	BlindWrite 5 image file
+b6t	Archive and compressed	Physical recordable media archiving	BlindWrite 6 image file
+bwt	Archive and compressed	Physical recordable media archiving	BlindWrite 4 image file
+cdi	Archive and compressed	Physical recordable media archiving	DiscJuggler image file
+cue	Archive and compressed	Physical recordable media archiving	CDRWrite CUE image file
+cif	Archive and compressed	Physical recordable media archiving	Easy CD Creator .cif format
+c2d	Archive and compressed	Physical recordable media archiving	Roxio-WinOnCD .c2d format
+daa	Archive and compressed	Physical recordable media archiving	PowerISO .daa format<!--
+ccd	Archive and compressed	Physical recordable media archiving	CCD, SUB, IMG: CloneCD image file removed because CCD and SUB are a file extension for a…
+sub	Archive and compressed	Physical recordable media archiving	CCD, SUB, IMG: CloneCD image file removed because CCD and SUB are a file extension for a…
+img	Archive and compressed	Physical recordable media archiving	CCD, SUB, IMG: CloneCD image file removed because CCD and SUB are a file extension for a…
+d64	Archive and compressed	Physical recordable media archiving	Commodore 64 floppy disk archive
+dms	Archive and compressed	Physical recordable media archiving	a disk-archiving system native to the Amiga
+dsk	Archive and compressed	Physical recordable media archiving	For archiving floppy disks from a number of other platforms, including the ZX Spectrum a…
+esd	Archive and compressed	Physical recordable media archiving	Electronic Software Distribution, a compressed and encrypted WIM File
+ffppkg	Archive and compressed	Physical recordable media archiving	FreeFire Profile Export Package
+gho	Archive and compressed	Physical recordable media archiving	GHO Norton Ghost
+ghs	Archive and compressed	Physical recordable media archiving	GHO Norton Ghost
+iso	Archive and compressed	Physical recordable media archiving	Generic format for most optical media, including CD-ROM, DVD-ROM, Wii, Blu-ray, HD DVD,…
+mds	Archive and compressed	Physical recordable media archiving	Daemon Tools native disc image format used for making images from optical CD-ROM, DVD-RO…
+mdx	Archive and compressed	Physical recordable media archiving	Daemon Tools format that allows getting one MDX disc image file instead of two (MDF and…
+nrg	Archive and compressed	Physical recordable media archiving	Proprietary optical media archive format used by Nero applications
+sdi	Archive and compressed	Physical recordable media archiving	Archives and provides "virtual disk" functionality
+swm	Archive and compressed	Physical recordable media archiving	Split WIM File, usually found on OEM Recovery Partition to store preinstalled Windows im…
+tib	Archive and compressed	Physical recordable media archiving	TIB Acronis True Image backup
+wim	Archive and compressed	Physical recordable media archiving	Compressed disk image used for installing Windows Fundamentals for Legacy PC, Windows Vi…
+vhd	Archive and compressed	Physical recordable media archiving	Virtual disk created by Hyper-V (Hyper-V runs on Microsoft Windows)
+vdhx	Archive and compressed	Physical recordable media archiving	Virtual disk created by Hyper-V (Hyper-V runs on Microsoft Windows)
+3dxml	Computer-aided extensions	Computer-aided design (CAD)	Dassault Systèmes]graphic representation
+3mf	Computer-aided extensions	Computer-aided design (CAD)	3D Manufacturing Format
+acp	Computer-aided extensions	Computer-aided design (CAD)	VA Software VA – Virtual Architecture CAD file
+amf	Computer-aided extensions	Computer-aided design (CAD)	Additive Manufacturing File Format
+aec	Computer-aided extensions	Computer-aided design (CAD)	DataCAD drawing format
+aedt	Computer-aided extensions	Computer-aided design (CAD)	Ansys Electronic Desktop – Project file
+ar	Computer-aided extensions	Computer-aided design (CAD)	Ashlar-Vellum Argon – 3D Modeling
+art	Computer-aided extensions	Computer-aided design (CAD)	ArtCAM model
+asc	Computer-aided extensions	Computer-aided design (CAD)	BRL-CAD Geometry File (old ASCII format)
+asm	Computer-aided extensions	Computer-aided design (CAD)	Solidedge Assembly, Pro/ENGINEER Assembly
+brep	Computer-aided extensions	Computer-aided design (CAD)	Open CASCADE 3D model (shape)
+c3d	Computer-aided extensions	Computer-aided design (CAD)	C3D Toolkit File Format
+c3p	Computer-aided extensions	Computer-aided design (CAD)	Construct3 Files
+ccc	Computer-aided extensions	Computer-aided design (CAD)	CopyCAD Curves
+ccm	Computer-aided extensions	Computer-aided design (CAD)	CopyCAD Model
+ccs	Computer-aided extensions	Computer-aided design (CAD)	CopyCAD Session
+cad	Computer-aided extensions	Computer-aided design (CAD)	CadStd
+catdrawing	Computer-aided extensions	Computer-aided design (CAD)	CATIA V5 Drawing document
+catpart	Computer-aided extensions	Computer-aided design (CAD)	CATIA V5 Part document
+catproduct	Computer-aided extensions	Computer-aided design (CAD)	CATIA V5 Assembly document
+catprocess	Computer-aided extensions	Computer-aided design (CAD)	CATIA V5 Manufacturing document
+cgr	Computer-aided extensions	Computer-aided design (CAD)	CATIA V5 graphic representation file
+ckd	Computer-aided extensions	Computer-aided design (CAD)	KeyCreator CAD parts, assemblies, and drawings
+ckt	Computer-aided extensions	Computer-aided design (CAD)	KeyCreator template file
+co	Computer-aided extensions	Computer-aided design (CAD)	Ashlar-Vellum Cobalt – parametric drafting and 3D modeling
+dab	Computer-aided extensions	Computer-aided design (CAD)	AppliCad 3D model CAD file
+drw	Computer-aided extensions	Computer-aided design (CAD)	Caddie Early version of Caddie drawing (prior to Caddie changing to DWG)
+dft	Computer-aided extensions	Computer-aided design (CAD)	Solidedge Draft
+dgn	Computer-aided extensions	Computer-aided design (CAD)	MicroStation design file
+dgk	Computer-aided extensions	Computer-aided design (CAD)	Delcam Geometry
+dmt	Computer-aided extensions	Computer-aided design (CAD)	Delcam Machining Triangles
+dxf	Computer-aided extensions	Computer-aided design (CAD)	ASCII Drawing Interchange file format, AutoCAD
+dwb	Computer-aided extensions	Computer-aided design (CAD)	VariCAD drawing file
+dwf	Computer-aided extensions	Computer-aided design (CAD)	Autodesk's Web Design Format; AutoCAD & Revit can publish to this format; similar in con…
+dwg	Computer-aided extensions	Computer-aided design (CAD)	Popular format for Computer Aided Drafting applications, notably AutoCAD, Open Design Al…
+easm	Computer-aided extensions	Computer-aided design (CAD)	SolidWorks eDrawings assembly file
+edrw	Computer-aided extensions	Computer-aided design (CAD)	eDrawings drawing file
+emb	Computer-aided extensions	Computer-aided design (CAD)	Wilcom's EmbroideryStudio and Hatch Embroidery CAD file
+eprt	Computer-aided extensions	Computer-aided design (CAD)	eDrawings part file
+escpcb	Computer-aided extensions	Computer-aided design (CAD)	"esCAD pcb" data file by Electro-System (Japan)
+escsch	Computer-aided extensions	Computer-aided design (CAD)	"esCAD sch" data file by Electro-System (Japan)
+esw	Computer-aided extensions	Computer-aided design (CAD)	AGTEK format
+excellon	Computer-aided extensions	Computer-aided design (CAD)	Excellon file
+exp	Computer-aided extensions	Computer-aided design (CAD)	Drawing Express format
+f3d	Computer-aided extensions	Computer-aided design (CAD)	Autodesk Fusion 360 archive file
+fcstd	Computer-aided extensions	Computer-aided design (CAD)	Native format for FreeCAD CAD/CAM packages
+fm	Computer-aided extensions	Computer-aided design (CAD)	FeatureCAM Part File
+fmz	Computer-aided extensions	Computer-aided design (CAD)	FormZ Project file
+g	Computer-aided extensions	Computer-aided design (CAD)	BRL-CAD Geometry File
+gbr	Computer-aided extensions	Computer-aided design (CAD)	Gerber file
+gcode	Computer-aided extensions	Computer-aided design (CAD)	G-code Geometric code; contains instructions for 3D printers
+glm	Computer-aided extensions	Computer-aided design (CAD)	KernelCAD model
+grb	Computer-aided extensions	Computer-aided design (CAD)	T-FLEX CAD File
+gri	Computer-aided extensions	Computer-aided design (CAD)	AppliCad GRIM-In file in readable text form for importing roof and wall cladding job dat…
+gro	Computer-aided extensions	Computer-aided design (CAD)	AppliCad GRIM-Out file in readable text form for exporting roof and wall cladding data j…
+iam	Computer-aided extensions	Computer-aided design (CAD)	Autodesk Inventor Assembly file
+icd	Computer-aided extensions	Computer-aided design (CAD)	IronCAD 2D CAD file
+idw	Computer-aided extensions	Computer-aided design (CAD)	Autodesk Inventor Drawing file
+ifc	Computer-aided extensions	Computer-aided design (CAD)	buildingSMART for sharing AEC and FM data
+iges	Computer-aided extensions	Computer-aided design (CAD)	Initial Graphics Exchange Specification
+cel	Computer-aided extensions	Computer-aided design (CAD)	Intergraph Standard File Formats Intergraph
+io	Computer-aided extensions	Computer-aided design (CAD)	Stud.io 3D model
+ipn	Computer-aided extensions	Computer-aided design (CAD)	Autodesk Inventor Presentation file
+ipt	Computer-aided extensions	Computer-aided design (CAD)	Autodesk Inventor Part file
+jt	Computer-aided extensions	Computer-aided design (CAD)	Jupiter Tesselation
+mcd	Computer-aided extensions	Computer-aided design (CAD)	Monu-CAD (Monument/Headstone Drawing file)
+mdg	Computer-aided extensions	Computer-aided design (CAD)	Model of Digital Geometric Kernel
+model	Computer-aided extensions	Computer-aided design (CAD)	CATIA V4 part document
+ocd	Computer-aided extensions	Computer-aided design (CAD)	Orienteering Computer Aided Design (OCAD) file
+par	Computer-aided extensions	Computer-aided design (CAD)	Solidedge Part
+part	Computer-aided extensions	Computer-aided design (CAD)	A file used with Stud.Io
+pipe	Computer-aided extensions	Computer-aided design (CAD)	PIPE-FLO Professional Piping system design file
+pln	Computer-aided extensions	Computer-aided design (CAD)	ArchiCad project
+pixil	Computer-aided extensions	Computer-aided design (CAD)	Pixilart.com file
+prt	Computer-aided extensions	Computer-aided design (CAD)	NX (recently known as Unigraphics), Pro/ENGINEER Part, CADKEY Part
+psm	Computer-aided extensions	Computer-aided design (CAD)	Solidedge Sheet
+psmodel	Computer-aided extensions	Computer-aided design (CAD)	PowerSHAPE Model
+pwi	Computer-aided extensions	Computer-aided design (CAD)	PowerINSPECT File
+pyt	Computer-aided extensions	Computer-aided design (CAD)	Pythagoras File
+rlf	Computer-aided extensions	Computer-aided design (CAD)	ArtCAM Relief
+rvm	Computer-aided extensions	Computer-aided design (CAD)	AVEVA PDMS 3D Review model
+rvt	Computer-aided extensions	Computer-aided design (CAD)	Autodesk Revit project files
+rfa	Computer-aided extensions	Computer-aided design (CAD)	Autodesk Revit family files
+rft	Computer-aided extensions	Computer-aided design (CAD)	Autodesk Revit Revit Family Template
+rxf	Computer-aided extensions	Computer-aided design (CAD)	AppliCad annotated 3D roof and wall geometry data in readable text form used to exchange…
+s12	Computer-aided extensions	Computer-aided design (CAD)	Spirit file, by Softtech
+scad	Computer-aided extensions	Computer-aided design (CAD)	OpenSCAD 3D part model
+scdoc	Computer-aided extensions	Computer-aided design (CAD)	SpaceClaim 3D Part/Assembly
+shapr	Computer-aided extensions	Computer-aided design (CAD)	Shapr3D
+skb	Computer-aided extensions	Computer-aided design (CAD)	Google SketchUp backup File
+skp	Computer-aided extensions	Computer-aided design (CAD)	Sketchup
+sldasm	Computer-aided extensions	Computer-aided design (CAD)	SolidWorks Assembly drawing
+slddrw	Computer-aided extensions	Computer-aided design (CAD)	SolidWorks 2D drawing
+sldprt	Computer-aided extensions	Computer-aided design (CAD)	SolidWorks 3D part model
+dotxsi	Computer-aided extensions	Computer-aided design (CAD)	For Softimage
+state	Computer-aided extensions	Computer-aided design (CAD)	A file used by the IaC tool to record information about what has been deployed by the tool
+step	Computer-aided extensions	Computer-aided design (CAD)	Standard for the Exchange of Product model data
+stl	Computer-aided extensions	Computer-aided design (CAD)	Stereo Lithographic data format used by various CAD systems and stereo lithographic prin…
+std	Computer-aided extensions	Computer-aided design (CAD)	Power Vision Plus – Electricity Meter Data (Circuitor)
+svf	Computer-aided extensions	Computer-aided design (CAD)	Autodesk proprietary model format
+svf2	Computer-aided extensions	Computer-aided design (CAD)	Updated SVF format type
+tct	Computer-aided extensions	Computer-aided design (CAD)	TurboCAD drawing template
+tcw	Computer-aided extensions	Computer-aided design (CAD)	TurboCAD for Windows 2D and 3D drawing
+unv	Computer-aided extensions	Computer-aided design (CAD)	I-DEAS I-DEAS (Integrated Design and Engineering Analysis Software)
+vc6	Computer-aided extensions	Computer-aided design (CAD)	Ashlar-Vellum Graphite – 2D and 3D drafting
+vlm	Computer-aided extensions	Computer-aided design (CAD)	Ashlar-Vellum Vellum, Vellum 2D, Vellum Draft, Vellum 3D, DrawingBoard
+vs	Computer-aided extensions	Computer-aided design (CAD)	Ashlar-Vellum Vellum Solids
+wrl	Computer-aided extensions	Computer-aided design (CAD)	Similar to STL, but includes color
+x_b	Computer-aided extensions	Computer-aided design (CAD)	Parasolids binary format
+x_t	Computer-aided extensions	Computer-aided design (CAD)	Parasolids
+xe	Computer-aided extensions	Computer-aided design (CAD)	Ashlar-Vellum Xenon – for associative 3D modeling
+zofzproj	Computer-aided extensions	Computer-aided design (CAD)	ZofzPCB 3D PCB model, containing mesh, netlist and BOM
+brd	Computer-aided extensions	Electronic design automation (EDA)	Board file for EAGLE Layout Editor, a commercial PCB design tool
+bsdl	Computer-aided extensions	Electronic design automation (EDA)	Description language for testing through JTAG
+cdl	Computer-aided extensions	Electronic design automation (EDA)	Transistor-level netlist format for IC design
+cpf	Computer-aided extensions	Electronic design automation (EDA)	Power-domain specification in system-on-a-chip (SoC) implementation (see also UPF)
+def	Computer-aided extensions	Electronic design automation (EDA)	Gate-level layout
+detailed	Computer-aided extensions	Electronic design automation (EDA)	Detailed Standard Parasitic Format, Analog-level Parastic component of interconnections…
+standard	Computer-aided extensions	Electronic design automation (EDA)	Detailed Standard Parasitic Format, Analog-level Parastic component of interconnections…
+parasitic	Computer-aided extensions	Electronic design automation (EDA)	Detailed Standard Parasitic Format, Analog-level Parastic component of interconnections…
+format	Computer-aided extensions	Electronic design automation (EDA)	Detailed Standard Parasitic Format, Analog-level Parastic component of interconnections…
+edif	Computer-aided extensions	Electronic design automation (EDA)	Vendor neutral gate-level netlist format
+fsdb	Computer-aided extensions	Electronic design automation (EDA)	Analog waveform format (see also Waveform viewer)
+gdsii	Computer-aided extensions	Electronic design automation (EDA)	Format for PCB and layout of integrated circuits
+hex	Computer-aided extensions	Electronic design automation (EDA)	ASCII-coded binary format for memory dumps
+lef	Computer-aided extensions	Electronic design automation (EDA)	Library Exchange Format, physical abstract of cells for IC design
+liberty	Computer-aided extensions	Electronic design automation (EDA)	Library modeling (function, timing) format
+eda	Computer-aided extensions	Electronic design automation (EDA)	Library modeling (function, timing) format
+ms12	Computer-aided extensions	Electronic design automation (EDA)	NI Multisim file
+oasis	Computer-aided extensions	Electronic design automation (EDA)	Open Artwork System Interchange Standard
+openaccess	Computer-aided extensions	Electronic design automation (EDA)	Design database format with APIs
+psf	Computer-aided extensions	Electronic design automation (EDA)	Cadence proprietary format to store simulation results/waveforms (2GB limit)
+psfxl	Computer-aided extensions	Electronic design automation (EDA)	Cadence proprietary format to store simulation results/waveforms
+sdc	Computer-aided extensions	Electronic design automation (EDA)	Synopsys Design Constraints, format for synthesis constraints
+sdf	Computer-aided extensions	Electronic design automation (EDA)	Standard for gate-level timings
+spef	Computer-aided extensions	Electronic design automation (EDA)	Standard format for Parasitic component of interconnections in IC design
+spi	Computer-aided extensions	Electronic design automation (EDA)	SPICE Netlist, device-level netlist and commands for simulation
+cir	Computer-aided extensions	Electronic design automation (EDA)	SPICE Netlist, device-level netlist and commands for simulation
+srec	Computer-aided extensions	Electronic design automation (EDA)	S-record, ASCII-coded format for memory dumps
+s19	Computer-aided extensions	Electronic design automation (EDA)	S-record, ASCII-coded format for memory dumps
+sst2	Computer-aided extensions	Electronic design automation (EDA)	Cadence proprietary format to store mixed-signal simulation results/waveforms
+stil	Computer-aided extensions	Electronic design automation (EDA)	Standard Test Interface Language, IEEE1450-1999 standard for Test Patterns for IC
+sv	Computer-aided extensions	Electronic design automation (EDA)	SystemVerilog source file
+tlf	Computer-aided extensions	Electronic design automation (EDA)	Contains timing and logical information about a collection of cells (circuit elements)
+upf	Computer-aided extensions	Electronic design automation (EDA)	Standard for Power-domain specification in SoC implementation
+v	Computer-aided extensions	Electronic design automation (EDA)	Verilog source file
+vcd	Computer-aided extensions	Electronic design automation (EDA)	Standard format for digital simulation waveform
+vhd	Computer-aided extensions	Electronic design automation (EDA)	VHDL source file
+vhdl	Computer-aided extensions	Electronic design automation (EDA)	VHDL source file
+wgl	Computer-aided extensions	Electronic design automation (EDA)	Waveform Generation Language, format for Test Patterns for IC
+4db	Database	Database	4D database Structure file
+4dc	Database	Database	4D database Structure file (compiled in legacy mode)
+4dd	Database	Database	4D database Data file
+4dindy	Database	Database	4D database Structure Index file
+4dindx	Database	Database	4D database Data Index file
+4dr	Database	Database	4D database Data resource file (in old 4D versions)
+4dz	Database	Database	4D database Structure file (compiled in 4D Project mode)
+accdb	Database	Database	Microsoft Database (Microsoft Office Access 2007 and later)
+accde	Database	Database	Compiled Microsoft Database (Microsoft Office Access 2007 and later)
+adt	Database	Database	Sybase Advantage Database Server (ADS)
+apr	Database	Database	Lotus Approach data entry & reports
+box	Database	Database	Lotus Notes Post Office mail routing database
+chml	Database	Database	Krasbit Technologies Encrypted database file for 1 click integration between contact man…
+daf	Database	Database	Digital Anchor data file
+dat	Database	Database	DOS Basic
+db	Database	Database	Paradox
+dbf	Database	Database	db/dBase II, III, IV and V, Clipper, Harbour/xHarbour, Fox/FoxPro, Oracle
+dta	Database	Database	Sage Sterling database file
+egt	Database	Database	EGT Universal Document, used to compress sql databases to smaller files, may contain ori…
+ess	Database	Database	EGT SmartSense is a database of files and its compression style
+eap	Database	Database	Enterprise Architect Project
+fdb	Database	Database	Firebird database file
+fp	Database	Database	FileMaker Pro
+fp3	Database	Database	FileMaker Pro
+fp5	Database	Database	FileMaker Pro
+fp7	Database	Database	FileMaker Pro
+frm	Database	Database	MySQL table definition
+gdb	Database	Database	Borland InterBase Databases
+gtable	Database	Database	Google Drive Fusion Table
+kexi	Database	Database	Kexi database file (SQLite-based)
+kexic	Database	Database	shortcut to a database connection for a Kexi databases on a server
+kexis	Database	Database	shortcut to a Kexi database
+lbx	Database	Database	A database archive format used by SimTex for 1990s MS-DOS strategy games like Masters of…
+ldb	Database	Database	Temporary database file, only exists while a database is open
+lirs	Database	Database	Layered Integer Storage
+mda	Database	Database	Add-in file for Microsoft Access
+mdb	Database	Database	Microsoft Access database
+adp	Database	Database	Microsoft Access project (used for accessing databases on a server)
+mde	Database	Database	Compiled Microsoft Database (Access)
+mdf	Database	Database	Microsoft SQL Server Database
+myd	Database	Database	MySQL MyISAM table data
+myi	Database	Database	MySQL MyISAM table index
+ncf	Database	Database	Lotus Notes configuration file
+nsf	Database	Database	Lotus Notes database file
+ntf	Database	Database	Lotus Notes database design template
+nv2	Database	Database	QW Page NewViews object oriented accounting database
+odb	Database	Database	LibreOffice Base or OpenOffice Base database
+ora	Database	Database	Oracle tablespace files sometimes get this extension (also used for configuration files)
+pcontact	Database	Database	WinIM Contact file
+pdb	Database	Database	Palm OS Database file
+pdi	Database	Database	Portable Database Image
+pdx	Database	Database	Corel Paradox database management
+prc	Database	Database	Palm OS resource database file
+sql	Database	Database	bundled SQL queries
+rec	Database	Database	GNU recutils database
+rel	Database	Database	Sage Retrieve 4GL data file
+rin	Database	Database	Sage Retrieve 4GL index file
+sdb	Database	Database	StarOffice's StarBase
+sdf	Database	Database	SQL Compact Database file
+sqlite	Database	Database	SQLite database file
+udl	Database	Database	Universal Data Link
+wadata	Database	Database	Wakanda (software) database Data file
+waindx	Database	Database	Wakanda (software) database Index file
+wamodel	Database	Database	Wakanda (software) database Model file
+wajournal	Database	Database	Wakanda (software) database Journal file
+wdb	Database	Database	Microsoft Works Database
+wmdb	Database	Database	Windows Media Database file; the CurrentDatabase_360.wmdb file can contain file name, fi…
+avro	Big Data (Distributed)	Big Data (Distributed)	Data format appropriate for ingestion of record based attributes; distinguishing charact…
+parquet	Big Data (Distributed)	Big Data (Distributed)	Columnar data storage, typically used within the Hadoop ecosystem
+orc	Big Data (Distributed)	Big Data (Distributed)	Similar to Parquet, but has better data compression and schema evolution handling
+ai	Desktop publishing	Desktop publishing	Adobe Illustrator
+af	Desktop publishing	Desktop publishing	Affinity (software)
+ave	Desktop publishing	Desktop publishing	Aquafadas
+zave	Desktop publishing	Desktop publishing	Aquafadas
+cdr	Desktop publishing	Desktop publishing	CorelDRAW
+chp	Desktop publishing	Desktop publishing	Ventura Publisher – Xerox (DOS / GEM)
+pub	Desktop publishing	Desktop publishing	Ventura Publisher – Xerox (DOS / GEM)
+sty	Desktop publishing	Desktop publishing	Ventura Publisher – Xerox (DOS / GEM)
+cap	Desktop publishing	Desktop publishing	Ventura Publisher – Xerox (DOS / GEM)
+cif	Desktop publishing	Desktop publishing	Ventura Publisher – Xerox (DOS / GEM)
+vgr	Desktop publishing	Desktop publishing	Ventura Publisher – Xerox (DOS / GEM)
+frm	Desktop publishing	Desktop publishing	Ventura Publisher – Xerox (DOS / GEM)
+cpt	Desktop publishing	Desktop publishing	Corel Photo-Paint
+djvu	Desktop publishing	Desktop publishing	Deja Vu
+dpe	Desktop publishing	Desktop publishing	Package of AVE documents made with Aquafadas digital publishing tools
+dtp	Desktop publishing	Desktop publishing	Greenstreet Publisher, GST PressWorks
+fm	Desktop publishing	Desktop publishing	Adobe FrameMaker
+gdraw	Desktop publishing	Desktop publishing	Google Drive Drawing
+ildoc	Desktop publishing	Desktop publishing	Broadvision Quicksilver document
+indd	Desktop publishing	Desktop publishing	Adobe InDesign
+ipynb	Desktop publishing	Desktop publishing	Jupyter Source File
+mcf	Desktop publishing	Desktop publishing	FotoInsight Designer
+pdf	Desktop publishing	Desktop publishing	Adobe Acrobat or Adobe Reader
+pmd	Desktop publishing	Desktop publishing	Aldus/Adobe PageMaker
+ppp	Desktop publishing	Desktop publishing	Serif PagePlus
+psd	Desktop publishing	Desktop publishing	Adobe Photoshop
+qxd	Desktop publishing	Desktop publishing	QuarkXPress
+sla	Desktop publishing	Desktop publishing	Scribus
+scd	Desktop publishing	Desktop publishing	Scribus
+xcf	Desktop publishing	Desktop publishing	Used by the GIMP and other programs
+twp	Desktop publishing	Desktop publishing	Talon Word Processor document
+0	Document	Document	Plain Text Document, normally used for licensing
+1st	Document	Document	Plain Text Document, normally preceded by the words "README" (README.1ST)
+600	Document	Document	Plain Text Document, used in UNZIP history log
+602	Document	Document	Text602 (T602) document
+abw	Document	Document	AbiWord document
+acl	Document	Document	MS Word AutoCorrect List
+afp	Document	Document	Advanced Function Presentation
+ami	Document	Document	Lotus Ami Pro
+ans	Document	Document	American National Standards Institute (ANSI) text
+asc	Document	Document	ASCII text
+aww	Document	Document	Ability Write
+bbeb	Document	Document	Broad Band EBook
+ccf	Document	Document	Color Chat 1.0
+csv	Document	Document	ASCII text as comma-separated values, used in spreadsheets and database management systems
+cwk	Document	Document	ClarisWorks-AppleWorks document
+dbk	Document	Document	DocBook XML sub-format
+dita	Document	Document	Darwin Information Typing Architecture document
+doc	Document	Document	Microsoft Word document
+docm	Document	Document	Microsoft Word macro-enabled document
+docx	Document	Document	document, Office Open XML, there are at least 4 quite different versions of Microsoft's…
+dot	Document	Document	Microsoft Word document template
+dotx	Document	Document	Office Open XML text document template
+dwd	Document	Document	DavkaWriter Heb/Eng word processor file
+egt	Document	Document	EGT Universal Document
+epub	Document	Document	An open standard for e-books
+evtx	Document	Document	Windows XML EventLog files are system log files used by the Windows operating system
+ezw	Document	Document	Reagency Systems easyOFFER document
+fdx	Document	Document	Final Draft
+ftm	Document	Document	Fielded Text Meta
+ftx	Document	Document	Fielded Text (Declared)
+gdoc	Document	Document	Google Drive document
+guide	Document	Document	AmigaGuide
+html	Document	Document	HyperText Markup Language
+htm	Document	Document	HyperText Markup Language
+hwp	Document	Document	Haansoft (Hancom) Hangul Word Processor document
+hwpml	Document	Document	Haansoft (Hancom) Hangul Word Processor Markup Language document
+kpub	Document	Document	Kobo ebook format
+log	Document	Document	Text log file
+lwp	Document	Document	Lotus Word Pro
+mbp	Document	Document	metadata for Mobipocket documents
+md	Document	Document	Markdown text document
+me	Document	Document	Plain text document normally preceded by the word "READ" (READ.ME)
+mcw	Document	Document	Microsoft Word for Macintosh (versions 4.0–5.1)
+mobi	Document	Document	Mobipocket documents
+nb	Document	Document	Mathematica Notebook
+nbp	Document	Document	Mathematica Player Notebook
+neis	Document	Document	학교생활기록부 작성 프로그램 (Student Record Writing Program) Document
+nt	Document	Document	N-Triples RDF container (.nt)
+nq	Document	Document	N-Quads RDF container (.nq)
+odm	Document	Document	OpenDocument master document
+odoc	Document	Document	Synology Drive Office Document
+odt	Document	Document	OpenDocument text document
+osheet	Document	Document	Synology Drive Office Spreadsheet
+ott	Document	Document	OpenDocument text document template
+omm	Document	Document	OmmWriter text document
+pages	Document	Document	Apple Pages document
+pap	Document	Document	Papyrus word processor document
+per	Document	Document	Canadian Forces Personnel Appraisal System (CFPAS) Personnel Evaluation Report (PER)
+pdr	Document	Document	Canadian Forces Personnel Appraisal System (CFPAS) Personnel Development Report (PDR)
+pdax	Document	Document	Portable Document Archive (PDA) document index file
+pdf	Document	Document	Portable Document Format
+protondoc	Document	Document	Proton Docs file shortcut
+quox	Document	Document	Question Object File Format for Quobject Designer or Quobject Explorer
+rtf	Document	Document	Rich Text document
+rpt	Document	Document	Crystal Reports
+sdw	Document	Document	StarWriter text document, used in earlier versions of StarOffice
+se	Document	Document	Shuttle Document
+stw	Document	Document	OpenOffice.org XML (obsolete) text document template
+sxw	Document	Document	OpenOffice.org XML (obsolete) text document
+tex	Document	Document	TeX
+tmdx	Document	Document	SoftMaker TextMaker
+info	Document	Document	Texinfo
+troff	Document	Document	Unix OS document processing system
+txt	Document	Document	ASCII or Unicode plain text
+uof	Document	Document	Uniform Office Format
+uoml	Document	Document	Unique Object Markup Language
+via	Document	Document	Revoware VIA Document Project File
+wpd	Document	Document	WordPerfect document
+wps	Document	Document	Microsoft Works document
+wpt	Document	Document	Microsoft Works document template
+wrd	Document	Document	WordIt! document
+wrf	Document	Document	ThinkFree Write
+wri	Document	Document	Microsoft Write document
+wrix	Document	Document	NovaDesk Writer document
+xhtml	Document	Document	eXtensible HyperText Markup Language
+xht	Document	Document	eXtensible HyperText Markup Language
+xml	Document	Document	eXtensible Markup Language
+xps	Document	Document	Open XML Paper Specification
+myo	Financial records	Financial records	MYOB Limited (Windows) File
+myob	Financial records	Financial records	MYOB Limited (Mac) File
+tax	Financial records	Financial records	TurboTax File
+ynab	Financial records	Financial records	You Need a Budget File
+tax2010	Financial records	Financial records	Tax filling software
+ifx	Financial records	Financial data transfer formats	Interactive Financial Exchange XML-based specification for financial transactions
+ofx	Financial records	Financial data transfer formats	Open Financial Exchange, open standard supported by CheckFree and Microsoft and partly b…
+qfx	Financial records	Financial data transfer formats	proprietary pay-only format used only by Intuit
+qif	Financial records	Financial data transfer formats	Quicken Interchange Format open standard formerly supported by Intuit
+abf	Font file	Font file	Adobe Binary Screen Font
+afm	Font file	Font file	Adobe Font Metrics
+bdf	Font file	Font file	Bitmap Distribution Format
+bmf	Font file	Font file	ByteMap Font Format
+brfnt	Font file	Font file	Binary Revolution Font Format (NintendoWare4Revolution)
+fnt	Font file	Font file	Bitmapped Font – Graphics Environment Manager (GEM)
+fon	Font file	Font file	Bitmapped Font – Microsoft Windows
+mgf	Font file	Font file	MicroGrafx Font
+otf	Font file	Font file	OpenType Font
+pcf	Font file	Font file	Portable Compiled Format
+pfa	Font file	Font file	Printer Font ASCII
+pfb	Font file	Font file	Printer Font Binary – Adobe
+pfm	Font file	Font file	Printer Font Metrics – Adobe
+fond	Font file	Font file	Font Description resource – Mac OS
+sfd	Font file	Font file	FontForge spline font database Font
+snf	Font file	Font file	Server Normal Format
+tdf	Font file	Font file	TheDraw Font
+tfm	Font file	Font file	TeX font metric
+ttf	Font file	Font file	TrueType Font
+ttc	Font file	Font file	TrueType Font
+ufo	Font file	Font file	Unified Font Object is a cross-platform, cross-application, human readable, future proof…
+woff	Font file	Font file	Web Open Font Format
+asc	Geographic information system	Geographic information system	ASCII point of interest (POI) text file
+apr	Geographic information system	Geographic information system	ESRI ArcView 3.3 and earlier project file
+dem	Geographic information system	Geographic information system	USGS DEM file format
+e00	Geographic information system	Geographic information system	ARC/INFO interchange file format
+geojson	Geographic information system	Geographic information system	Geographically located data in object notation
+topojson	Geographic information system	Geographic information system	Extension of GeoJSON with topology encoded in arcs for web development
+geotiff	Geographic information system	Geographic information system	Geographically located raster data
+gml	Geographic information system	Geographic information system	Geography Markup Language file
+gpx	Geographic information system	Geographic information system	XML-based interchange format
+itn	Geographic information system	Geographic information system	TomTom Itinerary format
+mxd	Geographic information system	Geographic information system	ESRI ArcGIS project file, 8.0 and higher
+ntf	Geographic information system	Geographic information system	National Transfer Format file
+ov2	Geographic information system	Geographic information system	TomTom POI overlay file
+shp	Geographic information system	Geographic information system	ESRI shapefile
+tab	Geographic information system	Geographic information system	MapInfo TAB format
+dted	Geographic information system	Geographic information system	Digital Terrain Elevation Data
+kml	Geographic information system	Geographic information system	Keyhole Markup Language, XML-based
+3dt	Graphical information organizers	Graphical information organizers	3D Topicscape, the database in which the meta-data of a 3D Topicscape is held, it is a f…
+aty	Graphical information organizers	Graphical information organizers	3D Topicscape file, produced when an association type is exported; used to permit round-…
+cag	Graphical information organizers	Graphical information organizers	Linear Reference System
+fes	Graphical information organizers	Graphical information organizers	3D Topicscape file, produced when a fileless occurrence in 3D Topicscape is exported to…
+mgmf	Graphical information organizers	Graphical information organizers	MindGenius Mind Mapping Software file format
+mm	Graphical information organizers	Graphical information organizers	FreeMind mind map file (XML)
+mmp	Graphical information organizers	Graphical information organizers	Mind Manager mind map file
+mup	Graphical information organizers	Graphical information organizers	File type used by MindMup to export editable Mind Maps
+tpc	Graphical information organizers	Graphical information organizers	3D Topicscape file, produced when an inter-Topicscape topic link file is exported to Win…
+act	Graphics	Color palettes	Adobe Color Table; contains a raw color palette and consists of 256 24-bit RGB colour va…
+ase	Graphics	Color palettes	Adobe Swatch Exchange; used by Adobe Substance, Photoshop, Illustrator, and InDesign
+gpl	Graphics	Color palettes	GIMP palette file; uses a text representation of color names and RGB values; various ope…
+pal	Graphics	Color palettes	Microsoft RIFF palette file
+icc	Graphics	Color management	Color profile conforming the specification of the ICC
+icm	Graphics	Color management	Color profile conforming the specification of the ICC
+art	Graphics	Raster graphics	America Online proprietary format
+aseprite	Graphics	Raster graphics	Aseprite Project format
+avif	Graphics	Raster graphics	AV1 Image File Format File Format
+blp	Graphics	Raster graphics	Blizzard Entertainment proprietary texture format
+bmp	Graphics	Raster graphics	Microsoft Windows bitmap formatted image
+bti	Graphics	Raster graphics	Nintendo proprietary texture format
+c4	Graphics	Raster graphics	JEDMICS image files, a DOD system
+cals	Graphics	Raster graphics	JEDMICS image files, a DOD system
+cd5	Graphics	Raster graphics	Chasys Draw IES image
+cit	Graphics	Raster graphics	Intergraph monochrome bitmap format
+cpt	Graphics	Raster graphics	Corel PHOTO-PAINT image
+clip	Graphics	Raster graphics	CLIP STUDIO PAINT format
+cpl	Graphics	Raster graphics	Microsoft Windows control panel file
+dds	Graphics	Raster graphics	DirectX texture file
+dib	Graphics	Raster graphics	Device-Independent Bitmap graphic
+djvu	Graphics	Raster graphics	designed for scanned documents
+egt	Graphics	Raster graphics	EGT Universal Document, used in EGT SmartSense to compress PNG files to yet a smaller file
+exif	Graphics	Raster graphics	Exchangeable image file format is a specification for the image format used by digital c…
+gif	Graphics	Raster graphics	CompuServe's Graphics Interchange Format
+flif	Graphics	Raster graphics	Free Lossless Image Format
+gifv	Graphics	Raster graphics	Graphics Interchange Format Video, a format used for short, looping videos that combines…
+grf	Graphics	Raster graphics	Zebra Technologies proprietary format
+icns	Graphics	Raster graphics	format for icons in macOS; contains bitmap images at multiple resolutions and bitdepths…
+heif	Graphics	Raster graphics	High Efficiency Image File Format
+heic	Graphics	Raster graphics	High Efficiency Image File Format
+ico	Graphics	Raster graphics	a format used for icons in Microsoft Windows; contains small bitmap images at multiple r…
+iff	Graphics	Raster graphics	IFF ILBM
+ilbm	Graphics	Raster graphics	IFF ILBM
+lbm	Graphics	Raster graphics	IFF ILBM
+jng	Graphics	Raster graphics	a single-frame MNG using JPEG compression and possibly an alpha channel
+jbig	Graphics	Raster graphics	JBIG
+jpeg	Graphics	Raster graphics	Joint Photographic Experts Group; a lossy image format widely used to display photograph…
+jpg	Graphics	Raster graphics	Joint Photographic Experts Group; a lossy image format widely used to display photograph…
+jfif	Graphics	Raster graphics	Joint Photographic Experts Group; a lossy image format widely used to display photograph…
+jp2	Graphics	Raster graphics	JPEG2000
+jai	Graphics	Raster graphics	JPEG AI
+jaic	Graphics	Raster graphics	JPEG AIC
+jar	Graphics	Raster graphics	JPEG AR
+jd	Graphics	Raster graphics	JPEG DNA
+jfm	Graphics	Raster graphics	JPEG Fake Media
+jls	Graphics	Raster graphics	JPEG LS
+jnft	Graphics	Raster graphics	JPEG NFT
+jpp	Graphics	Raster graphics	JPEG Pleno
+jrf	Graphics	Raster graphics	JPEG RF
+jps	Graphics	Raster graphics	JPEG Stereo
+jsy	Graphics	Raster graphics	JPEG Systems
+jxl	Graphics	Raster graphics	JPEG XL, an image format designed for professional photography and web images; supports…
+jxr	Graphics	Raster graphics	JPEG XR
+jxs	Graphics	Raster graphics	JPEG XS
+jxt	Graphics	Raster graphics	JPEG XT
+kra	Graphics	Raster graphics	Krita image file
+max	Graphics	Raster graphics	ScanSoft PaperPort document
+miff	Graphics	Raster graphics	ImageMagick's native file format
+mng	Graphics	Raster graphics	Multiple-image Network Graphics, the animated version of PNG
+msp	Graphics	Raster graphics	a format used by old versions of Microsoft Paint; replaced by BMP in Microsoft Windows 3.0
+nef	Graphics	Raster graphics	Nikon camera raw format; photos have this on some Nikon cameras if the quality RAW is se…
+nitf	Graphics	Raster graphics	A U.S
+otb	Graphics	Raster graphics	Over The Air bitmap, a specification designed by Nokia for black and white images for mo…
+pbm	Graphics	Raster graphics	portable bitmap
+pcf	Graphics	Raster graphics	Pixel Coordination Format
+pcx	Graphics	Raster graphics	a lossless format used by ZSoft's PC Paint, popular for a time on DOS systems
+pdd	Graphics	Raster graphics	Adobe PhotoDeluxe image
+pdn	Graphics	Raster graphics	Paint.NET image file
+pgf	Graphics	Raster graphics	Progressive Graphics File
+pgm	Graphics	Raster graphics	Portable graymap
+pi2	Graphics	Raster graphics	Portrait Innovations encrypted image format
+pict	Graphics	Raster graphics	Apple Macintosh PICT image
+pct	Graphics	Raster graphics	Apple Macintosh PICT image
+png	Graphics	Raster graphics	Portable Network Graphics (lossless, recommended for display and edition of graphic imag…
+pnj	Graphics	Raster graphics	a sub-format of the MNG file format, used for encapsulating JPEG files
+pnm	Graphics	Raster graphics	Portable anymap graphic bitmap image
+pns	Graphics	Raster graphics	PNG Stereo
+ppm	Graphics	Raster graphics	Portable Pixmap (Pixel Map) image
+psp	Graphics	Raster graphics	Paint Shop Pro image
+px	Graphics	Raster graphics	Pixel image editor image file
+pxm	Graphics	Raster graphics	Pixelmator image file
+pxr	Graphics	Raster graphics	Pixar Image Computer image file
+pxz	Graphics	Raster graphics	a compressed layered image file used for Pixlr
+qfx	Graphics	Raster graphics	QuickLink Fax image
+qoi	Graphics	Raster graphics	Quite OK Image, a compressed lossless image format
+rle	Graphics	Raster graphics	a run-length encoding image
+sct	Graphics	Raster graphics	Scitex Continuous Tone image file
+sgi	Graphics	Raster graphics	Silicon Graphics Image
+rgb	Graphics	Raster graphics	Silicon Graphics Image
+int	Graphics	Raster graphics	Silicon Graphics Image
+bw	Graphics	Raster graphics	Silicon Graphics Image
+tga	Graphics	Raster graphics	Truevision TGA (Targa) image
+targa	Graphics	Raster graphics	Truevision TGA (Targa) image
+icb	Graphics	Raster graphics	Truevision TGA (Targa) image
+vda	Graphics	Raster graphics	Truevision TGA (Targa) image
+vst	Graphics	Raster graphics	Truevision TGA (Targa) image
+pix	Graphics	Raster graphics	Truevision TGA (Targa) image
+tiff	Graphics	Raster graphics	Tag(ged) Image File Format; usually lossless, but many variants exist, including lossy o…
+tif	Graphics	Raster graphics	Tag(ged) Image File Format; usually lossless, but many variants exist, including lossy o…
+ep	Graphics	Raster graphics	Tag Image File Format / Electronic Photography, ISO 12234-2; tends to be used as a basis…
+vtf	Graphics	Raster graphics	Valve Texture Format
+webp	Graphics	Raster graphics	WebP, an image format designed for the web that can provide both lossless and lossy comp…
+xbm	Graphics	Raster graphics	X Window System Bitmap
+xcf	Graphics	Raster graphics	GIMP image (from Gimp's origin at the eXperimental Computing Facility of the University…
+xpm	Graphics	Raster graphics	X Window System Pixmap
+zif	Graphics	Raster graphics	Zoomable/Zoomify Image Format (a web-friendly, TIFF-based, zoomable image format)
+cr2	Graphics	Photographs	Canon camera raw format; photos have this on some Canon cameras if the quality RAW is se…
+dng	Graphics	Photographs	"Digital Negative" a type of raw image file format used in digital photography
+raw	Graphics	Photographs	General term for minimally processed image data (acquired by a digital camera)
+3dv	Graphics	Vector graphics	3-D wireframe graphics by Oscar Garcia
+file	Graphics	Vector graphics	3-D wireframe graphics by Oscar Garcia
+amf	Graphics	Vector graphics	Additive Manufacturing File Format
+awg	Graphics	Vector graphics	Ability Draw
+ai	Graphics	Vector graphics	Adobe Illustrator Document
+cgm	Graphics	Vector graphics	Computer Graphics Metafile, an ISO Standard
+cdr	Graphics	Vector graphics	CorelDRAW Document
+cmx	Graphics	Vector graphics	CorelDRAW vector image
+dp	Graphics	Vector graphics	Drawing Program file for PERQ
+drawio	Graphics	Vector graphics	Diagrams.net offline diagram
+dxf	Graphics	Vector graphics	ASCII Drawing Interchange file Format, used in AutoCAD and other CAD-programs
+e2d	Graphics	Vector graphics	2-dimensional vector graphics used by the editor which is included in JFire
+eps	Graphics	Vector graphics	Encapsulated Postscript
+fs	Graphics	Vector graphics	FlexiPro file.x
+gbr	Graphics	Vector graphics	Gerber file
+odg	Graphics	Vector graphics	OpenDocument Drawing
+movie.byu	Graphics	Vector graphics	3D Vector file for polygons, coordinates and more complex shapes
+renderman	Graphics	Vector graphics	Displays Shading in both 2D and 3D scapes
+svg	Graphics	Vector graphics	Scalable Vector Graphics, employs XML
+3dmlw	Graphics	Vector graphics	Scene description languages (3D vector image formats)
+stl	Graphics	Vector graphics	Stereo Lithographic data format (see STL (file format)) used by various CAD systems and…
+wrl	Graphics	Vector graphics	Virtual Reality Modeling Language, VRML Uses this extension for the creation of 3D viewa…
+x3d	Graphics	Vector graphics	XML-based file for communicating 3D graphics
+sxd	Graphics	Vector graphics	OpenOffice.org XML (obsolete) Drawing
+tgax	Graphics	Vector graphics	Texture format used by Zwift
+v2d	Graphics	Vector graphics	voucher design used by the voucher management included in JFire
+vdoc	Graphics	Vector graphics	Vector format used in AnyCut, CutStorm, DrawCut, DragonCut, FutureDRAW, MasterCut, SignM…
+vsd	Graphics	Vector graphics	Vector format used by Microsoft Visio
+vsdx	Graphics	Vector graphics	Vector format used by MS Visio and opened by VSDX Annotator
+vnd	Graphics	Vector graphics	Vision numeric Drawing file used in TypeEdit, Gravostyle
+wmf	Graphics	Vector graphics	Windows Meta File
+emf	Graphics	Vector graphics	Enhanced (Windows) MetaFile, an extension to WMF
+xar	Graphics	Vector graphics	Xara–Drawing
+3dmf	Graphics	3D graphics	QuickDraw 3D Metafile (.3dmf)
+3dm	Graphics	3D graphics	OpenNURBS Initiative 3D Model (used by Rhinoceros 3D) (.3dm)
+3mf	Graphics	3D graphics	3D Manufacturing Format
+3ds	Graphics	3D graphics	legacy 3D Studio Model (.3ds)
+abc	Graphics	3D graphics	Alembic (computer graphics)
+ac	Graphics	3D graphics	AC3D Model
+an8	Graphics	3D graphics	Anim8or Model
+aoi	Graphics	3D graphics	Art of Illusion Model
+asm	Graphics	3D graphics	PTC Creo assembly
+b3d	Graphics	3D graphics	Blitz3D Model
+bbmodel	Graphics	3D graphics	Blockbench Model
+blend	Graphics	3D graphics	Blender
+block	Graphics	3D graphics	Blender encrypted blend files
+bmd3	Graphics	3D graphics	Nintendo GameCube first-party J3D proprietary model format (.bmd)
+bdl4	Graphics	3D graphics	Nintendo GameCube and Wii first-party J3D proprietary model format (2002, 2006–2010) (.b…
+brres	Graphics	3D graphics	Nintendo Wii proprietary model format
+bfres	Graphics	3D graphics	Nintendo Wii U and later Switch proprietary model format
+bcres	Graphics	3D graphics	Nintendo 3DS proprietary model format
+c4d	Graphics	3D graphics	Cinema 4D (.c4d)
+cal3d	Graphics	3D graphics	Cal3D (.cal3d)
+ccp4	Graphics	3D graphics	X-ray crystallography voxels (electron density)
+cfl	Graphics	3D graphics	Compressed File Library
+cob	Graphics	3D graphics	Caligari Object
+core3d	Graphics	3D graphics	Coreona 3D Coreona 3D Virtual File (.core3d)
+ctm	Graphics	3D graphics	OpenCTM
+dae	Graphics	3D graphics	COLLADA
+dff	Graphics	3D graphics	RenderWare binary stream, commonly used by Grand Theft Auto III-era games as well as oth…
+dn	Graphics	3D graphics	Adobe Dimension CC file format
+dpm	Graphics	3D graphics	DeepMesh
+dts	Graphics	3D graphics	Torque Game Engine (DTS (file format))
+egg	Graphics	3D graphics	Panda3D Engine
+fact	Graphics	3D graphics	Electric Image (.fac)
+fbx	Graphics	3D graphics	Autodesk FBX
+g	Graphics	3D graphics	BRL-CAD geometry
+glb	Graphics	3D graphics	a binary form of glTF required to be loaded in Facebook 3D Posts
+glm	Graphics	3D graphics	Ghoul Mesh
+gltf	Graphics	3D graphics	the JSON-based standard developed by Khronos Group
+hec	Graphics	3D graphics	Hector Game Engine – Flatspace model format
+io	Graphics	3D graphics	Bricklink Stud.io 2.0 Model File
+iob	Graphics	3D graphics	Imagine (3D modeling software)
+jas	Graphics	3D graphics	Cheetah 3D file
+jmesh	Graphics	3D graphics	Universal mesh data exchange file based on JMesh specification (.jmsh for text/JSON base…
+ldr	Graphics	3D graphics	LDraw Model File
+lwo	Graphics	3D graphics	Lightwave Object
+lws	Graphics	3D graphics	Lightwave Scene
+lxf	Graphics	3D graphics	LEGO Digital Designer Model file
+lxo	Graphics	3D graphics	Luxology Modo (software) file
+m3d	Graphics	3D graphics	Model3D, universal, engine-neutral format
+ma	Graphics	3D graphics	Autodesk Maya ASCII File
+mb	Graphics	3D graphics	Autodesk Maya Binary File
+mpd	Graphics	3D graphics	LDraw Multi-Part Document Model File
+md2	Graphics	3D graphics	MD2: Quake II model format
+md3	Graphics	3D graphics	MD3: Quake III model format
+md5	Graphics	3D graphics	MD5: Doom 3 model format
+mdx	Graphics	3D graphics	Blizzard Entertainment's own model format
+mesh	Graphics	3D graphics	New York University (.m)
+miobject	Graphics	3D graphics	Mine-Imator object file
+miparticle	Graphics	3D graphics	Mine-Imator particle file
+mimodel	Graphics	3D graphics	Mine-Imator model file
+mm3d	Graphics	3D graphics	Misfit Model 3D
+mpo	Graphics	3D graphics	Multi-Picture Object – This JPEG standard is used for 3D images, as with the Nintendo 3DS
+mrc	Graphics	3D graphics	MRC: voxels in cryo-electron microscopy
+nif	Graphics	3D graphics	Gamebryo NetImmerse File
+nwc	Graphics	3D graphics	Navisworks – cached version of the converted model geometry
+nwd	Graphics	3D graphics	Navisworks – publish format
+nwf	Graphics	3D graphics	Navisworks – working format for projects
+obj	Graphics	3D graphics	Wavefront .obj file
+off	Graphics	3D graphics	OFF Object file format
+ogex	Graphics	3D graphics	Open Game Engine Exchange (OpenGEX) format
+ply	Graphics	3D graphics	PLY: Polygon File Format / Stanford Triangle Format
+prc	Graphics	3D graphics	Adobe PRC (embedded in PDF files)
+prt	Graphics	3D graphics	PTC Creo part
+pov	Graphics	3D graphics	POV-Ray document
+r3d	Graphics	3D graphics	Realsoft 3D (Real-3D)
+rwx	Graphics	3D graphics	RenderWare Object
+sia	Graphics	3D graphics	Nevercenter Silo Object
+sib	Graphics	3D graphics	Nevercenter Silo Object
+skp	Graphics	3D graphics	SketchUp file
+sldasm	Graphics	3D graphics	SolidWorks Assembly Document
+sldprt	Graphics	3D graphics	SolidWorks Part Document
+smd	Graphics	3D graphics	Valve Studiomdl Data format
+u3d	Graphics	3D graphics	Universal 3D format
+usd	Graphics	3D graphics	Universal Scene Description
+usda	Graphics	3D graphics	Universal Scene Description, human-readable text format
+usdc	Graphics	3D graphics	Universal Scene Description, binary format
+usdz	Graphics	3D graphics	Universal Scene Description, a zip-compressed container
+vim	Graphics	3D graphics	Revizto visual information model format (.vimproj)
+vrml97	Graphics	3D graphics	VRML Virtual reality modeling language (.wrl)
+vue	Graphics	3D graphics	Vue scene file
+vwx	Graphics	3D graphics	Vectorworks
+wings	Graphics	3D graphics	Wings3D
+w3d	Graphics	3D graphics	Westwood 3D Model
+x	Graphics	3D graphics	DirectX 3D Model
+z3d	Graphics	3D graphics	Zmodeler
+zbmx	Graphics	3D graphics	Mecabricks Blender Add-On
+alias	Links and shortcuts	Links and shortcuts	Alias (Mac OS)
+appref-ms	Links and shortcuts	Links and shortcuts	File shortcut format used by ClickOnce
+desktop	Links and shortcuts	Links and shortcuts	Desktop entry on Linux Desktop environments, can link to a file or folder, or an online…
+jnlp	Links and shortcuts	Links and shortcuts	Java Network Launching Protocol, an XML file used by Java Web Start for starting Java ap…
+lnk	Links and shortcuts	Links and shortcuts	Binary-format file shortcut in Microsoft Windows 95 and later
+nal	Links and shortcuts	Links and shortcuts	ZENworks Instant shortcut (opens a .EXE not on the C:\ drive)
+pif	Links and shortcuts	Links and shortcuts	Used to run MS-DOS programs under Windows (1.0–XP, and 32-bit Vista–10)
+sym	Links and shortcuts	Links and shortcuts	Symbolic link
+url	Links and shortcuts	Links and shortcuts	INI file pointing to a URL bookmarks/Internet shortcut in Microsoft Windows
+webloc	Links and shortcuts	Links and shortcuts	Property list (.plist) file pointing to a URL bookmarks/Internet shortcut in macOS and o…
+website	Links and shortcuts	Links and shortcuts	Internet Explorer "Pinned Site" launcher – An Internet shortcut created from dragging th…
+g3k	Mathematical	Mathematical	an obscure, uncommon format used by the CASIO graphing calculators to store keylogs
+mml	Mathematical	Mathematical	MathML – Mathematical Markup Language
+odf	Mathematical	Mathematical	OpenDocument math formula
+sxm	Mathematical	Mathematical	OpenOffice.org XML (obsolete) math formula
+phz	Physics	Physics	opens components on the 2D sandbox physics simulator Algodoo
+8bf	Native executable	Native executable	files plugins for some photo editing programs including Adobe Photoshop, Paint Shop Pro,…
+a	Native executable	Native executable	a static library on Unix-like systems
+a.out	Native executable	Native executable	(no suffix for executable image, .o for object files, .so for shared object files) class…
+apk	Native executable	Native executable	Android Package
+app	Native executable	Native executable	A folder found on macOS systems containing program code and resources, appearing as one…
+bac	Native executable	Native executable	an executable image for the RSTS/E system, created using the BASIC-PLUS COMPILE command
+bpl	Native executable	Native executable	a Win32 PE file created with Delphi or C++Builder containing a package
+bundle	Native executable	Native executable	a Macintosh plugin created with Xcode or make which holds executable code, data files, a…
+class	Native executable	Native executable	Compiled Java bytecode
+coff	Native executable	Native executable	(no suffix for executable image, .o for object files) Unix Common Object File Format, no…
+com	Native executable	Native executable	Simple executable format used by CP/M and DOS
+dcu	Native executable	Native executable	Delphi compiled unit
+dll	Native executable	Native executable	Dynamic library used in Windows and OS/2 to store data, resources and code
+dol	Native executable	Native executable	the format used by the GameCube and Wii, short for Dolphin, which was the codename of th…
+ear	Native executable	Native executable	archives of Java enterprise applications
+elf	Native executable	Native executable	(no suffix for executable image, .o for object files, .so for shared object files) used…
+exe	Native executable	Native executable	DOS executable (.exe: used in DOS)
+ipa	Native executable	Native executable	file extension for Apple iOS application executable file
+jar	Native executable	Native executable	archives of Java class files
+jeff	Native executable	Native executable	a file format allowing execution directly from static memory
+ko	Native executable	Native executable	Loadable kernel module
+lib	Native executable	Native executable	a static library on Microsoft platforms
+list	Native executable	Native executable	variable list
+mach-o	Native executable	Native executable	(no suffix for executable image, .o for object files, .dylib and .bundle for shared obje…
+nlm	Native executable	Native executable	NetWare Loadable Module the native 32-bit binaries compiled for Novell's NetWare Operati…
+o	Native executable	Native executable	un-linked object files directly from the compiler
+obj	Native executable	Native executable	object file on Windows
+rll	Native executable	Native executable	used in Microsoft operating systems together with a DLL file to store program resources
+s1es	Native executable	Native executable	Executable used for S1ES learning system
+so	Native executable	Native executable	shared library, typically ELF
+vap	Native executable	Native executable	Value Added Process the native 16-bit binaries compiled for Novell's NetWare Operating S…
+war	Native executable	Native executable	an archive of a Java Web application
+xap	Native executable	Native executable	Windows Phone package
+xbe	Native executable	Native executable	Xbox executable file used to run games
+xcoff	Native executable	Native executable	(no suffix for executable image, .o for object files, .a for shared object files) extend…
+xex	Native executable	Native executable	Xbox 360 executable file mainly used for games and apps, however it is also used for the…
+xpi	Native executable	Native executable	PKZIP archive that can be run by Mozilla web browsers to install software
+xsd	Native executable	Native executable	XML Schema Definition, used for planning and organizing XML documents
+ocx	Native executable	Native executable	Object Control extension
+tlb	Native executable	Native executable	Windows Type Library
+vbx	Native executable	Native executable	Visual Basic extension
+dvi	Page description language	Page description language	DVI are Device independent format
+egt	Page description language	Page description language	Universal Document can be used to store CSS type styles
+pld	Page description language	Page description language	PLD are PhotoLine Document files
+pcl	Page description language	Page description language	PCL Manages printer language
+pdf	Page description language	Page description language	PDF are Portable Document Format
+ps	Page description language	Page description language	PostScript
+gz	Page description language	Page description language	PostScript
+snp	Page description language	Page description language	SNP are Microsoft Access Report Snapshot
+xps	Page description language	Page description language	XPS
+xsl-fo	Page description language	Page description language	XSL-FO (Formatting Objects)
+mnb	Personal information manager	Personal information manager	MyInfo notebook
+msg	Personal information manager	Personal information manager	Microsoft Outlook task manager
+org	Personal information manager	Personal information manager	Lotus Organizer PIM package
+pst	Personal information manager	Personal information manager	Microsoft Outlook email communication
+ost	Personal information manager	Personal information manager	Microsoft Outlook email communication
+sc2	Personal information manager	Personal information manager	Microsoft Schedule+ calendar
+gslides	Presentation	Presentation	Google Drive Presentation
+key	Presentation	Presentation	Apple Keynote Presentation
+keynote	Presentation	Presentation	Apple Keynote Presentation
+nb	Presentation	Presentation	Mathematica Slideshow
+nbp	Presentation	Presentation	Mathematica Player slideshow
+odp	Presentation	Presentation	OpenDocument Presentation
+otp	Presentation	Presentation	OpenDocument Presentation template
+pez	Presentation	Presentation	Prezi Desktop Presentation
+pot	Presentation	Presentation	Microsoft PowerPoint template
+prdx	Presentation	Presentation	SoftMaker Presentations
+pps	Presentation	Presentation	Microsoft PowerPoint Show
+ppt	Presentation	Presentation	Microsoft PowerPoint Presentation
+pptx	Presentation	Presentation	Office Open XML Presentation, there are at least 4 quite different versions of Microsoft…
+prz	Presentation	Presentation	Lotus Freelance Graphics
+sdd	Presentation	Presentation	StarOffice's StarImpress
+shf	Presentation	Presentation	ThinkFree Show
+show	Presentation	Presentation	Haansoft(Hancom) Presentation software document
+shw	Presentation	Presentation	Corel Presentations slide show creation
+slp	Presentation	Presentation	Logix-4D Manager Show Control Project
+sspss	Presentation	Presentation	SongShow Plus Slide Show
+sti	Presentation	Presentation	OpenOffice.org XML (obsolete) Presentation template
+sxi	Presentation	Presentation	OpenOffice.org XML (obsolete) Presentation
+thmx	Presentation	Presentation	Microsoft Office theme template
+watch	Presentation	Presentation	Dataton Watchout Presentation
+mpp	Project management software	Project management software	Microsoft Project
+bib	Reference management software	Reference management software	BibTeX
+enl	Reference management software	Reference management software	EndNote
+ris	Reference management software	Reference management software	Research Information Systems RIS (file format)
+fits	Scientific data (data exchange)	Scientific data (data exchange)	Flexible Image Transport System, a standard data format for astronomy
+silo	Scientific data (data exchange)	Scientific data (data exchange)	a storage format for visualization developed at Lawrence Livermore National Laboratory
+spc	Scientific data (data exchange)	Scientific data (data exchange)	SPC, spectroscopic data
+eas3	Scientific data (data exchange)	Scientific data (data exchange)	binary format for structured data
+eossa	Scientific data (data exchange)	Scientific data (data exchange)	Electro-Optic Space Situational Awareness format
+ost	Scientific data (data exchange)	Scientific data (data exchange)	(Open Spatio-Temporal) extensible, mainly images with related data, or just pure data; m…
+ccp4	Scientific data (data exchange)	Scientific data (data exchange)	CCP4, X-ray crystallography voxels (electron density)
+mrc	Scientific data (data exchange)	Scientific data (data exchange)	MRC, voxels in cryo-electron microscopy
+hitran	Scientific data (data exchange)	Scientific data (data exchange)	spectroscopic data with one optical/infrared transition per line in the ASCII file (.hit)
+root	Scientific data (data exchange)	Scientific data (data exchange)	hierarchical platform-independent compressed binary format used by ROOT
+sdf	Scientific data (data exchange)	Scientific data (data exchange)	Simple Data Format (SDF), a platform-independent, precision-preserving binary data I/O f…
+myd	Scientific data (data exchange)	Scientific data (data exchange)	Everfine LEDSpec software file for LED measurements
+csdm	Scientific data (data exchange)	Scientific data (data exchange)	(Core Scientific Dataset Model) model for multi-dimensional and correlated datasets from…
+netcdf	Scientific data (data exchange)	Multi-domain	Network common data format
+hdr	Scientific data (data exchange)	Multi-domain	Hierarchical Data Format
+hdf	Scientific data (data exchange)	Multi-domain	Hierarchical Data Format
+h4	Scientific data (data exchange)	Multi-domain	Hierarchical Data Format
+h5	Scientific data (data exchange)	Multi-domain	Hierarchical Data Format
+sdxf	Scientific data (data exchange)	Multi-domain	SDXF, (Structured Data Exchange Format)
+cdf	Scientific data (data exchange)	Multi-domain	Common Data Format
+cgns	Scientific data (data exchange)	Multi-domain	CGNS, CFD General Notation System
+fmf	Scientific data (data exchange)	Multi-domain	Full-Metadata Format
+grib	Scientific data (data exchange)	Meteorology	Grid in Binary, WMO format for weather model data
+bufr	Scientific data (data exchange)	Meteorology	WMO format for weather observation data
+pp	Scientific data (data exchange)	Meteorology	UK Met Office format for weather model data
+nasa-ames	Scientific data (data exchange)	Meteorology	Simple text format for observation data
+cml	Scientific data (data exchange)	Chemistry	Chemical Markup Language (CML) (.cml)
+mol	Scientific data (data exchange)	Chemistry	Chemical table file (CTab)
+sd	Scientific data (data exchange)	Chemistry	Chemical table file (CTab)
+dx	Scientific data (data exchange)	Chemistry	Joint Committee on Atomic and Molecular Physical Data (JCAMP)
+jdx	Scientific data (data exchange)	Chemistry	Joint Committee on Atomic and Molecular Physical Data (JCAMP)
+smi	Scientific data (data exchange)	Chemistry	Simplified molecular input line entry specification (SMILES)
+g6	Scientific data (data exchange)	Mathematics	graph6, sparse6, ASCII encoding of Adjacency matrices
+s6	Scientific data (data exchange)	Mathematics	graph6, sparse6, ASCII encoding of Adjacency matrices
+ab1	Scientific data (data exchange)	Biology	In DNA sequencing, chromatogram files used by instruments from Applied Biosystems
+ace	Scientific data (data exchange)	Biology	A sequence assembly format
+asn.1	Scientific data (data exchange)	Biology	Abstract Syntax Notation One, is an International Standards Organization (ISO) data repr…
+bam	Scientific data (data exchange)	Biology	Binary Alignment/Map format (compressed SAM format)
+bcf	Scientific data (data exchange)	Biology	Binary compressed VCF format
+bed	Scientific data (data exchange)	Biology	The browser extensible display format is used for describing genes and other features of…
+caf	Scientific data (data exchange)	Biology	Common Assembly Format for sequence assembly
+cram	Scientific data (data exchange)	Biology	compressed file format for storing biological sequences aligned to a reference sequence
+ddbj	Scientific data (data exchange)	Biology	The flatfile format used by the DDBJ to represent database records for nucleotide and pe…
+embl	Scientific data (data exchange)	Biology	The flatfile format used by the EMBL to represent database records for nucleotide and pe…
+fasta	Scientific data (data exchange)	Biology	The FASTA format, for sequence data
+fastq	Scientific data (data exchange)	Biology	The FASTQ format, for sequence data with quality
+gcproj	Scientific data (data exchange)	Biology	The Genome Compiler project
+genbank	Scientific data (data exchange)	Biology	The flatfile format used by the NCBI to represent database records for nucleotide and pe…
+gff	Scientific data (data exchange)	Biology	The General feature format is used to describe genes and other features of DNA, RNA, and…
+gtf	Scientific data (data exchange)	Biology	The Gene transfer format is used to hold information about gene structure
+maf	Scientific data (data exchange)	Biology	The Multiple Alignment Format stores multiple alignments for whole-genome to whole-genom…
+ncbi	Scientific data (data exchange)	Biology	Structured ASN.1 format used at National Center for Biotechnology Information for DNA an…
+nexus	Scientific data (data exchange)	Biology	The Nexus file encodes mixed information about genetic sequence data in a block structur…
+nexml	Scientific data (data exchange)	Biology	XML format for phylogenetic trees
+nwk	Scientific data (data exchange)	Biology	The Newick tree format is a way of representing graph-theoretical trees with edge length…
+pdb	Scientific data (data exchange)	Biology	structures of biomolecules deposited in Protein Data Bank, also used to exchange protein…
+phd	Scientific data (data exchange)	Biology	Phred output, from the base-calling software Phred
+pln	Scientific data (data exchange)	Biology	Protein Line Notation used in proteax software specification
+sam	Scientific data (data exchange)	Biology	SAM, Sequence Alignment Map format, in which the results of the 1000 Genomes Project wil…
+sbml	Scientific data (data exchange)	Biology	The Systems Biology Markup Language is used to store biochemical network computational m…
+scf	Scientific data (data exchange)	Biology	Staden chromatogram files used to store data from DNA sequencing
+sff	Scientific data (data exchange)	Biology	Standard Flowgram Format
+sra	Scientific data (data exchange)	Biology	format used by the National Center for Biotechnology Information Short Read Archive to s…
+stockholm	Scientific data (data exchange)	Biology	The Stockholm format for representing multiple sequence alignments
+swiss-prot	Scientific data (data exchange)	Biology	The flatfile format used to represent database records for protein sequences from the Sw…
+vcf	Scientific data (data exchange)	Biology	Variant Call Format, a standard created by the 1000 Genomes Project that lists and annot…
+dcm	Scientific data (data exchange)	Biomedical imaging	Digital Imaging and Communications in Medicine (DICOM)
+nifti	Scientific data (data exchange)	Biomedical imaging	Neuroimaging Informatics Technology Initiative
+nii	Scientific data (data exchange)	Biomedical imaging	single-file (combined data and meta-data) style
+nii.gz	Scientific data (data exchange)	Biomedical imaging	gzip-compressed, used transparently by some software, notably the FMRIB Software Library…
+gii	Scientific data (data exchange)	Biomedical imaging	single-file (combined data and meta-data) style; NIfTI offspring for brain surface data
+img	Scientific data (data exchange)	Biomedical imaging	dual-file (separate data and meta-data, respectively) style
+brik	Scientific data (data exchange)	Biomedical imaging	AFNI data, meta-data
+head	Scientific data (data exchange)	Biomedical imaging	AFNI data, meta-data
+mgh	Scientific data (data exchange)	Biomedical imaging	uncompressed, Massachusetts General Hospital imaging format, used by the FreeSurfer brai…
+mgz	Scientific data (data exchange)	Biomedical imaging	zip-compressed, Massachusetts General Hospital imaging format, used by the FreeSurfer br…
+minc	Scientific data (data exchange)	Biomedical imaging	Medical Imaging NetCDF format
+mnc	Scientific data (data exchange)	Biomedical imaging	previously based on NetCDF; since version 2.0, based on HDF5
+acq	Scientific data (data exchange)	Biomedical signals (time series)	AcqKnowledge format for Windows/PC from Biopac Systems Inc., Goleta, CA, USA
+adicht	Scientific data (data exchange)	Biomedical signals (time series)	LabChart format from ADInstruments Pty Ltd, Bella Vista NSW, Australia
+bci2000	Scientific data (data exchange)	Biomedical signals (time series)	The BCI2000 project, Albany, NY, USA
+bdf	Scientific data (data exchange)	Biomedical signals (time series)	BioSemi data format from BioSemi B.V
+bkr	Scientific data (data exchange)	Biomedical signals (time series)	The EEG data format developed at the University of Technology Graz, Austria
+cfwb	Scientific data (data exchange)	Biomedical signals (time series)	Chart Data Format from ADInstruments Pty Ltd, Bella Vista NSW, Australia
+dicom	Scientific data (data exchange)	Biomedical signals (time series)	Waveform An extension of Dicom for storing waveform data
+ecgml	Scientific data (data exchange)	Biomedical signals (time series)	A markup language for electrocardiogram data acquisition and analysis
+edf	Scientific data (data exchange)	Biomedical signals (time series)	European Data Format
+fef	Scientific data (data exchange)	Biomedical signals (time series)	File Exchange Format for Vital signs, CEN TS 14271
+gdf	Scientific data (data exchange)	Biomedical signals (time series)	The General Data Format for biomedical signals
+hl7aecg	Scientific data (data exchange)	Biomedical signals (time series)	Health Level 7 v3 annotated ECG
+mfer	Scientific data (data exchange)	Biomedical signals (time series)	Medical waveform Format Encoding Rules
+openxdf	Scientific data (data exchange)	Biomedical signals (time series)	Open Exchange Data Format from Neurotronics, Inc., Gainesville, FL, USA
+scp-ecg	Scientific data (data exchange)	Biomedical signals (time series)	Standard Communication Protocol for Computer assisted electrocardiography EN1064:2007
+sigif	Scientific data (data exchange)	Biomedical signals (time series)	A digital SIGnal Interchange Format with application in neurophysiology
+wfdb	Scientific data (data exchange)	Biomedical signals (time series)	Format of Physiobank
+xdf	Scientific data (data exchange)	Biomedical signals (time series)	eXtensible Data Format
+hl7	Scientific data (data exchange)	Other biomedical formats	Health Level 7, a framework for exchange, integration, sharing, and retrieval of health…
+xdt	Scientific data (data exchange)	Other biomedical formats	a family of data exchange formats for medical records
+cbf	Scientific data (data exchange)	Biometric formats	Common Biometric Format, based on CBEFF 2.0 (Common Biometric ExFramework)
+ebf	Scientific data (data exchange)	Biometric formats	Extended Biometric Format, based on CBF but with S/MIME encryption support and semantic…
+cbfx	Scientific data (data exchange)	Biometric formats	XML Common Biometric Format, based upon XCBF 1.1 (OASIS XML Common Biometric Format)
+ebfx	Scientific data (data exchange)	Biometric formats	XML Extended Biometric Format, based on CBFX but with W3C XML Encryption support and sem…
+a	Source code	Source code	Zipped C/C++ object files
+adb	Source code	Source code	Ada body
+ads	Source code	Source code	Ada specification
+asm	Source code	Source code	Assembly language source
+s	Source code	Source code	Assembly language source
+ahk	Source code	Source code	AutoHotkey script file
+applescript	Source code	Source code	AppleScript: see SCPT
+as	Source code	Source code	Adobe Flash ActionScript File
+au3	Source code	Source code	AutoIt version 3
+awk	Source code	Source code	AWK
+b	Source code	Source code	B source
+bas	Source code	Source code	BASIC, FreeBASIC, Visual Basic, BASIC-PLUS source, PICAXE basic
+bb	Source code	Source code	Blitz Basic Blitz3D
+bmx	Source code	Source code	Blitz Basic BlitzMax
+bat	Source code	Source code	Batch file
+btm	Source code	Source code	Batch file
+c	Source code	Source code	C source
+cpp	Source code	Source code	C++ source
+cc	Source code	Source code	C++ source
+cxx	Source code	Source code	C++ source
+cbp	Source code	Source code	C++ source
+cs	Source code	Source code	C# source
+csproj	Source code	Source code	C# project (Visual Studio .NET)
+c3	Source code	Source code	C3 module(s)
+c3l	Source code	Source code	A C3 library file, zip compressed
+clj	Source code	Source code	Clojure source
+cljs	Source code	Source code	ClojureScript source
+cls	Source code	Source code	Visual Basic class
+cob	Source code	Source code	COBOL source
+cbl	Source code	Source code	COBOL source
+cjs	Source code	Source code	JavaScript CommonJS module
+class	Source code	Source code	Compiled Java binary
+cmd	Source code	Source code	Batch file
+command	Source code	Source code	A shell script, specifically associated with the Terminal on macOS
+coffee	Source code	Source code	CoffeeScript
+dart	Source code	Source code	Dart
+d	Source code	Source code	D source
+dba	Source code	Source code	DarkBASIC source
+dbpro123	Source code	Source code	DarkBASIC Professional project
+ebuild	Source code	Source code	Gentoo Linux portage package
+egg	Source code	Source code	ChickenScheme source
+egt	Source code	Source code	EGT Asterisk Application Source File, EGT Universal Document
+erb	Source code	Source code	Embedded Ruby, Ruby on Rails Script File
+e	Source code	Source code	Eiffel source
+efs	Source code	Source code	EGT Forever Source File
+el	Source code	Source code	Emacs Lisp source
+fs	Source code	Source code	F# source, fragment shader code
+for	Source code	Source code	Fortran source
+ftn	Source code	Source code	Fortran source
+f	Source code	Source code	Fortran source
+f77	Source code	Source code	Fortran source
+f90	Source code	Source code	Fortran source
+frm	Source code	Source code	Visual Basic form
+frx	Source code	Source code	Visual Basic form stash file (binary form file)
+fth	Source code	Source code	Forth source
+go	Source code	Source code	Go source
+ged	Source code	Source code	Game Maker Extension Editable file as of version 7.0
+gm6	Source code	Source code	Game Maker Editable file as of version 6.x
+gmd	Source code	Source code	Game Maker Editable file up to version 5.x
+gmk	Source code	Source code	Game Maker Editable file as of version 7.0
+gml	Source code	Source code	Game Maker Language script file
+gool	Source code	Source code	Created by Naughty Dog for Crash Bandicoot on the PS1
+hc	Source code	Source code	HolyC source code file
+hta	Source code	Source code	HTML Application
+hx	Source code	Source code	Haxe source
+hxml	Source code	Source code	Haxe project configuration file
+h	Source code	Source code	C/C++ header file
+hpp	Source code	Source code	C++ header file
+hxx	Source code	Source code	C++ header file
+hs	Source code	Source code	Haskell source
+i	Source code	Source code	SWIG interface file
+ibi	Source code	Source code	Icarus script
+ici	Source code	Source code	ICI
+ijs	Source code	Source code	J script
+inc	Source code	Source code	Turbo Pascal included source
+ino	Source code	Source code	Arduino sketch (program)
+ipynb	Source code	Source code	IPython Notebook
+iqblocks	Source code	Source code	VEXcode IQ Project File
+itcl	Source code	Source code	Itcl
+java	Source code	Source code	Java source
+js	Source code	Source code	JavaScript and JScript source
+jsfl	Source code	Source code	Adobe JavaScript
+jsx	Source code	Source code	JavaScript XML
+kt	Source code	Source code	Kotlin
+l	Source code	Source code	lex source
+lgt	Source code	Source code	Logtalk source
+lua	Source code	Source code	Lua
+lisp	Source code	Source code	Common Lisp source
+m	Source code	Source code	Mathematica package file
+mm	Source code	Source code	Objective-C++ source
+m4	Source code	Source code	m4 source
+map	Source code	Source code	CodeWarrior linker file
+mjs	Source code	Source code	JavaScript ECMAScript Module
+mrc	Source code	Source code	mIRC script
+ml	Source code	Source code	Standard ML and OCaml source
+msqr	Source code	Source code	M² source file, created by Mattia Marziali
+n	Source code	Source code	Nemerle source
+nb	Source code	Source code	Nuclear Basic source
+ncf	Source code	Source code	NetWare Command File (scripting for Novell's NetWare OS)
+nqp	Source code	Source code	Raku Not Quite Perl, or Raku bootstrapping language
+nuc	Source code	Source code	compiled script
+nud	Source code	Source code	C++ External module written in C++
+nut	Source code	Source code	Squirrel
+o	Source code	Source code	Compiled and optimized binary
+p	Source code	Source code	Parser source
+pas	Source code	Source code	Pascal source (DPR for projects)
+pp	Source code	Source code	Pascal source (DPR for projects)
+php	Source code	Source code	PHP source
+php3	Source code	Source code	PHP source
+php4	Source code	Source code	PHP source
+php5	Source code	Source code	PHP source
+phps	Source code	Source code	PHP source
+phtml	Source code	Source code	PHP source
+piv	Source code	Source code	Pivot stickfigure animator
+pli	Source code	Source code	PL/I
+pl1	Source code	Source code	PL/I
+prg	Source code	Source code	Ashton-Tate; dbII, dbIII and dbIV, db, db7, clipper, Microsoft Fox and FoxPro, harbour,…
+pro	Source code	Source code	IDL
+pol	Source code	Source code	Apcera Policy Language doclet
+pde	Source code	Source code	Processing script
+pl	Source code	Source code	Perl
+pm	Source code	Source code	Perl module
+ps1	Source code	Source code	Windows PowerShell shell script
+ps1xml	Source code	Source code	Windows PowerShell format and type definitions
+psc1	Source code	Source code	Windows PowerShell console file
+psd1	Source code	Source code	Windows PowerShell data file
+psm1	Source code	Source code	Windows PowerShell module file
+py	Source code	Source code	Python source
+pyc	Source code	Source code	Python bytecode files
+pyo	Source code	Source code	Python
+pyx	Source code	Source code	Cython source
+r	Source code	Source code	R scripts
+raku	Source code	Source code	Raku Language
+rakumod	Source code	Source code	Raku Language
+rakudoc	Source code	Source code	Raku Language
+rakutest	Source code	Source code	Raku Language
+rb	Source code	Source code	Ruby
+rdp	Source code	Source code	Remote Desktop Protocol (RDP) connection
+red	Source code	Source code	Red scripts
+rex	Source code	Source code	Rexx and Object REXX (ooRexx) script file
+rexx	Source code	Source code	Rexx and Object REXX (ooRexx) script file
+rs	Source code	Source code	Rust
+reds	Source code	Source code	Red/System source
+resx	Source code	Source code	Resource file for .NET applications
+rc	Source code	Source code	Resource script files to generate resources for .NET applications
+rc2	Source code	Source code	Resource script files to generate resources for .NET applications
+rkt	Source code	Source code	Racket source
+rktl	Source code	Source code	Racket source
+resources	Source code	Source code	Visual Studio Code
+scala	Source code	Source code	Scala source
+sci	Source code	Source code	Scilab
+sce	Source code	Source code	Scilab
+scm	Source code	Source code	Scheme source
+sd7	Source code	Source code	Seed7 source
+skb	Source code	Source code	Sage Retrieve 4GL Common Area (Main and Amended backup)
+skc	Source code	Source code	Sage Retrieve 4GL Common Area (Main and Amended backup)
+skd	Source code	Source code	Sage Retrieve 4GL Database
+skf	Source code	Source code	Sage Retrieve 4GL File Layouts (Main and Amended backup)
+skg	Source code	Source code	Sage Retrieve 4GL File Layouts (Main and Amended backup)
+ski	Source code	Source code	Sage Retrieve 4GL Instructions
+skk	Source code	Source code	Sage Retrieve 4GL Report Generator
+skm	Source code	Source code	Sage Retrieve 4GL Menu
+sko	Source code	Source code	Sage Retrieve 4GL Program
+skp	Source code	Source code	Sage Retrieve 4GL Print Layouts (Main and Amended backup)
+skq	Source code	Source code	Sage Retrieve 4GL Print Layouts (Main and Amended backup)
+sks	Source code	Source code	Sage Retrieve 4GL Screen Layouts (Main and Amended backup)
+skt	Source code	Source code	Sage Retrieve 4GL Screen Layouts (Main and Amended backup)
+skz	Source code	Source code	Sage Retrieve 4GL Security File
+sln	Source code	Source code	Visual Studio solution
+spin	Source code	Source code	Spin source (for Parallax Propeller microcontrollers)
+stk	Source code	Source code	Stickfigure file for Pivot stickfigure animator
+sb	Source code	Source code	Scratch Project file
+sb2	Source code	Source code	Scratch Project file
+sb3	Source code	Source code	Scratch Project file
+scpt	Source code	Source code	AppleScript
+scptd	Source code	Source code	See SCPT
+sdl	Source code	Source code	State Description Language
+sh	Source code	Source code	Shell script
+sprite3	Source code	Source code	Scratch 3.0 exported sprite file
+spwn	Source code	Source code	SPWN source file
+svelte	Source code	Source code	Svelte component
+syjs	Source code	Source code	SyMAT JavaScript
+sypy	Source code	Source code	SyMAT Python
+tcl	Source code	Source code	Tcl
+tns	Source code	Source code	Ti-Nspire Code/File
+ts	Source code	Source code	TypeScript
+tsx	Source code	Source code	TypeScript JSX equivalent
+vbs	Source code	Source code	VBScript Visual Basic Script
+vue	Source code	Source code	Vue.js component
+vap	Source code	Source code	Visual Studio Analyzer project
+vb	Source code	Source code	Visual Basic (.NET) (VB.NET) source
+vbg	Source code	Source code	Visual Studio compatible project group
+vbp	Source code	Source code	Visual Basic project
+vip	Source code	Source code	Visual Basic project
+vbproj	Source code	Source code	Visual Basic (.NET) project
+vcproj	Source code	Source code	Visual C++ project
+vdproj	Source code	Source code	Visual Studio deployment project
+vi	Source code	Source code	LabVIEW method file
+wasm	Source code	Source code	WebAssembly compiled binary
+wat	Source code	Source code	WebAssembly source code file
+xaml	Source code	Source code	Extensible Application Markup Language
+xpl	Source code	Source code	XProc script/pipeline
+xq	Source code	Source code	XQuery file
+xsl	Source code	Source code	XSLT stylesheet
+y	Source code	Source code	yacc source
+omf	Security	Security	OpenPGP Message Format used by Pretty Good Privacy, GNU Privacy Guard, and other OpenPGP…
+gxk	Security	Certificates and keys	Galaxkey, an encryption platform for authorized, private and confidential email communic…
+ssh	Security	Certificates and keys	OpenSSH private key, Secure Shell private key; format generated by ssh-keygen or convert…
+pub	Security	Certificates and keys	OpenSSH public key, Secure Shell public key; format generated by ssh-keygen or PuTTYgen
+ppk	Security	Certificates and keys	PuTTY private key, Secure Shell private key, in the format generated by PuTTYgen instead…
+nsign	Security	Certificates and keys	nSign public key nSign public key in a custom format
+cer	Security	X.509	Distinguished Encoding Rules stores certificates
+crt	Security	X.509	Distinguished Encoding Rules stores certificates
+der	Security	X.509	Distinguished Encoding Rules stores certificates
+p7b	Security	X.509	PKCS#7 SignedData commonly appears without main data, just certificates or certificate r…
+p7c	Security	X.509	PKCS#7 SignedData commonly appears without main data, just certificates or certificate r…
+p12	Security	X.509	PKCS#12 can store public certificates and private keys
+pfx	Security	X.509	PKCS#12 can store public certificates and private keys
+pem	Security	X.509	Privacy-enhanced Electronic Mail: full format not widely used, but often used to store D…
+axx	Security	Encrypted files	Encrypted file, created with AxCrypt or Xecrets Ez
+eea	Security	Encrypted files	An encrypted CAB, ostensibly for protecting email attachments
+tc	Security	Encrypted files	Virtual encrypted disk container, created by TrueCrypt
+hc	Security	Encrypted files	Virtual encrypted disk container, created by VeraCrypt
+kode	Security	Encrypted files	Encrypted file, created with KodeFile
+lockbit	Security	Encrypted files	Used in Ransomwares, trojans, and other viruses
+nsigne	Security	Encrypted files	An encrypted private key, created by nSign
+bpw	Security	Password files	Encrypted password file created by Bitser password manager
+kdb	Security	Password files	KeePass 1 database
+kdbx	Security	Password files	KeePass 2 database
+acq	Signal data (non-audio)	Signal data (non-audio)	AcqKnowledge format for Windows/PC from Biopac
+adicht	Signal data (non-audio)	Signal data (non-audio)	LabChart format from ADInstruments
+bkr	Signal data (non-audio)	Signal data (non-audio)	The EEG data format developed at the University of Technology Graz
+bdf	Signal data (non-audio)	Signal data (non-audio)	Configuration file for Comtrade data
+cfg	Signal data (non-audio)	Signal data (non-audio)	Configuration file for Comtrade data
+cfwb	Signal data (non-audio)	Signal data (non-audio)	Chart Data format from ADInstruments
+dat	Signal data (non-audio)	Signal data (non-audio)	Raw data file for Comtrade data
+edf	Signal data (non-audio)	Signal data (non-audio)	European data format
+fef	Signal data (non-audio)	Signal data (non-audio)	File Exchange Format for Vital signs
+gdf	Signal data (non-audio)	Signal data (non-audio)	General data formats for biomedical signals
+gms	Signal data (non-audio)	Signal data (non-audio)	Gesture And Motion Signal format
+irock	Signal data (non-audio)	Signal data (non-audio)	intelliRock Sensor Data File Format
+mfer	Signal data (non-audio)	Signal data (non-audio)	Medical waveform Format Encoding Rules
+sac	Signal data (non-audio)	Signal data (non-audio)	Seismic Analysis Code, earthquake seismology data format
+scp-ecg	Signal data (non-audio)	Signal data (non-audio)	Standard Communication Protocol for Computer assisted electrocardiography
+seed	Signal data (non-audio)	Signal data (non-audio)	Standard for the Exchange of Earthquake Data, seismological data and sensor metadata
+mseed	Signal data (non-audio)	Signal data (non-audio)	Standard for the Exchange of Earthquake Data, seismological data and sensor metadata
+segy	Signal data (non-audio)	Signal data (non-audio)	Reflection seismology data format
+sigif	Signal data (non-audio)	Signal data (non-audio)	SIGnal Interchange Format
+win	Signal data (non-audio)	Signal data (non-audio)	NIED/ERI seismic data format (.cnt)
+win32	Signal data (non-audio)	Signal data (non-audio)	NIED/ERI seismic data format (.cnt)
+8svx	Sound and music	Uncompressed	Commodore-Amiga 8-bit sound (usually in an IFF container)
+16svx	Sound and music	Uncompressed	Commodore-Amiga 16-bit sound (usually in an IFF container)
+aiff	Sound and music	Uncompressed	Audio Interchange File Format
+aif	Sound and music	Uncompressed	Audio Interchange File Format
+aifc	Sound and music	Uncompressed	Audio Interchange File Format
+au	Sound and music	Uncompressed	Simple audio file format introduced by Sun Microsystems
+aup3	Sound and music	Uncompressed	Audacity's file for when you save a song
+bwf	Sound and music	Uncompressed	Broadcast Wave Format, an extension of WAVE
+cdda	Sound and music	Uncompressed	Compact Disc Digital Audio
+dsf	Sound and music	Uncompressed	Direct Stream Digital audio file, also used in Super Audio CD
+dff	Sound and music	Uncompressed	Direct Stream Digital audio file, also used in Super Audio CD
+raw	Sound and music	Uncompressed	Raw samples without any header or sync
+wav	Sound and music	Uncompressed	Microsoft Wave
+cwav	Sound and music	Uncompressed	file read by the Nintendo 3DS for Home-screen sound effects
+qau	Sound and music	Uncompressed	Queye Audio file, adapted from WAVE with specific metadata, generally for artists to sub…
+queyeaudio	Sound and music	Uncompressed	Queye Audio file, adapted from WAVE with specific metadata, generally for artists to sub…
+qau0	Sound and music	Uncompressed	Proprietary version of the Queye Audio file, without metadata
+ra	Sound and music	Compressed	RealAudio format
+rm	Sound and music	Compressed	RealAudio format
+flac	Sound and music	Compressed	Free lossless codec of the Ogg project
+la	Sound and music	Compressed	Lossless audio
+pac	Sound and music	Compressed	LPAC
+ape	Sound and music	Compressed	Monkey's Audio
+ofr	Sound and music	Compressed	OptimFROG
+ofs	Sound and music	Compressed	OptimFROG
+off	Sound and music	Compressed	OptimFROG
+rka	Sound and music	Compressed	RKAU
+shn	Sound and music	Compressed	Shorten
+tak	Sound and music	Compressed	Tom's Lossless Audio Kompressor
+thd	Sound and music	Compressed	Dolby TrueHD
+tta	Sound and music	Compressed	Free lossless audio codec (True Audio)
+wv	Sound and music	Compressed	WavPack
+wma	Sound and music	Compressed	Windows Media Audio 9 Lossless
+bcwav	Sound and music	Compressed	Nintendo 3DS Home-screen BGM file
+brstm	Sound and music	Compressed	Binary Revolution Stream
+dts	Sound and music	Compressed	DTS (sound system)
+dtshd	Sound and music	Compressed	DTS (sound system)
+dtsma	Sound and music	Compressed	DTS (sound system)
+ast	Sound and music	Compressed	Nintendo Audio Stream
+aw	Sound and music	Compressed	Nintendo Audio Sample used in first-party games
+psf	Sound and music	Compressed	Portable Sound Format, PlayStation variant (originally PlayStation Sound Format)
+ac3	Sound and music	Lossy audio	Usually used for Dolby Digital tracks
+amr	Sound and music	Lossy audio	For GSM and UMTS based mobile phones
+mp1	Sound and music	Lossy audio	MPEG Layer 1
+mp2	Sound and music	Lossy audio	MPEG Layer 2
+mp3	Sound and music	Lossy audio	MPEG Layer 3
+spx	Sound and music	Lossy audio	Speex (Ogg project, specialized for voice, low bitrates)
+gsm	Sound and music	Lossy audio	GSM Full Rate, originally developed for use in mobile phones
+aac	Sound and music	Lossy audio	Advanced Audio Coding (usually in an MPEG-4 container)
+mpc	Sound and music	Lossy audio	Musepack
+vqf	Sound and music	Lossy audio	Yamaha TwinVQ
+ots	Sound and music	Lossy audio	Audio File (similar to MP3, with more data stored in the file and slightly better compre…
+swa	Sound and music	Lossy audio	Adobe Shockwave Audio (Same compression as MP3 with additional header information specif…
+vox	Sound and music	Lossy audio	Dialogic ADPCM Low Sample Rate Digitized Voice
+voc	Sound and music	Lossy audio	Creative Labs Soundblaster Creative Voice 8-bit & 16-bit Also output format of RCA Audio…
+dwd	Sound and music	Lossy audio	DiamondWare Digitized
+smp	Sound and music	Lossy audio	Turtlebeach SampleVision
+ogg	Sound and music	Lossy audio	Ogg Vorbis
+mod	Sound and music	Tracker modules and related	Soundtracker and Protracker sample and melody modules
+mt2	Sound and music	Tracker modules and related	MadTracker 2 module
+s3m	Sound and music	Tracker modules and related	Scream Tracker 3 module
+xm	Sound and music	Tracker modules and related	Fast Tracker module
+it	Sound and music	Tracker modules and related	Impulse Tracker module
+sng	Sound and music	Tracker modules and related	Goat Tracker module
+nsf	Sound and music	Tracker modules and related	NES Sound Format
+gbs	Sound and music	Tracker modules and related	Game Boy Sound System
+mid	Sound and music	Tracker modules and related	Standard MIDI file; most often just notes and controls but occasionally also sample dump…
+midi	Sound and music	Tracker modules and related	Standard MIDI file; most often just notes and controls but occasionally also sample dump…
+ftm	Sound and music	Tracker modules and related	FamiTracker Project file
+btm	Sound and music	Tracker modules and related	BambooTracker Project file
+fur	Sound and music	Tracker modules and related	Furnace Tracker Project file
+abc	Sound and music	Sheet music files	ABC Notation sheet music file
+darms	Sound and music	Sheet music files	DARMS File Format also known as the Ford-Columbia Format
+etf	Sound and music	Sheet music files	Enigma Transportation Format abandoned sheet music exchange format
+gp	Sound and music	Sheet music files	Guitar Pro sheet music and tablature file
+kern	Sound and music	Sheet music files	Kern File Format sheet music file
+ly	Sound and music	Sheet music files	LilyPond sheet music file
+mei	Sound and music	Sheet music files	Music Encoding Initiative file format that attempts to encode all musical notations
+mus	Sound and music	Sheet music files	Finale sheet music file
+musx	Sound and music	Sheet music files	Finale sheet music file
+mxl	Sound and music	Sheet music files	MusicXML standard sheet music exchange format
+xml	Sound and music	Sheet music files	MusicXML standard sheet music exchange format
+mscx	Sound and music	Sheet music files	MuseScore sheet music file
+mscz	Sound and music	Sheet music files	MuseScore sheet music file
+smdl	Sound and music	Sheet music files	Standard Music Description Language sheet music file
+sib	Sound and music	Sheet music files	Sibelius sheet music file
+asf	Sound and music	Other file formats pertaining to audio	Advanced Systems Format
+cust	Sound and music	Other file formats pertaining to audio	DeliPlayer custom sound format
+gym	Sound and music	Other file formats pertaining to audio	Genesis YM2612 log
+jam	Sound and music	Other file formats pertaining to audio	Jam music format
+mng	Sound and music	Other file formats pertaining to audio	Background music for the Creatures game series, starting from Creatures 2
+niff	Sound and music	Other file formats pertaining to audio	Notation Interchange File Format
+ptb	Sound and music	Other file formats pertaining to audio	Power Tab Editor tab
+pvd	Sound and music	Other file formats pertaining to audio	Portable Voice Document used for Oaisys & Mitel call recordings
+rmj	Sound and music	Other file formats pertaining to audio	RealJukebox Media used for RealPlayer
+sf2	Sound and music	Other file formats pertaining to audio	Polyphone Soundfont 2
+sf3	Sound and music	Other file formats pertaining to audio	Polyphone Soundfont 3
+sf4	Sound and music	Other file formats pertaining to audio	Polyphone Soundfont 4
+sid	Sound and music	Other file formats pertaining to audio	Sound Interface Device – Commodore 64 instructions to play SID music and sound effects
+spc	Sound and music	Other file formats pertaining to audio	Super NES sound format
+txm	Sound and music	Other file formats pertaining to audio	Track ax media
+vgm	Sound and music	Other file formats pertaining to audio	Stands for "Video Game Music", log for several different chips
+ym	Sound and music	Other file formats pertaining to audio	Atari ST/Amstrad CPC YM2149 sound chip format
+aimppl	Playlist formats	Playlist formats	AIMP Playlist format
+asx	Playlist formats	Playlist formats	Advanced Stream Redirector
+ram	Playlist formats	Playlist formats	Real Audio Metafile For RealAudio files only
+xpl	Playlist formats	Playlist formats	HDi playlist
+xspf	Playlist formats	Playlist formats	XML Shareable Playlist Format
+zpl	Playlist formats	Playlist formats	Groove Music Playlist format from Microsoft
+m3u	Playlist formats	Playlist formats	Multimedia playlist file
+pls	Playlist formats	Playlist formats	Multimedia playlist, originally developed for use with the museArc
+qaua	Playlist formats	Playlist formats	"Queye Audio Album", set of Queye Audio files with album metadata
+als	Audio editing and music production	Audio editing and music production	Ableton Live set
+alc	Audio editing and music production	Audio editing and music production	Ableton Live clip
+alp	Audio editing and music production	Audio editing and music production	Ableton Live pack
+atmos	Audio editing and music production	Audio editing and music production	Dolby Atmos Rendering and Mastering related file
+audio	Audio editing and music production	Audio editing and music production	Dolby Atmos Rendering and Mastering related file
+metadata	Audio editing and music production	Audio editing and music production	Dolby Atmos Rendering and Mastering related file
+aup	Audio editing and music production	Audio editing and music production	Audacity project file
+aup3	Audio editing and music production	Audio editing and music production	Audacity 3.0 project file
+band	Audio editing and music production	Audio editing and music production	GarageBand project file
+cel	Audio editing and music production	Audio editing and music production	Adobe Audition loop file (Cool Edit Loop)
+cau	Audio editing and music production	Audio editing and music production	Caustic project file
+cpr	Audio editing and music production	Audio editing and music production	Steinberg Cubase project file
+cwp	Audio editing and music production	Audio editing and music production	Cakewalk by BandLab project file
+drm	Audio editing and music production	Audio editing and music production	Steinberg Cubase drum file
+dwp	Audio editing and music production	Audio editing and music production	DirectWave Sampler Instrument file (mainly used for FL Studio Mobile)
+dmkit	Audio editing and music production	Audio editing and music production	Image-Line's Drumaxx drum kit file
+ens	Audio editing and music production	Audio editing and music production	Native Instruments Reaktor Ensemble
+flm	Audio editing and music production	Audio editing and music production	Image Line FL Studio Mobile project file
+flp	Audio editing and music production	Audio editing and music production	Image Line FL Studio project file
+grir	Audio editing and music production	Audio editing and music production	Native Instruments Komplete Guitar Rig Impulse Response
+logic	Audio editing and music production	Audio editing and music production	Logic Pro X project file
+mmp	Audio editing and music production	Audio editing and music production	LMMS project file (alternatively MMPZ for compressed formats)
+mmr	Audio editing and music production	Audio editing and music production	MAGIX Music Maker project file
+mx6hs	Audio editing and music production	Audio editing and music production	Mixcraft 6 Home Studio project file
+npr	Audio editing and music production	Audio editing and music production	Steinberg Nuendo project file
+omf	Audio editing and music production	Audio editing and music production	Open Media Framework Interchange OMFI succeeds OMF (Open Media Framework)
+omfi	Audio editing and music production	Audio editing and music production	Open Media Framework Interchange OMFI succeeds OMF (Open Media Framework)
+ptx	Audio editing and music production	Audio editing and music production	Pro Tools 10 or later project file
+ptf	Audio editing and music production	Audio editing and music production	Pro Tools 7 up to Pro Tools 9 project file
+pts	Audio editing and music production	Audio editing and music production	Legacy Pro Tools project file
+rin	Audio editing and music production	Audio editing and music production	Soundways RIN-M file containing sound recording participant credits and song information
+rpp	Audio editing and music production	Audio editing and music production	REAPER project file
+rpp-bak	Audio editing and music production	Audio editing and music production	REAPER project file
+reapeaks	Audio editing and music production	Audio editing and music production	REAPER peak (waveform cache) file
+ses	Audio editing and music production	Audio editing and music production	Adobe Audition multitrack session file
+sfk	Audio editing and music production	Audio editing and music production	Sound Forge waveform cache file
+sfl	Audio editing and music production	Audio editing and music production	Sound Forge sound file
+sng	Audio editing and music production	Audio editing and music production	MIDI sequence file (MidiSoft, Korg, etc.) or n-Track Studio project file
+stf	Audio editing and music production	Audio editing and music production	StudioFactory project file
+snd	Audio editing and music production	Audio editing and music production	Akai MPC sound file
+syn	Audio editing and music production	Audio editing and music production	SynFactory project file
+svp	Audio editing and music production	Audio editing and music production	Synthesizer V Studio project file
+ust	Audio editing and music production	Audio editing and music production	Utau Editor sequence excluding wave-file
+ustx	Audio editing and music production	Audio editing and music production	OpenUtau project file
+vcls	Audio editing and music production	Audio editing and music production	VocaListener project file
+vpr	Audio editing and music production	Audio editing and music production	Vocaloid 5 Editor sequence excluding wave-file
+vsq	Audio editing and music production	Audio editing and music production	Vocaloid 2 Editor sequence excluding wave-file
+vsqx	Audio editing and music production	Audio editing and music production	Vocaloid 3 & 4 Editor sequence excluding wave-file
+dvr-ms	Recorded television formats	Recorded television formats	Windows XP Media Center Edition's Windows Media Center recorded television format
+wtv	Recorded television formats	Recorded television formats	Windows Vista's and up Windows Media Center recorded television format
+123	Spreadsheet	Spreadsheet	Lotus 1-2-3
+ab2	Spreadsheet	Spreadsheet	Abykus worksheet
+ab3	Spreadsheet	Spreadsheet	Abykus workbook
+aws	Spreadsheet	Spreadsheet	Ability Spreadsheet
+bcsv	Spreadsheet	Spreadsheet	Nintendo proprietary table format
+clf	Spreadsheet	Spreadsheet	ThinkFree Calc
+cell	Spreadsheet	Spreadsheet	Haansoft (Hancom) SpreadSheet software document
+csv	Spreadsheet	Spreadsheet	Comma-separated values
+gsheet	Spreadsheet	Spreadsheet	Google Drive Spreadsheet
+lcw	Spreadsheet	Spreadsheet	Lucid 3-D
+ods	Spreadsheet	Spreadsheet	OpenDocument spreadsheet
+ots	Spreadsheet	Spreadsheet	OpenDocument spreadsheet template
+qpw	Spreadsheet	Spreadsheet	Quattro Pro spreadsheet
+pmdx	Spreadsheet	Spreadsheet	SoftMaker PlanMaker
+sdc	Spreadsheet	Spreadsheet	StarOffice StarCalc Spreadsheet
+slk	Spreadsheet	Spreadsheet	SYLK (SYmbolic LinK)
+stc	Spreadsheet	Spreadsheet	OpenOffice.org XML (obsolete) Spreadsheet template
+sxc	Spreadsheet	Spreadsheet	OpenOffice.org XML (obsolete) Spreadsheet
+tab	Spreadsheet	Spreadsheet	tab delimited columns; also TSV (Tab-Separated Values)
+txt	Spreadsheet	Spreadsheet	text file
+vc	Spreadsheet	Spreadsheet	Visicalc
+wk1	Spreadsheet	Spreadsheet	Lotus 1-2-3 up to version 2.01
+wk3	Spreadsheet	Spreadsheet	Lotus 1-2-3 version 3.0
+wk4	Spreadsheet	Spreadsheet	Lotus 1-2-3 version 4.0
+wks	Spreadsheet	Spreadsheet	Lotus 1-2-3
+wq1	Spreadsheet	Spreadsheet	Quattro Pro DOS version
+xlk	Spreadsheet	Spreadsheet	Microsoft Excel worksheet backup
+xls	Spreadsheet	Spreadsheet	Microsoft Excel worksheet sheet (97–2003)
+xlsb	Spreadsheet	Spreadsheet	Microsoft Excel binary workbook
+xlsm	Spreadsheet	Spreadsheet	Microsoft Excel Macro-enabled workbook
+xlsx	Spreadsheet	Spreadsheet	Office Open XML worksheet sheet, there are at least 4 quite different versions of Micros…
+xlr	Spreadsheet	Spreadsheet	Microsoft Works version 6.0
+xlt	Spreadsheet	Spreadsheet	Microsoft Excel worksheet template
+xltm	Spreadsheet	Spreadsheet	Microsoft Excel Macro-enabled worksheet template
+xlw	Spreadsheet	Spreadsheet	Microsoft Excel worksheet workspace (version 4.0)
+tsv	Tabulated data	Tabulated data	Tab-separated values
+csv	Tabulated data	Tabulated data	Comma-separated values
+db	Tabulated data	Tabulated data	databank format; accessible by many econometric applications
+dif	Tabulated data	Tabulated data	accessible by many spreadsheet applications
+3gp	Video	Video	the most common video format for cell phones
+aaf	Video	Video	mostly intended to hold edit decisions and rendering information, but can also contain c…
+at3	Video	Video	Sony's UMD data compression
+gif	Video	Video	Animated GIF (simple animation; until recently often avoided because of patent problems)
+asf	Video	Video	container (enables any form of compression to be used; MPEG-4 is common; video in ASF-co…
+avchd	Video	Video	Advanced Video Codec High Definition
+avi	Video	Video	container (a shell, which enables any form of compression to be used)
+bik	Video	Video	Bink Video file
+bk2	Video	Video	Bink Video file
+braw	Video	Video	a high bitrate video format used by Blackmagic Design cameras
+cam	Video	Video	aMSN webcam log file
+collab	Video	Video	Blackboard Collaborate session recording
+dat	Video	Video	video standard data file (automatically created when we attempted to burn as video file…
+dvr-ms	Video	Video	Windows XP Media Center Edition's Windows Media Center recorded television format
+flv	Video	Video	Flash video (encoded to run in a flash animation)
+gmv	Video	Video	Video format used on the iBall DAViD
+mpeg-1	Video	Video	M1V Video
+mpeg-2	Video	Video	M2V Video
+noa	Video	Video	rare movie format use in some Japanese eroges around 2002
+fla	Video	Video	Adobe Flash (for producing)
+flr	Video	Video	(text file which contains scripts extracted from SWF by a free ActionScript decompiler n…
+sol	Video	Video	Adobe Flash shared object ("Flash cookie")
+str	Video	Video	Sony PlayStation video stream
+m4v	Video	Video	video container file format developed by Apple
+mkv	Video	Video	Matroska Matroska is a container format, which enables any video format such as MPEG-4 A…
+wrap	Video	Video	MediaForge (*.wrap)
+mng	Video	Video	mainly simple animation containing PNG and JPEG objects, often somewhat more complex tha…
+mov	Video	Video	QuickTime container which enables any form of compression to be used; Sorenson codec is…
+mpeg	Video	Video	MPEG
+mpg	Video	Video	MPEG
+mpe	Video	Video	MPEG
+thp	Video	Video	Nintendo proprietary movie/video format, used in GameCube and Wii games
+mpeg-4	Video	Video	MPEG-4 Part 14, shortened "MP4" multimedia container (most often used for Sony's PlaySta…
+mxf	Video	Video	Material Exchange Format (standardized wrapper format for audio/visual material develope…
+roq	Video	Video	used by Quake III Arena
+nsv	Video	Video	NSV Nullsoft Streaming Video (media container designed for streaming video content over…
+ogg	Video	Video	container, multimedia
+qmg	Video	Video	Samsung device boot animation
+rm	Video	Video	RealMedia
+rmvb	Video	Video	Proprietary format on Chinese knockoff video game console
+svi	Video	Video	SVI Samsung video format for portable players
+smk	Video	Video	Smacker video file
+swf	Video	Video	Adobe Flash (for viewing)
+torrent	Video	Video	A file that holds information about where data is (used in Bittorrent, uTorrent] qBittor…
+wmv	Video	Video	Windows Media Video (see ASF)
+wtv	Video	Video	Windows Vista's and up Windows Media Center recorded television format
+yuv	Video	Video	raw video format; resolution (horizontal x vertical) and sample structure 4:2:2 or 4:2:0…
+webm	Video	Video	video file format for web video using HTML5
+ass	Video	Subtitles	ASS (also SSA): a subtitles file created by Aegisub, a video typesetting application (al…
+ssa	Video	Subtitles	ASS (also SSA): a subtitles file created by Aegisub, a video typesetting application (al…
+smi	Video	Subtitles	SMI SAMI Caption file (HTML like subtitle for movie files)
+srt	Video	Subtitles	SubRip Subtitle – file format for closed captioning or subtitles
+drp	Video	Video editing, production	Davinci Resolve 17 project file
+fcp	Video	Video editing, production	Final Cut Pro project file
+mswmm	Video	Video editing, production	Windows Movie Maker project file
+pds	Video	Video editing, production	Cyberlink PowerDirector project
+ppj	Video	Video editing, production	Adobe Premiere Pro video editing file
+prproj	Video	Video editing, production	Adobe Premiere Pro video editing file
+aep	Video	Video editing, production	Adobe After Effects video editing file
+imovieproj	Video	Video editing, production	iMovie project file
+veg	Video	Video editing, production	Sony Vegas project file
+veg-bak	Video	Video editing, production	Sony Vegas project file
+suf	Video	Video editing, production	Sony camera configuration file (setup.suf) produced by XDCAM-EX camcorders
+wlmp	Video	Video editing, production	Windows Live Movie Maker project file
+kdenlive	Video	Video editing, production	Kdenlive project file
+vpj	Video	Video editing, production	VideoPad project file
+motn	Video	Video editing, production	Apple Motion project file
+imoviemobile	Video	Video editing, production	iMovie project file for iOS users
+wfp	Video	Video editing, production	Wondershare Filmora Project
+wve	Video	Video editing, production	Wondershare Filmora Project
+vproj	Video	Video editing, production	VSDC Free Video Editor project file
+flb	Video	Video editing, production	Flowblade project file
+osb	Video game data	osu!	storyboard data
+osc	Video game data	osu!	osu!stream combined stream data
+osf2	Video game data	osu!	free osu!stream song file
+osg	Video game data	osu!	compressed live gameplay archive (optimized for spectating)
+osk	Video game data	osu!	compressed skin archive
+osr	Video game data	osu!	compressed replay archive
+osu	Video game data	osu!	beatmap data
+osz	Video game data	osu!	compressed beatmap archive
+olz	Video game data	osu!	compressed beatmap archive, can only be opened by osu! (lazer)
+osz2	Video game data	osu!	paid osu!stream song file
+mcaddon	Video game data	Minecraft	Bedrock Edition add-ons and resource packs
+mcfunction	Video game data	Minecraft	functions/scripts
+mcmeta	Video game data	Minecraft	customizable texture packs
+mcpack	Video game data	Minecraft	Bedrock Edition in-game texture packs and full add-ons
+mcr	Video game data	Minecraft	data for in-game worlds before version 1.2
+mctemplate	Video game data	Minecraft	Bedrock Edition world templates
+mcworld	Video game data	Minecraft	Bedrock Edition in-game worlds
+mca	Video game data	Minecraft	format used by Java Edition for storing data for in-game worlds
+nbt	Video game data	Minecraft	format used by Java Edition for storing program variables along with their (Java) type i…
+snbt	Video game data	Minecraft	format used by Java Edition as a stringified version of NBT, it gets converted into nbt…
+nbs	Video game data	Minecraft	used by Note Block Studio, a tool that can be used to make songs with note blocks in-game
+epk	Video game data	Eaglercraft	used by Eaglercraft, an AOT compiled port of Minecraft which has been modified to run un…
+gbx	Video game data	TrackMania/Maniaplanet Engine	All user-created content is stored in this file type
+dds	Video game data	TrackMania/Maniaplanet Engine	Almost every texture in the game uses this format
+pak	Video game data	TrackMania/Maniaplanet Engine	Stores environment data such as valid blocks
+loc	Video game data	TrackMania/Maniaplanet Engine	A locator
+script.txt	Video game data	TrackMania/Maniaplanet Engine	Scripts for Maniaplanet such as menus and game modes
+xml	Video game data	TrackMania/Maniaplanet Engine	ManiaLinks
+mod	Video game data	CPA Engine (OpenSpace)	Object file type used for geometrical 3D objects
+lvl	Video game data	CPA Engine (OpenSpace)	Level objects file type used for actor references
+lgt	Video game data	CPA Engine (OpenSpace)	Level lighting file used for lighting in worlds
+tex	Video game data	CPA Engine (OpenSpace)	Image file used for level textures
+gmt	Video game data	CPA Engine (OpenSpace)	Level material file used for material definitions
+vmt	Video game data	CPA Engine (OpenSpace)	Level visual materials file used for visual material definitions
+spo	Video game data	CPA Engine (OpenSpace)	Level superobject hierarchy file used for superobject definitions
+sct	Video game data	CPA Engine (OpenSpace)	Level sector hierarchy file used for sector definitions
+car	Video game data	CPA Engine (OpenSpace)	Actor data file
+mem	Video game data	CPA Engine (OpenSpace)	Memory block description file
+wad	Video game data	Doom engine	Data storage (contains music, maps, and textures)
+deh	Video game data	Doom engine	DeHackEd files to mutate the game executable (not officially part of the Doom engine)
+dsg	Video game data	Doom engine	Saved game
+lmp	Video game data	Doom engine	A "lump", an entry in a WAD file
+mus	Video game data	Doom engine	Music file (usually contained within a WAD file)
+bsp	Video game data	Quake engine	BSP (For binary space partitioning) – Compiled map format
+map	Video game data	Quake engine	MAP Raw map format used by editors like GtkRadiant or QuArK
+mdl	Video game data	Quake engine	MDL/MD2/MD3/MD5: Model for an item used in the game
+md2	Video game data	Quake engine	MDL/MD2/MD3/MD5: Model for an item used in the game
+md3	Video game data	Quake engine	MDL/MD2/MD3/MD5: Model for an item used in the game
+md5	Video game data	Quake engine	MDL/MD2/MD3/MD5: Model for an item used in the game
+pk2	Video game data	Quake engine	PAK/PK2: Data storage
+pk3	Video game data	Quake engine	PK3/PK4: Used by the Quake II, Quake III Arena, and Quake 4 game engines, respectively,…
+pk4	Video game data	Quake engine	PK3/PK4: Used by the Quake II, Quake III Arena, and Quake 4 game engines, respectively,…
+dat	Video game data	Quake engine	not specific file type, often generic extension for "data" files for a variety of applic…
+roq	Video game data	Quake engine	Video format
+sav	Video game data	Quake engine	Savegame/Savefile format
+fuk	Video game data	Unreal Engine	Map File for Postal 2
+u	Video game data	Unreal Engine	Unreal script format
+uasset	Video game data	Unreal Engine	An asset format since Unreal Engine 4/5
+uax	Video game data	Unreal Engine	Animations format for Unreal Engine 2
+umap	Video game data	Unreal Engine	Map file type for Unreal Engine and levels
+umx	Video game data	Unreal Engine	Map format for Unreal Tournament
+unr	Video game data	Unreal Engine	Map format for Unreal
+upk	Video game data	Unreal Engine	Package format for cooked content in Unreal Engine 3
+usx	Video game data	Unreal Engine	Sound format for Unreal Engine 1 and Unreal Engine 2
+ut2	Video game data	Unreal Engine	Map format for Unreal Tournament 2003 and Unreal Tournament 2004
+ut3	Video game data	Unreal Engine	Map format for Unreal Tournament 3
+utx	Video game data	Unreal Engine	Texture format for Unreal Engine 1 and Unreal Engine 2
+uxx	Video game data	Unreal Engine	Cache format; these are files a client downloaded from server (which can be converted to…
+dmo	Video game data	Duke Nukem 3D Engine	Save game
+grp	Video game data	Duke Nukem 3D Engine	Data storage
+sv	Video game data	Diablo Engine	Save Game
+itm	Video game data	Diablo Engine	Item File
+lip	Video game data	Real Virtuality Engine	Format that is created from WAV files to create in-game accurate lip-sync for character…
+pbo	Video game data	Real Virtuality Engine	Binarized file used for compiled models
+sqf	Video game data	Real Virtuality Engine	Format used for general editing
+sqm	Video game data	Real Virtuality Engine	Format used for mission files
+rbxl	Video game data	Roblox Studio engine	Roblox Studio place file (XML, binary)
+rbxm	Video game data	Roblox Studio engine	Roblox Studio model file (XML, binary)
+rbxlx	Video game data	Roblox Studio engine	Roblox Studio place file (exclusively XML)
+rbxmx	Video game data	Roblox Studio engine	Roblox Studio model file (exclusively XML)
+tres	Video game data	Godot engine	Human readable resource file
+gd	Video game data	Godot engine	Godot Engine's built-in scripting language (GDScript) source
+tscn	Video game data	Godot engine	Human readable scene file
+gdc	Video game data	Godot engine	Compiled GDScript files used in exported PCK files
+res	Video game data	Godot engine	Compiled resource files used in exported PCK files
+scn	Video game data	Godot engine	Compiled scene files used in exported PCK files
+import	Video game data	Godot engine	Human readable file alongside imported textures with metadata for the engine
+godot	Video game data	Godot engine	Human readable metadata file for the engine
+dem	Video game data	Source engine	Source Engine demo format
+hl2	Video game data	Source engine	Half-Life 2 save format
+pcf	Video game data	Source engine	Source Engine particle effect file
+smd	Video game data	Source engine	Source Engine uncompiled model format
+vmf	Video game data	Source engine	Valve Hammer Map editor raw map file
+vmx	Video game data	Source engine	Valve Hammer Map editor backup map file
+vpk	Video game data	Source engine	Source Engine pack format
+vtf	Video game data	Source engine	Source Engine texture format
+dtt	Video game data	Platinum Games engine	Data containers, acts similarly to a folder, but can only have one layer of depth
+evn	Video game data	Platinum Games engine	Data containers, acts similarly to a folder, but can only have one layer of depth
+eff	Video game data	Platinum Games engine	Data containers, acts similarly to a folder, but can only have one layer of depth
+eft	Video game data	Platinum Games engine	Data containers, acts similarly to a folder, but can only have one layer of depth
+wmb	Video game data	Platinum Games engine	Mesh data
+scr	Video game data	Platinum Games engine	Collection of WMBs to makeup levels and scenes
+wta	Video game data	Platinum Games engine	Texture definitions and flags
+wtp	Video game data	Platinum Games engine	Raw texture data
+wtb	Video game data	Platinum Games engine	Combination of both WTA and WTP, with WTA first, then WTP after
+trg	Video game data	Platinum Games engine	Controls the flow of in-game events and calls functions in code
+bxm	Video game data	Platinum Games engine	Binary-encoded and compressed XML data
+est	Video game data	Platinum Games engine	Effect data for the ESP effects system (used in Metal Gear Rising: Revengeance and Nier:…
+ef2	Video game data	Platinum Games engine	Effect data for the EF2 effects system (used in Bayonetta 1)
+mot	Video game data	Platinum Games engine	Motion capture animation data
+adofai	Video game data	Other formats	Level data for A Dance of Fire and Ice
+b	Video game data	Other formats	used for Grand Theft Auto saved game files
+bbkeymap	Video game data	Other formats	Blockbench keybindings
+bbsettings	Video game data	Other formats	Blockbench settings
+bbtheme	Video game data	Other formats	Blockbench theme
+bms	Video game data	Other formats	Rhythm game file format
+bme	Video game data	Other formats	Expansion of BMS file format
+bml	Video game data	Other formats	Expansion of BMS file format
+cgb	Video game data	Other formats	Pokémon Black and White]]Black 2 and White 2|Black 2 and White 2] C-Gear skins
+dbpf	Video game data	Other formats	The Sims 2 package
+ddz	Video game data	Other formats	a file which can only be used by the "daydreamer engine" created by "fever-dreamer", a p…
+diva	Video game data	Other formats	Project DIVA timings, element coordinates, MP3 references, notes, animation poses and sc…
+engine	Video game data	Other formats	Engine data for Automation
+esm	Video game data	Other formats	Master and Plugin data archives for the Creation Engine
+esp	Video game data	Other formats	Master and Plugin data archives for the Creation Engine
+gcf	Video game data	Other formats	format used by the Steam content management system for file archives
+gdr	Video game data	Other formats	Geometry Dash replays
+gdr2	Video game data	Other formats	Geometry Dash replays
+gdlvl	Video game data	Other formats	Geometry Dash level data
+gdkb	Video game data	Other formats	Geometry Dash keybind data
+gmd	Video game data	Other formats	Geometry Dash level data (Geode mod GDShare)
+he0	Video game data	Other formats	HE games file
+he2	Video game data	Other formats	HE games file
+he4	Video game data	Other formats	HE games file
+img	Video game data	Other formats	format used by Renderware-based Grand Theft Auto games for data storage
+jbeam	Video game data	Other formats	format used in BeamNG.Drive to define the physical structure of a vehicle
+llsp3	Video game data	Other formats	Lego Spike program file
+love	Video game data	Other formats	format used by the LOVE2D]engine
+mlog	Video game data	Other formats	A file format intended to be used for Mindustry logic
+msav	Video game data	Other formats	A file format used to store Mindustrys map and save data
+msch	Video game data	Other formats	A file format used to store Mindustrys schematic data
+mpq	Video game data	Other formats	MPQ archives used by Blizzard Entertainment
+nl2pkg	Video game data	Other formats	NoLimits 2 package
+oec	Video game data	Other formats	format used by OE-Cake! for scene data storage
+p3d	Video game data	Other formats	format for panda3d by Disney
+plagueinc	Video game data	Other formats	format used by Plague Inc
+pod	Video game data	Other formats	format used by Terminal Reality
+rct	Video game data	Other formats	Used for templates and save files in RollerCoaster Tycoon games
+rep	Video game data	Other formats	used by Blizzard Entertainment for scenario replays in StarCraft
+rdlevel	Video game data	Other formats	Used by Rhythm Doctor to store level data
+rdzip	Video game data	Other formats	Used by Rhythm Doctor to store level data
+simcity	Video game data	Other formats	All game plugins use this format, commonly with different file extensions (Sim City 4)
+sc4lot	Video game data	Other formats	All game plugins use this format, commonly with different file extensions (Sim City 4)
+sc4model	Video game data	Other formats	All game plugins use this format, commonly with different file extensions (Sim City 4)
+scs	Video game data	Other formats	SCS Software data file (Euro Truck Simulator 2 and American Truck Simulator)
+smzip	Video game data	Other formats	ZIP-based package for StepMania songs, themes and announcer packs
+uni	Video game data	Other formats	Super Mario UniMaker level data
+unis	Video game data	Other formats	Super Mario UniMaker level data
+usld	Video game data	Other formats	format used by Unison Shift to store level layouts
+viv	Video game data	Other formats	Archive format used to compress data for several video games, including Need for Speed:…
+vvvvvv	Video game data	Other formats	format used by VVVVVV
+cps	Video game data	Other formats	format used by The Powder Toy, Powder Toy save
+stm	Video game data	Other formats	format used by The Powder Toy, Powder Toy stamp
+pkg	Video game data	Other formats	format used by Bungie for the PC beta of Destiny 2, for nearly all the game's assets
+chr	Video game data	Other formats	format used by Team Salvato, for the character files of Doki Doki Literature Club!
+z5	Video game data	Other formats	format used by Z-machine for story files in interactive fiction
+scworld	Video game data	Other formats	format used by Survivalcraft to store sandbox worlds
+scskin	Video game data	Other formats	format used by Survivalcraft to store player skins
+scbtex	Video game data	Other formats	format used by Survivalcraft to store block textures
+prison	Video game data	Other formats	format used by Prison Architect to save prisons
+escape	Video game data	Other formats	format used by Prison Architect to save escape attempts
+wbfs	Video game data	Other formats	Wii Backup File System
+gba	Video game data	Other formats	Game Boy Advance ROM File
+jkr	Video game data	Other formats	format used by Balatro for data storage
+pss	Video game data	Other formats	Sony PlayStation 2 Game Video file and is used to store audio and video data by games fo…
+fnfc	Video game data	Other formats	Friday Night Funkin chart file
+arc	Video game data	Other formats	Nintendo U8 archive
+szs	Video game data	Other formats	Nintendo Yaz0 compressed archive
+egf	Video game data	Other formats	Educational Game Formatref>
+32x	Video game storage media	Video game storage media	Sega 32X
+3ds	Video game storage media	Video game storage media	Nintendo 3DS
+a26	Video game storage media	Video game storage media	Atari 2600
+a52	Video game storage media	Video game storage media	Atari 5200
+a78	Video game storage media	Video game storage media	Atari 7800
+adf	Video game storage media	Video game storage media	Amiga file, for 880K diskette images
+adz	Video game storage media	Video game storage media	GZip-compressed version of above
+bin	Video game storage media	Video game storage media	Magnavox Odyssey 2
+cia	Video game storage media	Video game storage media	Nintendo 3DS Installation File (for installing games with the use of the FBI homebrew ap…
+crt	Video game storage media	Video game storage media	Commodore 64 (for cartridge images)
+d64	Video game storage media	Video game storage media	Commodore 64 (for disk images)
+dms	Video game storage media	Video game storage media	Disk Masher System, previously used as a disk-archiving system native to the Amiga, also…
+dsi	Video game storage media	Video game storage media	DSiWare
+dsk	Video game storage media	Video game storage media	(for disk images)
+fds	Video game storage media	Video game storage media	Famicom Disk System
+fig	Video game storage media	Video game storage media	Super Famicom (Japanese releases are rarely .fig, above extensions are more common)
+frz	Video game storage media	Video game storage media	Snes9x Save States
+000-008	Video game storage media	Video game storage media	Snes9x Save States
+gb	Video game storage media	Video game storage media	Game Boy (this applies to the original Game Boy and the Game Boy Color)
+gba	Video game storage media	Video game storage media	a Game Boy Advance game from a ROM cartridge
+gbc	Video game storage media	Video game storage media	Game Boy Color
+gcm	Video game storage media	Video game storage media	a GameCube disk/game
+iso	Video game storage media	Video game storage media	a GameCube disk/game
+gg	Video game storage media	Video game storage media	Game Gear
+gmv	Video game storage media	Video game storage media	Movie format that stores controller input for Sega Genesis emulator Gens
+int	Video game storage media	Video game storage media	Intellivision
+wbfs	Video game storage media	Video game storage media	a Wii and WiiU disk/game
+wad	Video game storage media	Video game storage media	a Wii and WiiU disk/game
+wdf	Video game storage media	Video game storage media	a Wii and WiiU disk/game
+jag	Video game storage media	Video game storage media	an Atari Jaguar game from a ROM cartridge
+j64	Video game storage media	Video game storage media	an Atari Jaguar game from a ROM cartridge
+jst	Video game storage media	Video game storage media	Jnes Save States
+lnx	Video game storage media	Video game storage media	Atari Lynx
+min	Video game storage media	Video game storage media	Pokémon Mini]
+n64	Video game storage media	Video game storage media	Nintendo 64
+v64	Video game storage media	Video game storage media	Nintendo 64
+z64	Video game storage media	Video game storage media	Nintendo 64
+u64	Video game storage media	Video game storage media	Nintendo 64
+usa	Video game storage media	Video game storage media	Nintendo 64
+jap	Video game storage media	Video game storage media	Nintendo 64
+pal	Video game storage media	Video game storage media	Nintendo 64
+eur	Video game storage media	Video game storage media	Nintendo 64
+nds	Video game storage media	Video game storage media	a Nintendo DS game from a ROM cartridge
+nes	Video game storage media	Video game storage media	Nintendo Entertainment System
+ngc	Video game storage media	Video game storage media	Neo Geo Pocket Color
+npc	Video game storage media	Video game storage media	Neo Geo Pocket
+ngp	Video game storage media	Video game storage media	Neo Geo Pocket
+nsp	Video game storage media	Video game storage media	Nintendo eShop Video Game file that stores audio data, video data, game data, and progra…
+pce	Video game storage media	Video game storage media	TurboGrafx-16/PC Engine
+pj	Video game storage media	Video game storage media	Project64 Save States
+pss	Video game storage media	Video game storage media	a Sony PlayStation 2 Game Video file used to store audio and video data by games for the…
+sav	Video game storage media	Video game storage media	Game Boy Advance Saved Data Files
+sg	Video game storage media	Video game storage media	SG-1000
+sgm	Video game storage media	Video game storage media	VisualBoyAdvance Save States
+sgx	Video game storage media	Video game storage media	PC Engine SuperGrafx
+smc	Video game storage media	Video game storage media	Super Nintendo Entertainment System (.078 is for split ROMs, which are rare)
+078	Video game storage media	Video game storage media	Super Nintendo Entertainment System (.078 is for split ROMs, which are rare)
+sfc	Video game storage media	Video game storage media	Super Nintendo Entertainment System (.078 is for split ROMs, which are rare)
+smd	Video game storage media	Video game storage media	Mega Drive/Genesis
+sms	Video game storage media	Video game storage media	Master System
+srm	Video game storage media	Video game storage media	Super Nintendo Entertainment System Saved Data Files
+t64	Video game storage media	Video game storage media	(for tape images without copy protection, considerably smaller than .tap files)
+tap	Video game storage media	Video game storage media	Commodore 64 (.tap) (for tape images including copy protection)
+tzx	Video game storage media	Video game storage media	ZX Spectrum (for exact copies of ZX Spectrum games)
+vb	Video game storage media	Video game storage media	Virtual Boy
+vec	Video game storage media	Video game storage media	Vectrex
+ws	Video game storage media	Video game storage media	WonderSwan
+wsc	Video game storage media	Video game storage media	WonderSwan Color
+xci	Video game storage media	Video game storage media	Nintendo Switch Video Game cartridge dump file that stores audio data, video data, game…
+z80	Video game storage media	Video game storage media	(for snapshots of the emulator RAM)
+sna	Video game storage media	Video game storage media	(for snapshots of the emulator RAM)
+zst	Video game storage media	Video game storage media	ZSNES Save States
+zs1-zs9	Video game storage media	Video game storage media	ZSNES Save States
+z10-z99	Video game storage media	Video game storage media	ZSNES Save States
+vfd	Virtual machines	Microsoft Virtual PC, Virtual Server	Virtual Floppy Disk
+vhd	Virtual machines	Microsoft Virtual PC, Virtual Server	Virtual Hard Disk
+vud	Virtual machines	Microsoft Virtual PC, Virtual Server	Virtual Undo Disk
+vmc	Virtual machines	Microsoft Virtual PC, Virtual Server	Virtual Machine Configuration
+vsv	Virtual machines	Microsoft Virtual PC, Virtual Server	Virtual Machine Saved State
+log	Virtual machines	VMware ESX, GSX, Workstation, Player	Virtual Machine Logfile
+vmdk	Virtual machines	VMware ESX, GSX, Workstation, Player	Virtual Machine Disk
+dsk	Virtual machines	VMware ESX, GSX, Workstation, Player	Virtual Machine Disk
+nvram	Virtual machines	VMware ESX, GSX, Workstation, Player	Virtual Machine BIOS
+vmem	Virtual machines	VMware ESX, GSX, Workstation, Player	Virtual Machine paging file
+vmsd	Virtual machines	VMware ESX, GSX, Workstation, Player	Virtual Machine snapshot metadata
+vmsn	Virtual machines	VMware ESX, GSX, Workstation, Player	Virtual Machine snapshot
+vmss	Virtual machines	VMware ESX, GSX, Workstation, Player	Virtual Machine suspended state
+std	Virtual machines	VMware ESX, GSX, Workstation, Player	Virtual Machine suspended state
+vmtm	Virtual machines	VMware ESX, GSX, Workstation, Player	Virtual Machine team data
+vmx	Virtual machines	VMware ESX, GSX, Workstation, Player	Virtual Machine configuration
+cfg	Virtual machines	VMware ESX, GSX, Workstation, Player	Virtual Machine configuration
+vmxf	Virtual machines	VMware ESX, GSX, Workstation, Player	Virtual Machine team configuration
+vbox	Virtual machines	VirtualBox	VirtualBox machine
+vdi	Virtual machines	VirtualBox	VirtualBox virtual disk image
+vbox-extpack	Virtual machines	VirtualBox	VirtualBox extension pack
+hdd	Virtual machines	Parallels Workstation	Virtual Machine hard disk
+pvs	Virtual machines	Parallels Workstation	Virtual Machine preferences/configuration
+sav	Virtual machines	Parallels Workstation	Virtual Machine saved state
+cow	Virtual machines	QEMU	Copy-on-write
+qcow	Virtual machines	QEMU	QEMU copy-on-write
+qcow2	Virtual machines	QEMU	QEMU copy-on-write – version 2
+qed	Virtual machines	QEMU	QEMU enhanced disk format
+chm	Web page	Web page	Microsoft Compiled HTML Help page
+dtd	Web page	Web page	Document Type Definition (standard), must be public and free
+html	Web page	Web page	HyperText Markup Language
+htm	Web page	Web page	HyperText Markup Language
+xhtml	Web page	Web page	XHTML eXtensible HyperText Markup Language
+xht	Web page	Web page	XHTML eXtensible HyperText Markup Language
+mht	Web page	Web page	MHTML Archived HTML, store all data on a specific web page (text, images, etc.) in one s…
+mhtml	Web page	Web page	MHTML Archived HTML, store all data on a specific web page (text, images, etc.) in one s…
+maff	Web page	Web page	Mozilla Firefox's MAF web archive, based on ZIP; functionally similar to, but not interc…
+webarchive	Web page	Web page	Apple Safari's Web Archive, relies on .plist files; functionally similar to, but not int…
+asp	Web page	Web page	ASP Microsoft Active Server Page
+aspx	Web page	Web page	ASPX Microsoft Active Server Page
+adp	Web page	Web page	ADP AOLserver Dynamic Page
+bml	Web page	Web page	BML Better Markup Language (templating)
+cfm	Web page	Web page	CFM ColdFusion
+cgi	Web page	Web page	CGI
+ihtml	Web page	Web page	iHTML Inline HTML
+jsp	Web page	Web page	JSP JavaServer Pages
+las	Web page	Web page	Lasso, A file created or served with the Lasso Programming Language
+lasso	Web page	Web page	Lasso, A file created or served with the Lasso Programming Language
+lassoapp	Web page	Web page	Lasso, A file created or served with the Lasso Programming Language
+pl	Web page	Web page	Perl
+php	Web page	Web page	PHP ? is version number (previously abbreviated Personal Home Page, later changed to PHP…
+php?	Web page	Web page	PHP ? is version number (previously abbreviated Personal Home Page, later changed to PHP…
+phtml	Web page	Web page	PHP ? is version number (previously abbreviated Personal Home Page, later changed to PHP…
+shtml	Web page	Web page	SSI HTML with Server Side Includes (Apache)
+stm	Web page	Web page	SSI HTML with Server Side Includes (Apache)
+atom	Web page	Markup languages and other web standards-based formats	Atom Another syndication format
+xml	Web page	Markup languages and other web standards-based formats	Atom Another syndication format
+eml	Web page	Markup languages and other web standards-based formats	EML Format used by several desktop email clients
+jsonld	Web page	Markup languages and other web standards-based formats	JSON-LD A JSON-based serialization for linked data
+kprx	Web page	Markup languages and other web standards-based formats	KPRX A XML-based serialization for workflow definition generated by K2
+markdown	Web page	Markup languages and other web standards-based formats	Markdown Plain text formatting syntax, which is popularly used to format "readme" files
+md	Web page	Markup languages and other web standards-based formats	Markdown Plain text formatting syntax, which is popularly used to format "readme" files
+metalink	Web page	Markup languages and other web standards-based formats	Metalink A format to list metadata about downloads, such as mirrors, checksums, and othe…
+met	Web page	Markup languages and other web standards-based formats	Metalink A format to list metadata about downloads, such as mirrors, checksums, and othe…
+ps	Web page	Markup languages and other web standards-based formats	PS A XML-based serialization for test automation scripts called PowerScripts for K2 base…
+rss	Web page	Markup languages and other web standards-based formats	RSS Syndication format
+se	Web page	Markup languages and other web standards-based formats	Shuttle Another lightweight markup language
+zim	Web page	Other web-related formats	ZIM: an open file format that stores wiki content for offline usage
+htaccess	Web page	Other web-related formats	htaccess: Apache access configuration on a per-directory basis (used without a filename)
+conf	Web page	Other web-related formats	Configuration file: Configuration files containing webserver configuration
+config	Web page	Other web-related formats	Configuration file: Configuration files containing webserver configuration
+json	Web page	Other web-related formats	JSON: Configuration or arbitrary static data
+yaml	Web page	Other web-related formats	Yet Another Markup Language
+axd	Other	Other	cookie extensions found in temporary internet folder
+bca	Other	Other	In optical discs, Burst Cutting Area, holds the information of the circular area near th…
+bdf	Other	Other	Binary Data Format – raw data from recovered blocks of unallocated space on a hard drive
+cbp	Other	Other	CD Box Labeler Pro, CentraBuilder, Code::Blocks Project File, Conlab Project
+cex	Other	Other	SolidWorks Enterprise PDM Vault File
+col	Other	Other	Nintendo GameCube proprietary collision file (.col)
+credx	Other	Other	CredX Dat File
+ddb	Other	Other	Generating code for Vocaloid singers voice (see .DDI)
+ddi	Other	Other	Vocaloid phoneme library (Japanese, English, Korean, Spanish, Chinese, Catalan)
+dupx	Other	Other	DuupeCheck database management tool project file
+ftm	Other	Other	Family Tree Maker data file
+ftmb	Other	Other	Family Tree Maker backup file
+fx	Other	Other	Microsoft DirectX plain text effects and properties for the associated file and are used…
+ga3	Other	Other	Graphical Analysis 3
+ged	Other	Other	GEDCOM (GEnealogical Data COMmunication) format to exchange genealogy data between diffe…
+hlp	Other	Other	Windows or CP/M help file
+igc	Other	Other	flight tracks downloaded from GPS devices in the FAI's]] escribed format
+inf	Other	Other	similar format to INI file; used to install device drivers under Windows, inter alia
+jam	Other	Other	JAM Message Base Format for BBSes
+kmc	Other	Other	tests made with KatzReview's MegaCrammer
+kcl	Other	Other	Nintendo GameCube/Wii proprietary collision file (.kcl)
+ktr	Other	Other	Hitachi Vantara Pentaho Data Integration/Kettle Transformation Project file
+lnk	Other	Other	Microsoft Windows format for Hyperlinks to Executables
+lsm	Other	Other	LSMaker script file (program using layered .jpg to create special effects; specifically…
+mcr	Other	Other	A macro recording file for Super Macro software
+melsave	Other	Other	Save file used in the game Melon Sandbox
+melmod	Other	Other	Mod file used in the game Melon Sandbox
+melmap	Other	Other	Map file used in the game Melon Sandbox
+melworld	Other	Other	World file used in the game Melon Sandbox
+melrope	Other	Other	Rope file used in the game Melon Sandbox
+midata	Other	Other	Mine-Imator data file
+miframes	Other	Other	Mine-imator keyframes file (.miframes)
+milanguage	Other	Other	Mine-Imator language data file
+narc	Other	Other	Archive format used in Nintendo DS games
+nth	Other	Other	Nokia Theme Used by Nokia Series 40 cellphones
+oer	Other	Other	AU OER Tool, Open Educational Resource editor
+pa	Other	Other	Used to assign sound effects to materials in KCL files
+pif	Other	Other	Used to run MS-DOS programs under Windows (1.0–XP, and 32-bit Vista–10)
+por	Other	Other	So called "portable" SPSS files, readable by PSPP
+pxz	Other	Other	Compressed file to exchange media elements with PSALMO
+rise	Other	Other	File containing RISE generated information model evolution
+scr	Other	Other	Windows Screen Saver file
+slop	Other	Other	Save file for the game Wordslop by R47n
+topc	Other	Other	TopicCrunch SEO Project file holding keywords, domain, and search engine settings (ASCII)
+wheel	Other	Other	JSON-formatted file for storing wheel names and images; these files can be opened, viewe…
+xlf	Other	Other	Utah State University Extensible LADAR Format
+xmc	Other	Other	Assisted contact lists format, based on XML and used in kindergartens and schools
+zed	Other	Other	My Heritage Family Tree
+zone	Other	Other	Zone file a text file containing a DNS zone
+ani	Other	Cursors	Animated cursor
+cur	Other	Cursors	Cursor file
+smes	Other	Cursors	Hawk's Dock configuration file
+csv	Generalized files	Text-based	Comma-separated values
+html	Generalized files	Text-based	Hypertext Markup Language
+css	Generalized files	Text-based	Cascading Style Sheets
+ini	Generalized files	Text-based	a configuration text file whose format is substantially similar between applications
+json	Generalized files	Text-based	JavaScript Object Notation is an openly used data format now used by many languages, not…
+tini	Generalized files	Text-based	used to configure and backup Crostini, the Linux container for Chromebook
+tsv	Generalized files	Text-based	tab-separated values
+xml	Generalized files	Text-based	an open data format
+yaml	Generalized files	Text-based	an open data format
+md	Generalized files	Text-based	Markdown an open lightweight markup language to create simple but rich text, often used…
+asciidoc	Generalized files	Text-based	an open human-readable markup document format semantically equivalent to DocBook
+yni	Generalized files	Text-based	a configuration file similar to YAML
+plist	Generalized files	Text-based	Short for Property List, stores data in XML-like format on Apple Inc devices
+bak	Generalized files	Binary files	Bak file various backup formats: some just copies of data files, some in application-spe…
+bk	Generalized files	Binary files	Bak file various backup formats: some just copies of data files, some in application-spe…
+bin	Generalized files	Binary files	binary data, often memory dumps of executable code or data to be re-used by the same sof…
+dat	Generalized files	Binary files	data file, usually binary data proprietary to the program that created it, or an MPEG-1…
+dsk	Generalized files	Binary files	file representations of various disk storage images
+raw	Generalized files	Binary files	raw (unprocessed) data
+ifds	Generalized files	Binary files	Incredibly Flexible Data Storage file format
+cnf	Generalized files	Text files	configuration file substantially software-specific
+conf	Generalized files	Text files	configuration file substantially software-specific
+cfg	Generalized files	Text files	configuration file substantially software-specific
+log	Generalized files	Text files	logfiles usually text, but sometimes binary
+text	Generalized files	Text files	human-readable plain text, usually no more specific
+txt	Generalized files	Text files	human-readable plain text, usually no more specific
+asc	Generalized files	Text files	human-readable plain text, usually no more specific
+diff	Generalized files	Differences and patches	text file differences created by the program diff and applied as updates by patch
+!ut	Generalized files	Incomplete transfers	partially complete uTorrent download
+crdownload	Generalized files	Incomplete transfers	"Chrome Partial Download" file created by Chromium-based browsers such as Google Chrome;…
+opdownload	Generalized files	Incomplete transfers	"Opera Partially Downloaded File" is the same as CRDOWNLOAD, but for Opera / Opera GX
+part	Generalized files	Incomplete transfers	partly complete Mozilla Firefox or Transmission download
+partial	Generalized files	Incomplete transfers	partly complete Internet Explorer or Microsoft Edge Legacy download
+duckload	Generalized files	Incomplete transfers	partly complete DuckDuckGo Private Browser download
+temp	Generalized files	Temporary files	temporary file sometimes in a specific format, but often raw data in the middle of proce…
+tmp	Generalized files	Temporary files	temporary file sometimes in a specific format, but often raw data in the middle of proce…
+mp4	Video	Video	MPEG-4 Part 14 video
+mts	Video	Video	AVCHD transport stream
+m2ts	Video	Video	Blu-ray / AVCHD transport stream
+ts	Video	Video	MPEG transport stream
+ogv	Video	Video	Ogg video (Theora)
+3g2	Video	Video	3GPP2 multimedia
+f4v	Video	Video	Flash MP4 video
+vob	Video	Video	DVD video object
+divx	Video	Video	DivX video
+h264	Video	Video	Raw H.264 / AVC stream
+264	Video	Video	Raw H.264 / AVC stream
+hevc	Video	Video	Raw H.265 / HEVC stream
+h265	Video	Video	Raw H.265 / HEVC stream
+y4m	Video	Video	YUV4MPEG uncompressed video
+dv	Video	Video	Digital Video (DV)
+nut	Video	Video	NUT multimedia container
+ivf	Video	Video	IVF (VP8/VP9/AV1 stream)
+mk3d	Video	Video	Matroska 3D video
+amv	Video	Video	AMV video (MP4 players)
+m1v	Video	Video	MPEG-1 video stream
+m2v	Video	Video	MPEG-2 video stream
+mjpeg	Video	Video	Motion JPEG
+apng	Graphics	Raster graphics	Animated PNG
+m4a	Sound and music	Lossy audio	MPEG-4 audio (AAC or ALAC)
+m4b	Sound and music	Lossy audio	MPEG-4 audiobook
+m4r	Sound and music	Lossy audio	iPhone ringtone (AAC)
+opus	Sound and music	Lossy audio	Opus audio
+oga	Sound and music	Lossy audio	Ogg audio
+weba	Sound and music	Lossy audio	WebM audio
+mka	Sound and music	Lossless audio	Matroska audio
+caf	Sound and music	Lossless audio	Apple Core Audio Format
+w64	Sound and music	Uncompressed	Sony Wave64 audio
+rf64	Sound and music	Uncompressed	RF64 (large WAV) audio
+awb	Sound and music	Lossy audio	AMR-WB audio
+eac3	Sound and music	Lossy audio	Dolby Digital Plus (E-AC-3)
+mlp	Sound and music	Lossless audio	Meridian Lossless Packing
+truehd	Sound and music	Lossless audio	Dolby TrueHD
+pcm	Sound and music	Uncompressed	Raw PCM audio
+alac	Sound and music	Lossless audio	Apple Lossless audio stream
+j2k	Graphics	Raster graphics	JPEG 2000 codestream
+jpx	Graphics	Raster graphics	JPEG 2000 (extended)
+exr	Graphics	Raster graphics	OpenEXR high dynamic range image
+hdr	Graphics	Raster graphics	Radiance HDR image
+pam	Graphics	Raster graphics	Portable Arbitrary Map
+pfm	Graphics	Raster graphics	Portable Float Map
+ras	Graphics	Raster graphics	Sun Raster image
+sun	Graphics	Raster graphics	Sun Raster image
+xwd	Graphics	Raster graphics	X Window Dump
+dpx	Graphics	Raster graphics	Digital Picture Exchange
+cin	Graphics	Raster graphics	Kodak Cineon image
+cur	Graphics	Raster graphics	Windows cursor
+wbmp	Graphics	Raster graphics	Wireless Bitmap
+vtt	Video	Subtitles	WebVTT subtitles
+webvtt	Video	Subtitles	WebVTT subtitles
+sub	Video	Subtitles	MicroDVD subtitles
+lrc	Video	Subtitles	Synchronized lyrics
+sbv	Video	Subtitles	YouTube subtitles
+ttml	Video	Subtitles	Timed Text Markup Language subtitles
+dfxp	Video	Subtitles	Distribution Format Exchange Profile subtitles
+scc	Video	Subtitles	Scenarist closed captions
+stl	Video	Subtitles	Spruce subtitle file
+sup	Video	Subtitles	Blu-ray PGS subtitles
+mpl	Video	Subtitles	MPL2 subtitles
+rt	Video	Subtitles	RealText subtitles
+jss	Video	Subtitles	JACOsub subtitles
+pjs	Video	Subtitles	Phoenix Japanimation Society subtitles
+m3u8	Playlist formats	Playlist formats	UTF-8 M3U playlist / HLS stream
+wpl	Playlist formats	Playlist formats	Windows Media Player playlist
+tgz	Archive and compressed	Archive and compressed	gzip-compressed tar archive
+tbz2	Archive and compressed	Archive and compressed	bzip2-compressed tar archive
+txz	Archive and compressed	Archive and compressed	xz-compressed tar archive
+zst	Archive and compressed	Archive and compressed	Zstandard compressed file
+lz4	Archive and compressed	Archive and compressed	LZ4 compressed file
+cpio	Archive and compressed	Archive and compressed	cpio archive
+xar	Archive and compressed	Archive and compressed	eXtensible ARchive
+lha	Archive and compressed	Archive and compressed	LHA archive
+ar	Archive and compressed	Archive and compressed	Unix ar archive
+cbz	Archive and compressed	Archive and compressed	Comic book archive (ZIP)
+cbr	Archive and compressed	Archive and compressed	Comic book archive (RAR)
+yml	Generalized files	Text-based	YAML data
+toml	Generalized files	Text-based	TOML configuration
+markdown	Generalized files	Text-based	Markdown text

@@ -26,9 +26,30 @@ pub fn tools() -> Option<Tools> {
     TOOLS.lock().unwrap().get_or_insert_with(locate).clone()
 }
 
-/// Forgets the cached location so the next [`tools`] call searches again.
+/// Forgets the cached location (and encoder list) so they are looked up again.
 pub fn refresh() {
     *TOOLS.lock().unwrap() = None;
+    *ENCODERS.lock().unwrap() = None;
+}
+
+static ENCODERS: Mutex<Option<std::collections::HashSet<String>>> = Mutex::new(None);
+
+/// Whether the installed FFmpeg build has an encoder (builds differ: e.g. some lack
+/// AMR-WB, Speex or GSM). The list is read once from `ffmpeg -encoders`.
+pub fn has_encoder(name: &str) -> bool {
+    let mut cache = ENCODERS.lock().unwrap();
+    cache.get_or_insert_with(load_encoders).contains(name)
+}
+
+fn load_encoders() -> std::collections::HashSet<String> {
+    let Some(mut cmd) = ffmpeg_cmd() else { return Default::default() };
+    let Ok(out) = cmd.arg("-encoders").stdout(Stdio::piped()).stderr(Stdio::null()).output() else { return Default::default() };
+    String::from_utf8_lossy(&out.stdout)
+        .lines()
+        .skip_while(|l| !l.trim_start().starts_with("------"))
+        .skip(1)
+        .filter_map(|l| l.split_whitespace().nth(1).map(str::to_string))
+        .collect()
 }
 
 /// Per-user folder where VMPC keeps an FFmpeg it downloaded itself.
@@ -248,6 +269,8 @@ pub struct MediaInfo {
     pub audio: Option<AudioInfo>,
     /// Embedded cover art (e.g. album art in MP3/M4A/FLAC).
     pub has_cover: bool,
+    /// Codec names of the subtitle tracks (e.g. "subrip", "ass", "hdmv_pgs_subtitle").
+    pub subtitles: Vec<String>,
 }
 
 #[derive(Clone, Debug)]
@@ -437,6 +460,7 @@ pub fn probe(source: &str) -> Result<MediaInfo, String> {
                     channels: s.channels.unwrap_or(2),
                 });
             }
+            Some("subtitle") => info.subtitles.push(s.codec_name.clone().unwrap_or_default()),
             _ => {}
         }
     }

@@ -33,6 +33,8 @@ pub enum Icon {
     Upload,
     Music,
     Image,
+    Doc,
+    Archive,
 }
 
 fn arc(c: Pos2, r: f32, a0: f32, a1: f32, n: usize) -> Vec<Pos2> {
@@ -204,6 +206,22 @@ pub fn paint(p: &Painter, rect: Rect, icon: Icon, color: Color32) {
             p.circle_filled(at(0.28, 0.78), s * 0.15, color);
             p.circle_filled(at(0.76, 0.68), s * 0.15, color);
             line(p, vec![at(0.42, 0.78), at(0.42, 0.14), at(0.9, 0.06), at(0.9, 0.68)], st);
+        }
+        Icon::Doc => {
+            // Page with a folded corner and text lines.
+            line(p, vec![at(0.6, 0.06), at(0.18, 0.06), at(0.18, 0.94), at(0.82, 0.94), at(0.82, 0.28), at(0.6, 0.06)], st);
+            line(p, vec![at(0.6, 0.06), at(0.6, 0.28), at(0.82, 0.28)], st);
+            for y in [0.5, 0.64, 0.78] {
+                p.line_segment([at(0.32, y), at(0.68, y)], st);
+            }
+        }
+        Icon::Archive => {
+            // Box with a lid and a zip strip.
+            p.rect_stroke(Rect::from_min_max(at(0.1, 0.12), at(0.9, 0.34)), s * 0.05, st);
+            line(p, vec![at(0.16, 0.34), at(0.16, 0.9), at(0.84, 0.9), at(0.84, 0.34)], st);
+            for y in [0.46, 0.6, 0.74] {
+                p.line_segment([at(0.44, y), at(0.56, y)], st);
+            }
         }
         Icon::Image => {
             p.rect_stroke(Rect::from_min_max(at(0.06, 0.14), at(0.94, 0.86)), s * 0.1, st);

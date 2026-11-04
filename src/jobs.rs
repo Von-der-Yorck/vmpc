@@ -46,6 +46,8 @@ pub struct Job {
     pub started: Option<Instant>,
     pub elapsed: f64,
     pub speed: String,
+    /// Run this program instead of ffmpeg (archives use the system `tar`).
+    pub tool: Option<PathBuf>,
 }
 
 impl Job {
@@ -63,6 +65,7 @@ impl Job {
             started: None,
             elapsed: 0.0,
             speed: String::new(),
+            tool: None,
         }
     }
 }
@@ -192,14 +195,21 @@ fn run_job(shared: &Shared, job: Job, ctx: &egui::Context) {
 }
 
 fn execute(shared: &Shared, job: &Job, ctx: &egui::Context) -> Result<(), String> {
-    let mut cmd = ffmpeg::ffmpeg_cmd().ok_or("FFmpeg not found")?;
-    cmd.args(["-y", "-v", "error", "-nostats", "-progress", "pipe:1"]);
+    let mut cmd = match &job.tool {
+        // Other tools have no progress protocol; the bar simply runs until done.
+        Some(tool) => ffmpeg::command(tool),
+        None => {
+            let mut c = ffmpeg::ffmpeg_cmd().ok_or("FFmpeg not found")?;
+            c.args(["-y", "-v", "error", "-nostats", "-progress", "pipe:1"]);
+            c
+        }
+    };
     cmd.args(&job.args);
     let mut child = cmd
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .spawn()
-        .map_err(|e| format!("Could not start ffmpeg: {e}"))?;
+        .map_err(|e| format!("Could not start {}: {e}", job.tool.as_ref().map(|t| t.display().to_string()).unwrap_or("ffmpeg".into())))?;
     let stdout = child.stdout.take().ok_or("no stdout")?;
     let mut stderr = child.stderr.take().ok_or("no stderr")?;
     *shared.child.lock().unwrap() = Some((job.id, child));

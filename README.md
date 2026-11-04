@@ -19,9 +19,12 @@ The layout follows the Claude app:
 
    | Detected | Conversions offered |
    | --- | --- |
-   | Video | Video formats · audio only (extract the soundtrack) · still image · **image sequence** (PNG/JPEG/WebP/BMP/TIFF frames) · any other extension |
+   | Video | Video formats · audio only (extract the soundtrack) · still image · **image sequence** (PNG/JPEG/WebP/BMP/TIFF/TGA/DPX/EXR frames) · **subtitles** (extract text tracks) · any other extension |
    | Audio | Audio formats · any other extension |
    | Image(s) | Image formats · **video from these images** (also from a single image) · any other extension |
+   | Subtitles | SRT · WebVTT · ASS · SSA · TTML · LRC, with a timing shift |
+   | Archive | Extract · repack as ZIP, 7Z, TAR.GZ, TAR.XZ, TAR.ZST, TAR.BZ2, TAR, ISO · play the media inside |
+   | JSON / YAML / TOML / CSV / TSV | Convert into each other |
 
    Opening a folder of images preselects *video from N images* automatically.
 4. The **sidebar** (click the logo or press Ctrl+B to collapse it) has the open actions, your
@@ -37,6 +40,27 @@ with no "please connect" messages. Turn it off or check manually in **Settings �
 - Installed with the Windows setup (per user or for all users) or with `install-linux.sh`:
   updates install themselves.
 - Portable zip / `.deb`: VMPC opens the release page instead.
+
+## File types
+
+VMPC knows **1,708 file types**: nearly the whole of Wikipedia's
+[List of file formats](https://en.wikipedia.org/wiki/List_of_file_formats) plus common media,
+subtitle, archive and data formats the list misses. Open **Supported formats** in the sidebar
+to search them all and see what VMPC does with each:
+
+| What | Formats (examples) | VMPC |
+| --- | --- | --- |
+| Video, audio, images | MP4, MKV, MOV, AVI, WebM, MXF, VOB, MP3, FLAC, Opus, DTS, PNG, JPEG, AVIF, JPEG XL, EXR, PSD… | Play / view and convert (86 output formats) |
+| Subtitles | SRT, ASS, SSA, VTT, SUB, LRC, SBV, TTML, SMI… | View, convert, shift timing, extract from videos |
+| Playlists | M3U, M3U8, PLS, XSPF, ASX, WPL | Load every entry into the library (HLS `.m3u8` streams play directly) |
+| Archives | ZIP, 7Z, RAR, TAR, GZ, BZ2, XZ, ZST, ISO, CAB, CPIO, XAR, LHA, DEB, RPM, CBZ/CBR… | Browse, extract, repack, play media inside |
+| Text and data | Source code, logs, Markdown, HTML, XML, INI; JSON, YAML, TOML, CSV, TSV | Text viewer; data formats convert into each other |
+| Everything else | Documents, spreadsheets, CAD, 3D, databases, executables, fonts, VM images, game data… | Recognised by name and category, opened with the default app |
+
+Output formats depend on the FFmpeg build: VMPC asks the engine which encoders it has and only
+offers what it can really write (the bundled build has all but AMR-WB, Speex and GSM).
+Archives use libarchive's `bsdtar`, built into Windows 10/11; on Linux install
+`libarchive-tools` (the `.deb` recommends it).
 
 ## Features
 
@@ -236,6 +260,10 @@ src/
   theme.rs       design system (tokens, fonts, buttons, sliders, toggles, segmented…)
   icons.rs       vector icons, logo (vector + software rasteriser), PNG/ICO writer
   util.rs        time parsing, natural sort, output paths
+  catalog.rs     1,708-format catalogue, file classification (media/subtitle/playlist/archive/text)
+  playlist.rs    M3U/PLS/XSPF/ASX/WPL parsing
+  archive.rs     list / extract / repack / play-inside via libarchive bsdtar
+  data.rs        JSON / YAML / TOML / CSV / TSV conversion
 installer/vmpc.iss   Windows installer (full + web) for Inno Setup
 scripts/             build scripts and the Linux installer
 .github/workflows/   CI and automated releases
@@ -246,7 +274,8 @@ uses roughly a quarter of one CPU core for VMPC plus the FFmpeg decoder.
 
 ## Limitations
 
-- "Any format" means anything FFmpeg can decode/encode: media, not documents (PDF/DOCX etc.).
+- Documents, spreadsheets, CAD, 3D models, databases and executables are recognised but not
+  converted: that needs their own applications (e.g. LibreOffice for documents).
 - DRM-protected streams (Netflix, Spotify…) can't be played. Web pages such as YouTube links
   aren't media URLs: VMPC needs the direct stream URL.
 - Subtitles are not rendered during playback yet (they're kept by the *Custom* converter).

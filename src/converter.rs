@@ -7,6 +7,7 @@ use std::path::{Path, PathBuf};
 
 use egui::{vec2, RichText, Ui};
 
+use crate::catalog::DataFormat;
 use crate::ffmpeg::{MediaInfo, MediaKind};
 use crate::formats::{self, Format, Kind, Res, FORMATS, IMAGE_SEQ_FORMATS, SEQ_VIDEO_FORMATS};
 use crate::icons::Icon;
@@ -25,6 +26,87 @@ pub enum Target {
     Sequence(usize),
     /// Image(s) → video ([`SEQ_VIDEO_FORMATS`] index).
     ToVideo(usize),
+    /// Subtitle file conversion, or extraction from a video ([`formats::SUB_FORMATS`] index).
+    Subtitle(usize),
+    /// Data file conversion (JSON / YAML / TOML / CSV / TSV).
+    Data(DataFormat),
+    /// Extract an archive into a folder.
+    Extract,
+    /// Rewrite an archive in another format ([`crate::archive::REPACK_FORMATS`] index).
+    Repack(usize),
+}
+
+/// What is being converted; decides which targets make sense.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum Subject {
+    Media { kind: MediaKind, images: usize, text_subtitles: usize },
+    Subtitle,
+    Data(DataFormat),
+    Archive,
+}
+
+fn subtitle_targets() -> Vec<(Target, String)> {
+    formats::SUB_FORMATS.iter().enumerate().map(|(i, (name, _, _))| (Target::Subtitle(i), name.to_string())).collect()
+}
+
+/// The conversion targets that fit the subject, grouped for display.
+pub fn groups_for_subject(subject: Subject) -> Vec<Group> {
+    let g = |title: &str, icon, targets| Group { title: title.to_string(), icon, targets };
+    match subject {
+        Subject::Media { kind, images, text_subtitles } => {
+            let mut groups = groups_for(kind, images);
+            if text_subtitles > 0 {
+                let title = if text_subtitles > 1 { format!("Subtitles ({text_subtitles} tracks)") } else { "Subtitles".into() };
+                groups.insert(groups.len() - 1, g(&title, Icon::Playlist, subtitle_targets()));
+            }
+            groups
+        }
+        Subject::Subtitle => vec![g("Subtitle format", Icon::Playlist, subtitle_targets())],
+        Subject::Data(from) => vec![g(
+            "Data format",
+            Icon::Convert,
+            DataFormat::ALL.iter().filter(|f| **f != from).map(|f| (Target::Data(*f), f.label().to_string())).collect(),
+        )],
+        Subject::Archive => vec![
+            g("Unpack", Icon::Folder, vec![(Target::Extract, "Extract all files".into())]),
+            g(
+                "Repack as",
+                Icon::Convert,
+                crate::archive::REPACK_FORMATS.iter().enumerate().map(|(i, (name, _))| (Target::Repack(i), name.to_string())).collect(),
+            ),
+        ],
+    }
+}
+
+pub fn default_for_subject(subject: Subject) -> Target {
+    match subject {
+        Subject::Media { kind, images, .. } => default_target(kind, images),
+        Subject::Subtitle => Target::Subtitle(0),
+        Subject::Data(from) => Target::Data(if from == DataFormat::Json { DataFormat::Yaml } else { DataFormat::Json }),
+        Subject::Archive => Target::Extract,
+    }
+}
+
+/// Converts a subtitle file, or extracts subtitle track `track` from a video.
+pub fn subtitle_job(source: &str, format: usize, track: usize, shift: f64, dir: Option<&Path>) -> Job {
+    let (label, ext, codec) = formats::SUB_FORMATS[format.min(formats::SUB_FORMATS.len() - 1)];
+    let mut args: Vec<OsString> = Vec::new();
+    if shift.abs() > 1e-3 {
+        args.extend(["-itsoffset".into(), format!("{shift:.3}").into()]);
+    }
+    args.extend(["-i".into(), source.into(), "-map".into(), format!("0:s:{track}").into()]);
+    if let Some(c) = codec {
+        args.extend(["-c:s".into(), c.into()]);
+    }
+    let parent = dir
+        .map(PathBuf::from)
+        .or_else(|| (!util::is_url(source)).then(|| Path::new(source).parent().map(PathBuf::from)).flatten())
+        .unwrap_or_else(|| util::default_output_dir("Videos"));
+    let name = util::display_name(source);
+    let stem = Path::new(&name).file_stem().map(|s| s.to_string_lossy().into_owned()).unwrap_or_else(|| "subtitles".into());
+    let output = util::unique_path(&parent, &stem, ext);
+    args.push(output.clone().into());
+    Job::new(format!("{name} → {label} subtitles"), output, args, None)
 }
 
 pub struct Group {
@@ -35,10 +117,13 @@ pub struct Group {
 
 fn formats_of(kind: usize) -> Vec<(Target, String)> {
     let k = kind_of(kind);
+    // Index first (targets refer to the position among formats of this kind), then hide
+    // formats the installed FFmpeg build cannot write.
     FORMATS
         .iter()
         .filter(|f| f.kind == k)
         .enumerate()
+        .filter(|(_, f)| f.available())
         .map(|(i, f)| (Target::Format { kind, format: i }, f.name.to_string()))
         .collect()
 }
@@ -205,10 +290,7 @@ impl Converter {
                 });
             });
         }
-        let bitrate = fmt.and_then(|f| f.audio).is_some_and(|a| {
-            use formats::ACodec::*;
-            matches!(a, Mp3 | Aac | Opus | Wma | Mp2)
-        });
+        let bitrate = fmt.and_then(|f| f.audio).is_some_and(formats::uses_bitrate);
         if bitrate && !(kind == Kind::Video && self.no_audio) && info.audio.is_some() {
             field(ui, "Audio bitrate", |ui| {
                 egui::ComboBox::from_id_salt("conv-kbps").selected_text(format!("{} kb/s", self.kbps)).show_ui(ui, |ui| {
@@ -325,6 +407,10 @@ impl Converter {
                     Some(a) if !self.no_audio && info.audio.is_some() => {
                         args.extend(["-map".into(), "0:a:0?".into()]);
                         args.extend(formats::audio_args(a, q, self.kbps));
+                        if f.ext == "mxf" {
+                            // MXF only carries 48 kHz audio.
+                            args.extend(["-ar".into(), "48000".into()]);
+                        }
                         if !af.is_empty() {
                             args.extend(["-af".into(), af.join(",")]);
                         }
@@ -345,6 +431,10 @@ impl Converter {
             }
             (Kind::Image, Some(f)) => {
                 args.extend(["-map".into(), "0:v:0".into(), "-frames:v".into(), "1".into(), "-update".into(), "1".into()]);
+                if f.video == Some(formats::VCodec::Ico) {
+                    // Icons are at most 256 × 256.
+                    vf.push("scale=256:256:force_original_aspect_ratio=decrease".into());
+                }
                 if !vf.is_empty() {
                     args.extend(["-vf".into(), vf.join(",")]);
                 }
@@ -377,6 +467,9 @@ impl Converter {
             .unwrap_or_else(|| "converted".into());
         let stem = if self.reverse { format!("{stem}_reversed") } else { stem };
         let output = util::unique_path(&dir, &stem, &ext);
+        if let Some(muxer) = fmt.filter(|_| kind != Kind::Custom).and_then(|f| f.muxer) {
+            args.extend(["-f".into(), muxer.into()]);
+        }
         let mut os_args: Vec<OsString> = args.into_iter().map(OsString::from).collect();
         os_args.push(output.clone().into_os_string());
 
@@ -483,20 +576,29 @@ mod tests {
         let src = sample.to_string_lossy().into_owned();
         let info = ffmpeg::probe(&src).unwrap();
         let out = testing::scratch_dir("convert_all");
-        let mut failures = Vec::new();
+        let (mut failures, mut skipped, mut ok) = (Vec::new(), Vec::new(), 0);
         for kind in 0..3 {
             let count = FORMATS.iter().filter(|f| f.kind == kind_of(kind)).count();
             for format in 0..count {
                 let c = converter_for(kind, format, &out);
-                let fmt = c.selected_format();
-                let job = testing::run(c.build_job(&src, &info, fmt));
+                let fmt = c.selected_format().unwrap();
+                if !fmt.available() {
+                    skipped.push(fmt.name);
+                    continue;
+                }
+                let job = testing::run(c.build_job(&src, &info, Some(fmt)));
                 let size = std::fs::metadata(&job.output).map(|m| m.len()).unwrap_or(0);
-                if job.status != Status::Done || size == 0 {
-                    failures.push(format!("{}: {:?} ({size} bytes)", fmt.unwrap().name, job.status));
+                // The result must be a real file FFmpeg can read back.
+                let readable = ffmpeg::probe(&job.output.to_string_lossy()).is_ok();
+                if job.status != Status::Done || size == 0 || !readable {
+                    failures.push(format!("{}: {:?} ({size} bytes, readable: {readable})", fmt.name, job.status));
+                } else {
+                    ok += 1;
                 }
             }
         }
         let _ = std::fs::remove_dir_all(&out);
+        eprintln!("{ok} presets converted; skipped (encoder not in this FFmpeg build): {skipped:?}");
         assert!(failures.is_empty(), "failed presets: {failures:#?}");
     }
 
@@ -555,6 +657,36 @@ mod tests {
         assert!(!video.iter().any(|t| matches!(t, Target::ToVideo(_))));
         assert_eq!(default_target(MediaKind::Image, 5), Target::ToVideo(0));
         assert_eq!(default_target(MediaKind::Audio, 0), Target::Format { kind: 1, format: 0 });
+        let _ = std::fs::remove_dir_all(&out);
+    }
+
+    #[test]
+    fn subtitles_convert_and_extract() {
+        let Some(sample) = testing::sample_video() else { return };
+        let out = testing::scratch_dir("subs");
+        let srt = out.join("talk.srt");
+        std::fs::write(&srt, "1\n00:00:01,000 --> 00:00:02,500\nHello <i>there</i>\n\n2\n00:00:02,600 --> 00:00:03,000\nBye\n").unwrap();
+        for (i, (name, ext, _)) in formats::SUB_FORMATS.iter().enumerate() {
+            let job = testing::run(subtitle_job(&srt.to_string_lossy(), i, 0, 1.5, Some(&out)));
+            assert_eq!(job.status, Status::Done, "{name}: {:?}", job.status);
+            let text = std::fs::read_to_string(&job.output).unwrap();
+            assert!(text.contains("Hello") || *ext == "ttml" && text.contains("Hello"), "{name} lost the text:\n{text}");
+        }
+        // Timing shift: +1.5 s moves 00:00:01,000 to 00:00:02,500.
+        let shifted = std::fs::read_to_string(out.join("talk (2).srt")).unwrap();
+        assert!(shifted.contains("00:00:02,500 --> 00:00:04,000"), "{shifted}");
+        // Mux the subtitles into a video, then extract them again.
+        let mkv = out.join("movie.mkv");
+        let ok = ffmpeg::ffmpeg_cmd().unwrap().args(["-y", "-v", "error", "-i"]).arg(&sample).arg("-i").arg(&srt)
+            .args(["-map", "0", "-map", "1", "-c", "copy", "-c:s", "srt"]).arg(&mkv).status().unwrap();
+        assert!(ok.success());
+        let info = ffmpeg::probe(&mkv.to_string_lossy()).unwrap();
+        assert_eq!(info.subtitles, vec!["subrip".to_string()]);
+        let groups = groups_for_subject(Subject::Media { kind: info.kind(), images: 0, text_subtitles: 1 });
+        assert!(groups.iter().any(|g| g.targets.iter().any(|(t, _)| matches!(t, Target::Subtitle(_)))));
+        let job = testing::run(subtitle_job(&mkv.to_string_lossy(), 1, 0, 0.0, Some(&out)));
+        assert_eq!(job.status, Status::Done, "{:?}", job.status);
+        assert!(std::fs::read_to_string(&job.output).unwrap().starts_with("WEBVTT"));
         let _ = std::fs::remove_dir_all(&out);
     }
 }

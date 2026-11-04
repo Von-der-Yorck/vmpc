@@ -123,6 +123,14 @@ pub fn reveal(path: &Path) {
     }
 }
 
+/// Opens a file with the program the system associates with it.
+pub fn open_with_default(path: &Path) {
+    #[cfg(windows)]
+    let _ = std::process::Command::new("explorer").arg(path).spawn();
+    #[cfg(not(windows))]
+    let _ = std::process::Command::new("xdg-open").arg(path).spawn();
+}
+
 /// Default folder for outputs that have no obvious home (URLs, snapshots).
 pub fn default_output_dir(kind: &str) -> PathBuf {
     let home = std::env::var_os(if cfg!(windows) { "USERPROFILE" } else { "HOME" })

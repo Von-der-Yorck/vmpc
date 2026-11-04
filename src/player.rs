@@ -420,16 +420,14 @@ impl Default for Player {
 }
 
 impl Player {
-    /// Starts loading a file path or URL. Probing runs in the background.
-    pub fn open(&mut self, source: String) {
+
+    /// Opens media that has already been probed (skips the second probe).
+    pub fn open_known(&mut self, source: String, info: MediaInfo) {
         self.stop();
         self.source = Some(source.clone());
         self.state = LoadState::Loading;
         let (tx, rx) = mpsc::channel();
-        std::thread::spawn(move || {
-            let res = ffmpeg::probe(&source);
-            let _ = tx.send((source, res));
-        });
+        let _ = tx.send((source, Ok(info)));
         self.probe_rx = Some(rx);
     }
 

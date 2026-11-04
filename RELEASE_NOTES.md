@@ -1,7 +1,9 @@
-## What's new in 1.2.0
+## What's new in 1.3.0
 
-- **Automatic updates.** VMPC checks GitHub at start-up and offers to update itself: it downloads the new version, verifies it and restarts. Offline? It simply skips the check. You can turn it off in Settings.
-- **New design** inspired by the Claude app: calm, flat surfaces, a collapsible sidebar with your library and a home page where you drop or paste anything.
-- **Everything that fits, in one place.** After importing, the slide-out Convert bar lists every compatible format for the detected media: video, audio, still frames, image sequences and more.
-- **Images → video automatically.** Open a single image or a folder of images and you can turn them into a video right away (an image sequence at any fps, or a slideshow with seconds per image).
-- Suggestions on the home page: Convert to MP3, Make a GIF, Extract frames, Images → video.
+- **Knows 1,708 file types.** VMPC now recognises nearly every format on Wikipedia's "List of file formats", from video and audio to CAD drawings, databases, executables and game files. Browse them all in the new **Supported formats** library (sidebar) and see what VMPC can do with each one.
+- **Many more conversions:** 86 output formats, including 3GP, FLV, OGV, VOB, MXF, M2TS, WebM AV1/VP8, AC3, E-AC3, DTS, WavPack, AMR, CAF, TGA, JPEG 2000, JPEG XL, AVIF, OpenEXR, ICO and more. Only formats your FFmpeg engine can actually write are shown.
+- **Subtitles:** open SRT, ASS, SSA, VTT, SUB, LRC and more; convert between SRT, WebVTT, ASS, SSA, TTML and LRC, shift their timing, or extract subtitles from videos.
+- **Playlists:** M3U, M3U8, PLS, XSPF, ASX and WPL load all their entries into your library.
+- **Archives:** ZIP, 7Z, RAR, TAR, GZ, XZ, ZST, ISO, CAB, CPIO, DEB, RPM, comic books and more: browse their contents, extract them, repack them in another format, or play the media inside.
+- **Text and data:** source code, logs, Markdown, HTML and other text files open in a viewer; JSON, YAML, TOML, CSV and TSV convert into each other.
+- Anything else opens with a card that tells you what the file is, with "Open with default app".
